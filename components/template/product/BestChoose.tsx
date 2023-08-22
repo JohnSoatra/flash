@@ -14,7 +14,7 @@ const Class = {
 
 type Props = {
     label: string,
-    fetchAllcount: (args?: GetAllcount) => Promise<number>,
+    fetchAllcount: (args: GetAllcount) => Promise<number>,
     fetchFunc: (args: BestChoiceProducts) => Promise<ProductX[]>
 }
 
@@ -32,12 +32,17 @@ const BestChooseProducts = ({ fetchFunc, fetchAllcount, label }: Props) => {
     });
     
     const { result: allCount, fetching: fetchingAllCount } = useFetchLazy({
-        func: fetchAllcount
+        func: fetchAllcount,
+        args: {
+            query: {}
+        }
     });
     const { result: partedProducts, refetch: refetchProducts, fetching: fetchingProducts } = useFetchLazy({
         func: fetchFunc,
         args: {
-            skip: range.current.skip
+            query: {
+                skip: range.current.skip
+            }
         }
     });
 

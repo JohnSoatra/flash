@@ -90,7 +90,7 @@ const Index = ({ card }: { card: CardX }) => {
     const [ selectedChoice, setSelectedChoice ] = useState(0);
     const [ loading, setLoading ] = useState(false);
     const [ quantities, setQuantities ] = useState(card.product_quantities);
-    const subPrice = calulateSubPrice(card);
+    const subPrice = calculateSubPrice(card);
     const shippingPrice = calculateShippingPrice(card);
     const taxPrice = calculateTaxPrice(card);
     
@@ -375,7 +375,7 @@ const Index = ({ card }: { card: CardX }) => {
     );
 }
 
-function calulateSubPrice(card: CardX) {
+function calculateSubPrice(card: CardX) {
     return card.products.reduce((res, product) => res + product.price, 0);
 }
 

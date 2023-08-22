@@ -1,15 +1,21 @@
-import VARS from "@/constants/vars";
 import { GetoneUserRouter } from "@/prisma-types/typings";
 import { GetOneUser } from "@/typings";
-import clear from "@/utils/string/clear";
+import fetchHandler from "@/utils/fetch/handler";
 
-async function getOneUser(args?: GetOneUser): Promise<GetoneUserRouter> {
-    const res = await fetch(clear(`${VARS.ENV.gate_url}/user/getone`), {
-        signal: args?.signal,
-        credentials: 'include'
+async function getOneUser({
+    signal,
+    onData,
+    onError
+}: GetOneUser): Promise<GetoneUserRouter> {
+    const response = await fetchHandler({
+        method: 'get',
+        url: '/user/getone',
+        signal,
+        onData,
+        onError
     });
 
-    const json = await res.json();
+    const json = await response.json();
 
     return json;
 }

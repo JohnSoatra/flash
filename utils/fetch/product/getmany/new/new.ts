@@ -1,19 +1,23 @@
 import { GetmanyNewProductsRouter } from "@/prisma-types/typings";
 import { GetManyNewProducts } from "@/typings";
-import clear from "@/utils/string/clear";
+import fetchHandler from "@/utils/fetch/handler";
 
-async function getManyNewProducts(args: GetManyNewProducts): Promise<GetmanyNewProductsRouter> {
-    const res = await fetch(clear(`
-        ${process.env.GATEWAY_URL}/product/getmany/new?
-            skip=${args.skip || ''}&
-            limit=${args.limit || ''}&
-            released_at=${args.releasedAt || ''}
-    `), {
-        signal: args.signal,
-        credentials: 'include'
+async function getManyNewProducts({
+    signal,
+    query,
+    onData,
+    onError
+}: GetManyNewProducts): Promise<GetmanyNewProductsRouter> {
+    const response = await fetchHandler({
+        method: 'get',
+        url: '/product/getmany/new',
+        signal,
+        query,
+        onData,
+        onError
     });
 
-    const json = await res.json();
+    const json = await response.json();
 
     return json;
 }

@@ -1,23 +1,23 @@
 import { SignupRouter } from "@/prisma-types/typings";
 import { Signup } from "@/typings";
-import networkEncrypt from "@/utils/crypto/encrypt/network";
-import clear from "@/utils/string/clear";
+import fetchHandler from "../handler";
 
-async function signup(args: Signup): Promise<SignupRouter> {
-    const res = await fetch(clear(`${process.env.GATEWAY_URL}/auth/signup`), {
-        signal: args.signal,
-        credentials: 'include',
+async function signup({
+    signal,
+    body,
+    onData,
+    onError,
+}: Signup): Promise<SignupRouter> {
+    const response = await fetchHandler({
         method: 'post',
-        headers: {
-            'content-type': 'application/json'
-        },
-        body: JSON.stringify({
-            email: args.email,
-            password: networkEncrypt(args.password)
-        })
+        url: '/auth/signup',
+        signal,
+        body,
+        onData,
+        onError
     });
 
-    const json = await res.json();
+    const json = await response.json();
 
     return json;
 }

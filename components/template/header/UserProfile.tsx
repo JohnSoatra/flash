@@ -1,22 +1,17 @@
 'use client';
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
+import { Fragment, useState } from "react";
+import { Transition } from "@headlessui/react";
 import ROUTE from "@/constants/route";
 import Image from "next/image";
-import { signOut } from "next-auth/react";
-import { Fragment, useState } from "react";
 import Link from "next/link";
 import SampleProfileIcon from "./ProfileIcon";
-import { Transition } from "@headlessui/react";
 import UserPopover from "./UserPopover";
 import useUser from "@/hooks/useUser";
  
 const UserProfile = () => {
   const [ open, setOpen ] = useState(false);
   const user = useUser();
-
-  const emitSignOut = () => {
-    signOut();
-  }
 
   if (user === null) {
     return (

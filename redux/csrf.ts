@@ -1,6 +1,5 @@
 import { RootState } from '@/redux/store';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { UserC } from '@/prisma-types/typings';
 
 export interface CsrfState {
     value: string

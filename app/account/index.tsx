@@ -4,7 +4,6 @@ import ContactAccount from "@/components/template/account/Contact";
 import GeneralAccount from "@/components/template/account/General";
 import SecurityAccount from "@/components/template/account/Security";
 import { useFetch } from "@/hooks/useFetch";
-import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { PiSlidersHorizontal } from 'react-icons/pi';
 import { MdOutlineAssignment, MdOutlineSecurity, MdPayment } from 'react-icons/md';
@@ -13,6 +12,7 @@ import VARS from "@/constants/vars";
 import Link from "next/link";
 import getOneCreditCard from "@/utils/fetch/creditcard/getone";
 import Spinner from "@/components/template/spinner/Spinner";
+import useUser from "@/hooks/useUser";
 
 const Class = {
     Icon: 'w-4 h-4 opacity-75',
@@ -102,7 +102,7 @@ const OPTIONS: { [key: string]: RegisterOptions } = {
 }
 
 const Index = () => {
-    const { data: session } = useSession();
+    const user = useUser();
     const {
         register,
         trigger,
@@ -188,7 +188,7 @@ const Index = () => {
             <div className="flex flex-1 flex-col p-5 md:p-10 mb-8 mx-5 md:ml-0 md:mr-10 md:mt-5 bg-stone-50 border border-light-400 rounded-lg">
 
             {
-                (!session?.user || creditCard === undefined) ?
+                (!user || creditCard === undefined) ?
                 <div className="w-full max-h-64 flex-1 flex items-center justify-center">
                     <div className="w-12 h-12 md:w-14 md:h-14">
                         <Spinner />
@@ -199,7 +199,7 @@ const Index = () => {
                     
                         <BlockWrapper id="general">
                             <GeneralAccount
-                                user={session.user}
+                                user={user}
                                 register={register}
                                 errors={errors}
                                 options={OPTIONS}
@@ -217,7 +217,7 @@ const Index = () => {
                             id="contact"
                             className={Class.BlockWrapper}>
                             <ContactAccount
-                                user={session.user}
+                                user={user}
                                 register={register}
                                 errors={errors}
                                 options={OPTIONS}
@@ -227,7 +227,7 @@ const Index = () => {
                             id="security"
                             className={Class.BlockWrapper}>
                             <SecurityAccount
-                                user={session.user}
+                                user={user}
                                 register={register}
                                 errors={errors}
                                 options={OPTIONS}
@@ -237,7 +237,6 @@ const Index = () => {
                             id="billing"
                             className={Class.BlockWrapper}>
                             <BillingAccount
-                                user={session.user}
                                 creditCard={creditCard}
                                 register={register}
                                 errors={errors}

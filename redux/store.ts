@@ -3,6 +3,7 @@ import basketReducer from '@/redux/basket';
 import filterReducer from '@/redux/filter';
 import userReducer from '@/redux/user';
 import cookieReducer from '@/redux/cookie';
+import csrfReducer from '@/redux/csrf';
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     filter: filterReducer,
     cookie: cookieReducer,
     user: userReducer,
+    csrf: csrfReducer
   },
 });
 

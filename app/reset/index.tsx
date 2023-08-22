@@ -7,14 +7,13 @@ import Error from "@/components/Error";
 import zxcvbn from "zxcvbn";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-import random from "@/utils/string/random";
-import postOneResetCode from "@/utils/fetch/email/reset/postone";
-import updateOneUser from "@/utils/fetch/user/updateone";
 import { useRouter } from "next/navigation";
 import ROUTE from "@/constants/route";
 import Link from "next/link";
-import encrypt from "@/utils/string/crypto/encrypt";
-import decrypt from "@/utils/string/crypto/decrypt";
+import sendEmailVerifyRequest from "@/utils/fetch/email/send/verify_request";
+import verifyRequestToken from "@/utils/fetch/email/verify/request";
+import resetPassword from "@/utils/fetch/user/reset_password";
+import { toast } from "react-hot-toast";
 
 const OPTIONS: { [key: string]: RegisterOptions } = {
     'email': {
@@ -33,6 +32,20 @@ const OPTIONS: { [key: string]: RegisterOptions } = {
         pattern: {
             value: /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/,
             message: 'is in wrong format.'
+        }
+    },
+    'code': {
+        required: {
+            value: true,
+            message: 'is required.'
+        },
+        minLength: {
+            value: 6,
+            message: 'has 6 characters.'
+        },
+        maxLength: {
+            value: 6,
+            message: 'has 6 characters.'
         }
     },
     'password': {
@@ -56,96 +69,108 @@ const OPTIONS: { [key: string]: RegisterOptions } = {
             return 'is not strong enough.'
         }
     },
-    'code': {
-        required: {
-            value: true,
-            message: 'is required.'
-        },
-        minLength: {
-            value: 6,
-            message: 'has 6 characters.'
-        },
-        maxLength: {
-            value: 6,
-            message: 'has 6 characters.'
-        }
-    }
-}
-
-type Prop = {
-    networkSecret: string
 }
 
 type Fields = {
     email: string,
-    password: string,
     code: string,
+    password: string,
 }
    
-const Index = ({ networkSecret }: Prop) => {
+const Index = () => {
     const {
         register,
         handleSubmit,
         trigger,
         watch,
         setError,
-        formState: { errors }
+        formState: { errors },
+        clearErrors
     } = useForm();
     const [ loading, setLoading ] = useState(false);
-    const [ code, setCode ] = useState(null as string|null);
     const router = useRouter();
 
     const requestCode = async () => {
-        const ok = await trigger('email');
-        
-        if (ok) {
+        clearErrors('email');
+
+        if (await trigger('email')) {
             const email = watch('email');
-            const encrypted = encrypt(random(6), [networkSecret]);
-            const emailResult = await postOneResetCode({
-                email,
-                code: encrypted
+            const result = await sendEmailVerifyRequest({
+                body: {
+                    email
+                },
+                signal: null
             });
 
-            if (emailResult?.error) {
-                if (emailResult.error.field === 'email') {
-                    setError('email', { message: 'is not in our system.' });
-                } else {
-                    setError('email', { message: 'has some problem.' });
-                }
-            } else if (emailResult?.emailInfo) {
-                setCode(encrypted);
+            if (result === true) {
+                toast.success(
+                    `Code has been send to ${email}.`,
+                    {
+                        position: 'bottom-center'
+                    }
+                );
+            } else if (result === false) {
+                setError(
+                    'email',
+                    {
+                        message: 'cannot receive message.'
+                    }
+                );
+            } else {
+                setError(
+                    'email',
+                    {
+                        message: 'is not in our system.'
+                    }
+                );
             }
         }
     }
 
     const onSubmit = async (data: any) => {
+        clearErrors(['email', 'code', 'password']);
         setLoading(true);
-        
+
         const dataField = data as Fields;
         const email = dataField.email;
         const password = dataField.password;
-        const inputCode = dataField.code;
-        
-        if (
-            code &&
-            decrypt(code, [networkSecret]) === inputCode
-        ) {
-            const updateResult = await updateOneUser({
+        const code = dataField.code;
+
+        const verified = await verifyRequestToken({
+            body: {
                 email,
-                password
+                token: code,
+            },
+            signal: null
+        });
+
+        if (verified) {
+            const result = await resetPassword({
+                body: {
+                    email,
+                    email_token: verified,
+                    new_password: password
+                },
+                signal: null
             });
-            
-            if (updateResult?.error) {
-                if (updateResult.error.field === 'email') {
-                    setError('email', { message: 'is not in our system.' })
-                } else {
-                    setError('email', { message: 'has some problem.' })
-                }
-            } else if (updateResult?.user) {
+
+            if (result) {
                 router.push(ROUTE.SIGN_IN);
+            } else {
+                toast.error(
+                    'There is a problem with resetting password.',
+                    {
+                        position: 'bottom-center'
+                    }
+                );
             }
         } else {
-            setError('code', { message: 'is incorrect.' })
+            setError(
+                'code',
+                {
+                    message: 'is incorrect.'
+                }
+            );
         }
         
         setLoading(false);        

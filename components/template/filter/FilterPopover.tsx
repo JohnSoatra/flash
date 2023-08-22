@@ -10,7 +10,7 @@ import getAllModels from '@/utils/fetch/model/getall';
 const FilterPopover = () => {
     const [ open, setOpen ] = useState(false);
     const [ loaded, setLoaded ] = useState(false);
-    const {result: categories} = useFetch({ func: getAllCategories });
+    const {result: categories} = useFetch({ func: getAllCategories});
     const {result: brands} = useFetch({ func: getAllBrands });
     const {result: models} = useFetch({ func: getAllModels });
 

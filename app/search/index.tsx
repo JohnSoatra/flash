@@ -36,14 +36,18 @@ const Index = ({ string }: Props) => {
     const { result: allCount, refetch: refetchAllCount, fetching: fetchingAllCount } = useFetchLazy({
         func: getAllcountSearchProducts,
         args: {
-            string: range.current.string
+            query: {
+                string: range.current.string
+            }
         }
     });
     const { result: partedProducts, refetch: refetchProducts, fetching: fetchingProducts } = useFetchLazy({
         func: getManySearchProducts,
         args: {
-            string: range.current.string,
-            skip: range.current.skip
+            query: {
+                string: range.current.string,
+                skip: range.current.skip
+            }
         }
     });
 

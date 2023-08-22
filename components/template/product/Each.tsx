@@ -1,17 +1,17 @@
 import React from 'react';
 import { ProductX } from '@/typings';
-import Love from '@/components/Favorite';
+import Love from '@/components/Love';
 import Rating from '@/components/RatingCount';
 import ROUTE from '@/constants/route';
 import { addToBasket } from '@/redux/basket';
 import limitString from '@/utils/string/limit';
-import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 import Wrapper from '@/components/Wrapper';
 import Tooltip from '@/components/Tooltip';
+import useUser from '@/hooks/useUser';
 
 
 type Props = {
@@ -23,7 +23,7 @@ const EachProduct = ({
     product,
     showFavorite
 }: Props) => {
-    const { data: session } = useSession();
+    const user = useUser();
     const dispatch = useDispatch();
 
     const addProductToBasket = (product: ProductX) => {
@@ -82,18 +82,11 @@ const EachProduct = ({
                             <div className="text-base lg:text-lg font-semibold opacity-75">
                                 ${product.price}
                             </div>
-
-                            <div className='text-base lg:text-lg'>
-                                <Rating count={product.rating} />
-                            </div>
                             
                             {
-                                showFavorite && session?.user &&
+                                showFavorite && user &&
                                 <div className='text-base lg:text-lg flex justify-center'>
-                                    <Love
-                                        loved={product.favorited}
-                                        productId={product.id}
-                                    />
+                                    <Love product={product} />
                                 </div>
                             }
                         </div>

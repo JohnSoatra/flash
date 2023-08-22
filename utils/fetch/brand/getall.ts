@@ -1,14 +1,21 @@
 import { GetallBrandsRouter } from "@/prisma-types/typings";
 import { GetAllBrands } from "@/typings";
-import clear from "@/utils/string/clear";
+import fetchHandler from "../handler";
 
-async function getAllBrands(args?: GetAllBrands): Promise<GetallBrandsRouter> {
-    const res = await fetch(clear(`${process.env.GATEWAY_URL}/brand/getall`), {
-        signal: args?.signal,
-        credentials: 'include'
+async function getAllBrands({
+    signal,
+    onData,
+    onError,
+}: GetAllBrands): Promise<GetallBrandsRouter> {
+    const response = await fetchHandler({
+        method: 'get',
+        url: '/brand/getall',
+        signal,
+        onData,
+        onError
     });
 
-    const json = await res.json();
+    const json = await response.json();
 
     return json;
 }

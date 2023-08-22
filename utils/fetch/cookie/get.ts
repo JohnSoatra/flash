@@ -1,17 +1,23 @@
 import { GetCookieRouter } from "@/prisma-types/typings";
 import { GetCookie } from "@/typings";
-import clear from "@/utils/string/clear";
+import fetchHandler from "../handler";
 
-async function getCookie(args: GetCookie): Promise<GetCookieRouter> {
-    const res = await fetch(clear(`
-        ${process.env.GATEWAY_URL}/cookie/get?
-            name=$0
-    `, args.name), {
-        signal: args.signal,
-        credentials: 'include'
+async function getCookie({
+    signal,
+    query,
+    onData,
+    onError,
+}: GetCookie): Promise<GetCookieRouter> {
+    const response = await fetchHandler({
+        method: 'get',
+        url: '/cookie/get',
+        signal,
+        query,
+        onData,
+        onError
     });
 
-    const json = await res.json();
+    const json = await response.json();
 
     return json;
 }

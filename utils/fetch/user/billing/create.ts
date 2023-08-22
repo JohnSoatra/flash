@@ -1,27 +1,23 @@
 import { UpdateoneBillingRouter } from "@/prisma-types/typings";
 import { CreateBilling } from "@/typings";
-import clear from "@/utils/string/clear";
+import fetchHandler from "../../handler";
 
-async function createBilling(args: CreateBilling): Promise<UpdateoneBillingRouter> {
-    const res = await fetch(clear(`
-        ${process.env.GATEWAY_URL}/user/updateone/billing
-    `), {
-        signal: args.signal,
-        credentials: 'include',
+async function createBilling({
+    signal,
+    body,
+    onData,
+    onError,
+}: CreateBilling): Promise<UpdateoneBillingRouter> {
+    const response = await fetchHandler({
         method: 'post',
-        headers: {
-            'content-type': 'application/json'
-        },
-        body: JSON.stringify({
-            'password': args.password,
-            'card_number': args.cardNumber,
-            'expired_month': args.expiredMonth,
-            'expired_year': args.expiredYear,
-            'cvc': args.cvc,
-        })
+        url: '/user/updateone/billing',
+        signal,
+        body,
+        onData,
+        onError
     });
 
-    const json = await res.json();
+    const json = await response.json();
 
     return json;
 }

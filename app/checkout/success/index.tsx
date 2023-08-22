@@ -1,11 +1,11 @@
 'use client';
 import Button from '@/components/Button';
+import useUser from '@/hooks/useUser';
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
 import { useMediaQuery } from 'react-responsive';
 
 type StripeProduct = {
@@ -32,7 +32,7 @@ const testPro: StripeProduct = {
 
 const Index = ({ products=[testPro] }: Props) => {
     const param = useSearchParams();
-    const { data: session } = useSession();
+    const user = useUser();
     const isTabletOrMobile = useMediaQuery({ query: "(max-width: 1024px)" });
     const [mounted, setMounted] = useState(false);
     const [showOrderSummary, setShowOrderSummary] = useState(false);
@@ -74,7 +74,7 @@ const Index = ({ products=[testPro] }: Props) => {
                         <p className="text-sm text-gray-600">Order #{session_id?.slice(-5)}</p>
                         <h4 className="text-lg">
                             Thank you{" "}
-                            {session ? session.user.username.split(" ")[0] : "Guest"}
+                            {user ? user.username.split(" ")[0] : "Guest"}
                         </h4>
                     </div>
                 </div>

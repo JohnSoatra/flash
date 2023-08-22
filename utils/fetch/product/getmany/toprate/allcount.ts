@@ -1,17 +1,23 @@
 import { GetmanyToprateProductsAllCountRouter } from "@/prisma-types/typings";
 import { GetAllcountToprateProducts } from "@/typings";
-import clear from "@/utils/string/clear";
+import fetchHandler from "@/utils/fetch/handler";
 
-async function getAllcountToprateProducts(args?: GetAllcountToprateProducts): Promise<GetmanyToprateProductsAllCountRouter> {
-    const res = await fetch(clear(`
-        ${process.env.GATEWAY_UTL}/product/getmany/toprate/allcount?
-            released_at=${args?.releasedAt || ''}
-    `), {
-        signal: args?.signal,
-        credentials: 'include'
+async function getAllcountToprateProducts({
+    signal,
+    query,
+    onData,
+    onError,
+}: GetAllcountToprateProducts): Promise<GetmanyToprateProductsAllCountRouter> {
+    const response = await fetchHandler({
+        method: 'get',
+        url: '/product/getmany/toprate/allcount',
+        signal,
+        query,
+        onData,
+        onError
     });
 
-    const json = await res.json();
+    const json = await response.json();
 
     return json;
 }

@@ -1,19 +1,23 @@
 import { GetmanyToprateProductsRouter } from "@/prisma-types/typings";
 import { GetManyToprateProducts } from "@/typings";
-import clear from "@/utils/string/clear";
+import fetchHandler from "@/utils/fetch/handler";
 
-async function getManyToprateProducts(args: GetManyToprateProducts): Promise<GetmanyToprateProductsRouter> {
-    const res = await fetch(clear(`
-        ${process.env.GATEWAY_URL}/getmany/toprate?
-            skip=${args.skip || ''}&
-            limit=${args.limit || ''}&
-            released_at=${args.releasedAt || ''}
-    `), {
-        signal: args.signal,
-        credentials: 'include'
+async function getManyToprateProducts({
+    signal,
+    query,
+    onData,
+    onError
+}: GetManyToprateProducts): Promise<GetmanyToprateProductsRouter> {
+    const response = await fetchHandler({
+        method: 'get',
+        url: '/product/getmany/toprate',
+        signal,
+        query,
+        onData,
+        onError
     });
 
-    const json = await res.json();
+    const json = await response.json();
 
     return json;
 }

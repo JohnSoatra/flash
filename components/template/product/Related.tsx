@@ -15,7 +15,9 @@ const RelatedProducts = ({ productId }: Props) => {
     const {result: products} = useFetch({
         func: getManyRelatedProducts,
         args: {
-            productId
+            query: {
+                product_id: productId
+            }
         }
     });
 
@@ -59,9 +61,9 @@ const RelatedProducts = ({ productId }: Props) => {
                                         <div className="text-base md:text-lg font-semibold opacity-70">
                                             ${product.price}
                                         </div>
-                                        <div>
+                                        {/* <div>
                                             <Rating count={product.rating} />
-                                        </div>
+                                        </div> */}
                                     </div>
 
                                 </div>

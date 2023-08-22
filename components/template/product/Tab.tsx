@@ -67,8 +67,10 @@ const TabProducts = () => {
     const {result: products} = useFetch({
         func: Tabs[activeIndex].fetchFunc,
         args: {
-            skip: Tabs[activeIndex].args.skip,
-            limit: Tabs[activeIndex].args.limit
+            query: {
+                skip: Tabs[activeIndex].args.skip,
+                limit: Tabs[activeIndex].args.limit
+            }
         }
     });
 

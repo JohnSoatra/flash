@@ -1,14 +1,21 @@
 import { GetCsrfRouter } from "@/prisma-types/typings";
 import { GetOneCsrf } from "@/typings";
-import clear from "@/utils/string/clear";
+import fetchHandler from "../handler";
 
-async function getOneCsrf(args?: GetOneCsrf): Promise<GetCsrfRouter> {
-    const res = await fetch(clear(`${process.env.GATEWAY_URL}/csrf/get`), {
-        signal: args?.signal,
-        credentials: 'include',
+async function getOneCsrf({
+    signal,
+    onData,
+    onError,
+}: GetOneCsrf): Promise<GetCsrfRouter> {
+    const response = await fetchHandler({
+        method: 'get',
+        url: '/csrf/get',
+        signal,
+        onData,
+        onError
     });
 
-    const json = await res.json();
+    const json = await response.json();
 
     return json;
 }

@@ -1,18 +1,23 @@
 import { ToggleLoveRouter } from "@/prisma-types/typings";
 import { ToggleLove } from "@/typings";
-import clear from "@/utils/string/clear";
+import fetchHandler from "../handler";
 
-async function toggleLove(args: ToggleLove): Promise<ToggleLoveRouter> {
-    const res = await fetch(clear(`
-        ${process.env.GATEWAY_URL}/favorite/toggle?
-            product_id=${args.productId}&
-            prev_favorited=${args.prevFavorited || ''}
-    `), {
-        signal: args.signal,
-        credentials: 'include'
+async function toggleLove({
+    signal,
+    body,
+    onData,
+    onError,
+}: ToggleLove): Promise<ToggleLoveRouter> {
+    const response = await fetchHandler({
+        method: 'post',
+        url: '/love/toggle',
+        signal,
+        body,
+        onData,
+        onError
     });
 
-    const json = await res.json();
+    const json = await response.json();
 
     return json;
 }

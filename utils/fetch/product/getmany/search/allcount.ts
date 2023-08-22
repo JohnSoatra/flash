@@ -1,18 +1,23 @@
 import { GetmanySearchProductsAllCountRouter } from "@/prisma-types/typings";
 import { GetAllcountSearchProducts } from "@/typings";
-import clear from "@/utils/string/clear";
+import fetchHandler from "@/utils/fetch/handler";
 
-async function getAllcountSearchProducts(args: GetAllcountSearchProducts): Promise<GetmanySearchProductsAllCountRouter> {
-    const res = await fetch(clear(`
-        ${process.env.GATEWAY_URL}/product/getmany/search/allcount?
-            string=$0&
-            released_at=${args.releasedAt || ''}
-    `, args.string), {
-        signal: args.signal,
-        credentials: 'include'
+async function getAllcountSearchProducts({
+    signal,
+    query,
+    onData,
+    onError,
+}: GetAllcountSearchProducts): Promise<GetmanySearchProductsAllCountRouter> {
+    const response = await fetchHandler({
+        method: 'get',
+        url: '/product/getmany/search/allcount',
+        signal,
+        query,
+        onData,
+        onError
     });
 
-    const json = await res.json();
+    const json = await response.json();
 
     return json;
 }

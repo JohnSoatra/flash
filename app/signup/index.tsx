@@ -7,30 +7,16 @@ import { RegisterOptions, useForm } from "react-hook-form";
 import { useState } from "react";
 import Image from "next/image";
 import Error from "@/components/Error";
-import postOneUser from "@/utils/fetch/user/postone";
 import { useRouter } from "next/navigation";
-import encrypt from "@/utils/string/crypto/encrypt";
-import networkEncrypt from "@/utils/crypto/encrypt/network";
+import signup from "@/utils/fetch/auth/signup";
+import { toast } from "react-hot-toast";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import random from "@/utils/string/random";
+import sendEmailVerifyEmail from "@/utils/fetch/email/send/verify_email";
+import verifyEmailToken from "@/utils/fetch/email/verify/email";
 
 const OPTIONS: { [key: string]: RegisterOptions } = {
-    'username': {
-        required: {
-            value: true,
-            message: 'is required.'
-        },
-        minLength: {
-            value: 3,
-            message: 'must be at lease 3 characters.'
-        },
-        maxLength: {
-            value: 30,
-            message: 'must not be more then 30 characters.'
-        },
-        pattern: {
-            value: /^(?=.{3,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/,
-            message: 'is in wrong format.'
-        }
-    },
     'email': {
         required: {
             value: true,
@@ -47,6 +33,20 @@ const OPTIONS: { [key: string]: RegisterOptions } = {
         pattern: {
             value: /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/,
             message: 'is in wrong format.'
+        }
+    },
+    'code': {
+        required: {
+            value: true,
+            message: 'is required.'
+        },
+        minLength: {
+            value: 6,
+            message: 'has 6 characters.'
+        },
+        maxLength: {
+            value: 6,
+            message: 'has 6 characters.'
         }
     },
     'password': {
@@ -69,20 +69,13 @@ const OPTIONS: { [key: string]: RegisterOptions } = {
 
             return 'is not strong enough.'
         }
-    },
-    'condition': {
-        required: {
-            value: true,
-            message: 'You must agree with Terms and Conditions.'
-        }
     }
 }
 
 type Fields = {
-    condition: boolean,
     email: string,
+    code: string,
     password: string,
-    username: string
 }
    
 const Index = () => {
@@ -90,27 +83,38 @@ const Index = () => {
         register,
         handleSubmit,
         formState: { errors },
-        setError
+        setError,
+        trigger,
+        watch,
+        clearErrors
     } = useForm();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
 
-    const onSubmit = async (data: any) => {
-        setLoading(true);
+    const requestCode = async () => {
+        clearErrors('email');
 
-        const dataField = data as Fields;
+        if (await trigger('email')) {
+            const email = watch('email');
+            const result = await sendEmailVerifyEmail({
+                body: {
+                    email
+                },
+                signal: null
+            });
 
-        const userRes = await postOneUser({
-            email: dataField.email,
-            password: networkEncrypt(dataField.password),
-        });
-
-        if (userRes?.error) {
-            if (userRes.error.field === 'username') {
-                setError(
-                    'username',
+            if (result === true) {
+                toast.success(
+                    `Code has been send to ${email}.`,
                     {
-                        message: 'is already token.'
+                        position: 'bottom-center'
+                    }
+                );
+            } else if (result === false) {
+                setError(
+                    'email',
+                    {
+                        message: 'cannot receive message.'
                     }
                 );
             } else {
@@ -121,8 +125,60 @@ const Index = () => {
                     }
                 );
             }
-        } else if (userRes?.user) {
-            router.push(ROUTE.SIGN_IN);
+        }
+    }
+
+    const onSubmit = async (data: any) => {
+        clearErrors(['email', 'code', 'password']);
+        setLoading(true);
+
+        const dataField = data as Fields;
+        const email = dataField.email;
+        const code = dataField.code;
+        const password = dataField.password;
+
+        const verified = await verifyEmailToken({
+            body: {
+                email,
+                token: code,
+            },
+            signal: null
+        });
+
+        if (verified) {
+            const result = await signup({
+                body: {
+                    email,
+                    email_token: verified,
+                    password,
+                },
+                signal: null,
+            });
+
+            if (result === true) {
+                router.push(ROUTE.SIGN_IN);
+            } else if (result === false) {
+                toast.error(
+                    'There is a problem with signing up.',
+                    {
+                        position: 'bottom-center'
+                    }
+                );
+            } else {
+                setError(
+                    'email',
+                    {
+                        message: 'is already used with another account.'
+                    }
+                );
+            }
+        } else {
+            setError(
+                'code',
+                {
+                    message: 'is incorrect.'
+                }
+            );
         }
 
         setLoading(false);        
@@ -132,6 +188,7 @@ const Index = () => {
         <div className="min-h-screen flex justify-center items-center">
             <div className="border border-midmain shadow-lg h-fit py-5 px-10 rounded-lg">
                 <Card color="transparent" shadow={false}>
+                    
                     <div className="flex justify-center items-center space-x-3 mb-3 md:mb-5">
                         <Link href={ROUTE.HOME}>
                             <div className='relative border border-midmain rounded-full h-12 w-12 md:w-14 md:h-14 cursor-pointer opacity-80 transition hover:opacity-100'>
@@ -162,25 +219,6 @@ const Index = () => {
                         onSubmit={handleSubmit(onSubmit)}>
 
                         <div className="mb-4 flex flex-col gap-6">
-                
-                            <div>
-                                <div className="mb-2 text-sm font-medium flex items-start ">
-                                    <label htmlFor="username">
-                                        Username&nbsp;
-                                    </label>
-                                    {
-                                        errors['username'] &&
-                                        <Error message={String(errors['username']['message'])} />
-                                    }
-                                </div>
-                                <input
-                                    type="text"
-                                    id="username"
-                                    className="w-full block p-2.5 transition text-sm bg-transparent border border-midmain rounded-lg focus:border-blue-500"
-                                    { ...register('username', OPTIONS['username']) }
-                                />
-                            </div>
-
                             <div>
                                 <div className="mb-2 text-sm font-medium flex items-start ">
                                     <label
@@ -193,11 +231,49 @@ const Index = () => {
                                         <Error message={String(errors['email']['message'])} />
                                     }
                                 </div>
+
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        id="email"
+                                        className="w-full block pr-10 p-2.5 transition text-sm bg-transparent border border-midmain rounded-lg focus:border-blue-500"
+                                        { ...register('email', OPTIONS['email']) }
+                                    />
+                                    <Tooltip
+                                        className='bg-white border border-blue-gray-50 shadow-xl shadow-black/10 px-4 py-3'
+                                        content={
+                                            <div className="text-gray-800">
+                                                Request Verification Code
+                                            </div>
+                                        }>
+                                        <button
+                                            type="button"
+                                            className="absolute inset-y-0 right-0 flex items-center pr-3"
+                                            onClick={requestCode}>
+                                            <FontAwesomeIcon icon={faPaperPlane} size="1x" className="text-blue-500 shadow-blue-500/20 hover:shadow-blue-500/40"/>
+                                        </button>
+                                    </Tooltip>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div className="mb-2 text-sm font-medium flex items-start ">
+                                    <label
+                                        htmlFor="code"
+                                        className="block mb-2 text-sm font-medium">
+                                        Code&nbsp;
+                                    </label>
+                                    {
+                                        errors['code'] &&
+                                        <Error message={String(errors['code']['message'])} />
+                                    }
+                                </div>
+
                                 <input
                                     type="text"
-                                    id="email"
+                                    id="code"
                                     className="w-full block p-2.5 transition text-sm bg-transparent border border-midmain rounded-lg focus:border-blue-500"
-                                    { ...register('email', OPTIONS['email']) }
+                                    { ...register('code', OPTIONS['code']) }
                                 />
                             </div>
 
@@ -224,41 +300,6 @@ const Index = () => {
 
                         </div>
 
-                        <div className="space-y-2">
-                            <div className="flex items-start">
-                                <div className="flex items-center h-5">
-                                    <input
-                                        id="term"
-                                        type="checkbox"
-                                        value=""
-                                        className="w-4 h-4 rounded border border-gray-300 bg-gray-50 focus:ring-3 focus:ring-blue-300"
-                                        { ...register('condition', OPTIONS['condition']) }
-                                    />
-                                </div>
-                                <label
-                                    htmlFor="term"
-                                    className="ml-2 text-sm font-medium flex opacity-75">
-                                    <p>I agree with the&nbsp;</p>
-                                    <Tooltip
-                                        placement="top"
-                                        className="bg-white border border-blue-gray-50 shadow-xl shadow-black/10 px-4 py-3"
-                                        content={
-                                            <div className="w-80 text-gray-800">
-                                                We will save your information in our system <br/>
-                                                for later uses, such as Authentication, <br />
-                                                Product shipping and Product Reviews.
-                                            </div>
-                                        }>
-                                        <p className="underline">Terms and Conditions</p>
-                                    </Tooltip>
-                                    .
-                                </label>
-                            </div>
-                            {
-                                errors['condition'] &&
-                                <Error message={String(errors['condition']['message'])} />
-                            }
-                        </div>
                         <Button
                             type="submit"
                             className="flex items-center justify-center space-x-2 mt-6"
@@ -273,6 +314,7 @@ const Index = () => {
                                 <p>Sign up</p>
                             }
                         </Button>
+
                         <div className="flex justify-center mt-4 text-sm text-center">
                             <p className="opacity-75 pr-2">Already have an account?</p>
                             <Link
@@ -281,6 +323,7 @@ const Index = () => {
                                 Sign In
                             </Link>
                         </div>
+
                     </form>
                 </Card>
             </div>

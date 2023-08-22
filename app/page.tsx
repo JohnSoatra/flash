@@ -9,23 +9,37 @@ export const metadata: Metadata = {
 
 const Home = async () => {
   const pc = await getOneProduct({
-    id: '1'
+    query: {
+      id: '1'
+    },
+    signal: null
   });
   const smartphone = await getOneProduct({
-    id: '3'
+    query: {
+      id: '3'
+    },
+    signal: null
   });
   const earphone = await getOneProduct({
-    id: 'cljjh97ha000ijrzkkb8ga4ok'
+    query: {
+      id: 'cljjh97ha000ijrzkkb8ga4ok'
+    },
+    signal: null
   });
 
-  return (
-    <Index
-      pc={pc!}
-      smartphone={smartphone!}
-      earphone={earphone!}
-    />
-  );
+  if (pc && smartphone && earphone) {
+    return (
+      <Index
+        pc={pc}
+        smartphone={smartphone}
+        earphone={earphone}
+      />
+    );
+  }
 
+  return (
+    <p>No PC, no Smartphone and no Earphone.</p>
+  );
 }
 
 export default Home;

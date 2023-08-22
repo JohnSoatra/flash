@@ -1,14 +1,21 @@
 import { GetoneCardRouter } from "@/prisma-types/typings";
 import { GetOneCard } from "@/typings";
-import clear from "@/utils/string/clear";
+import fetchHandler from "../handler";
 
-async function getOneCard(args: GetOneCard): Promise<GetoneCardRouter> {
-    const res = await fetch(clear(`${process.env.GATEWAY_URL}/card/getone`), {
-        signal: args.signal,
-        credentials: 'include'
+async function getOneCard({
+    signal,
+    onData,
+    onError
+}: GetOneCard): Promise<GetoneCardRouter> {
+    const response = await fetchHandler({
+        method: 'get',
+        url: '/card/getone',
+        signal,
+        onData,
+        onError
     });
 
-    const json = await res.json();
+    const json = await response.json();
 
     return json;
 }

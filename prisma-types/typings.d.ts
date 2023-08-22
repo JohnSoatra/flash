@@ -15,8 +15,8 @@ type ProductOrderX = ProductOrder & {
   
 type OrderX = Order & {
     product_orders: ProductOrderX[],
-    payment: Payment|null,
-    shipping: Shipping|null
+    payment: Payment,
+    shipping: Shipping
 }
 
 // -> Video
@@ -108,10 +108,10 @@ type SetCookieRouter = boolean;
 type GetoneCreditcardRouter = CreditCardC|null;
 
 // -> Email
-type SendEmailVerifyEmailRouter = boolean;
-type SendEmailVerifyRequestRouter = boolean;
-type VerifyTokenEmail = boolean;
-type verifyTokenRequest = boolean;
+type SendEmailVerifyEmailRouter = { message: FieldMessage }|boolean;
+type SendEmailVerifyRequestRouter = { message: FieldMessage }|boolean;
+type VerifyTokenEmailRouter = string|false;
+type VerifyTokenRequestRouter = string|false;
 
 // -> Love
 type ToggleLoveRouter = boolean|null;
@@ -121,6 +121,7 @@ type GetallModelsRouter = Model[];
 
 // -> Order
 type GetManyOrdersRouter = OrderX[];
+type CreateOneOrderRouter = boolean;
 
 // -> Product
 type GetOneProductRouter = ProductX|null;
@@ -146,6 +147,7 @@ type UpdateoneContactRouter = { message: FieldMessage }|boolean;
 type UpdateoneGeneralRouter = { message: FieldMessage }|boolean;
 type UpdateoneSecurity = boolean;
 type GetoneUserRouter = UserC|null;
+type ResetPasswordRouter = boolean;
 
 // -> CSRF
 type GetCsrfRouter = string;
@@ -172,6 +174,14 @@ type FetchResult = {
     data?: string,
     reason?: string
 }
+
+type ProductOrders = {
+    product_id: string,
+    quantity: number,
+    price: number,
+}[];
+
+type PhoneNumbers = string[];
 
 
 // Cookie

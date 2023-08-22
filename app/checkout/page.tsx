@@ -10,15 +10,18 @@ export const metadata: Metadata = {
 }
 
 const Checkout = async () => {
-    const card = await getOneCard({
-        
-    });
+    // const card = await getOneCard({
+    //     signal: null
+    // });
 
-    if (!card) {
-        return <Empty />
-    }
+    // if (!card) {
+    //     return <Empty />
+    // }
 
-    return <Index card={card} />;
+    return (
+        'sdf'
+        // <Index card={card} />
+    );
 }
 
 export default Checkout;

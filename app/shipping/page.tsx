@@ -10,6 +10,8 @@ export const metadata: Metadata = {
 
 const Shipping = async () => {
     const orders = await getManyOrders({
+        signal: null,
+        query: {}
     });
 
     return (

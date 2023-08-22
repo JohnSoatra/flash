@@ -54,8 +54,10 @@ const VideoPlayer = ({
         controller.current = new AbortController();
 
         setCookie({
-            name: name,
-            value: value.toString(),
+            body: {
+                name: name,
+                value: value.toString(),
+            },
             signal: controller.current.signal
         })
         .then(() => {})
@@ -78,7 +80,7 @@ const VideoPlayer = ({
     const _setCurrentVolume = (value: number) => {
         if (refVideo.current) {
             refVideo.current.volume = value;
-            dispatch(changeVolume({ volume: value }));
+            dispatch(changeVolume(value));
             _setCookie('volume', value.toString(), volumeController);
         }
     }
@@ -86,7 +88,7 @@ const VideoPlayer = ({
     const _setMuted = (value: boolean) => {
         if (refVideo.current) {
             refVideo.current.muted = value;
-            dispatch(changeMuted({ muted: value }));
+            dispatch(changeMuted(value));
             _setCookie('muted', value.toString(), mutedController);
         }
     }

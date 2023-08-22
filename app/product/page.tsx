@@ -20,7 +20,10 @@ const ProductDetail = async ({ searchParams }: Prop) => {
         typeof(searchParams['id']) === "string"
     ) {
         const product = await getOneProduct({
-            id: searchParams['id']
+            query: {
+                id: searchParams['id']
+            },
+            signal: null
         });
         
         if (product) {

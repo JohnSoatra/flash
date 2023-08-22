@@ -1,6 +1,7 @@
 'use client';
 import ShippingProcess from "@/components/template/shipping/ShippingProcess";
 import { OrderX } from "@/prisma-types/typings";
+import { cardTypeString } from "@/utils/number/cardtype";
 import Image from "next/image";
 
 const Class = {
@@ -34,7 +35,7 @@ const OrderTracking = ({ order }: { order: OrderX }) => {
                         <div>
                             <p className="opacity-80 font-semibold text-sm text-bold uppercase text-blue-600">
                                 {
-                                    order.payment?.card_type.name
+                                    cardTypeString(order.payment.card_type)
                                 }
                             </p>
                         </div>
@@ -43,12 +44,10 @@ const OrderTracking = ({ order }: { order: OrderX }) => {
                             <p className="text-sm opacity-75">
                                 {'*'.repeat(12)}{order.payment?.card_last_four}
                             </p>
-                            <p className="text-xs opacity-70">
-                                {order.payment?.card_expired_month}/{order.payment?.card_expired_year}
-                            </p>
                         </div>
                     </div>
                 </div>
+
             </div>
 
             <div className="h-px bg-light-400 w-full"></div>

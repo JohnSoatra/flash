@@ -9,7 +9,7 @@ const ROUTE = {
     CHECKOUT: '/checkout',
     SHIPPING: '/shipping',
     ACCOUNT: '/account',
-    FAVORITE: '/favorite',
+    LOVE: '/love',
     PRODUCT_NEW: '/product/new',
     PRODUCT_TOPRATE: '/product/toprate',
     PRODUCT_POPULAR: '/product/popular',

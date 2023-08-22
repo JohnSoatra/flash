@@ -1,14 +1,27 @@
 import { SignoutRouter } from "@/prisma-types/typings";
 import { Signout } from "@/typings";
-import clear from "@/utils/string/clear";
+import fetchHandler from "../handler";
+import store from "@/redux/store";
+import { setUser } from "@/redux/user";
 
-async function signout(args: Signout): Promise<SignoutRouter> {
-    const res = await fetch(clear(`${process.env.GATEWAY_URL}/auth/signout`), {
-        signal: args.signal,
-        credentials: 'include'
+async function signout({
+    signal,
+    onData,
+    onError,
+}: Signout): Promise<SignoutRouter> {
+    const response = await fetchHandler({
+        method: 'get',
+        url: '/auth/signout',
+        signal,
+        onData,
+        onError
     });
 
-    const json = await res.json();
+    const json = await response.json();
+
+    if (json) {
+        store.dispatch(setUser(null));
+    }
 
     return json;
 }

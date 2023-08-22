@@ -1,16 +1,21 @@
 import { GetallCategoriesRouter } from "@/prisma-types/typings";
 import { GetAllCategories } from "@/typings";
-import clear from "@/utils/string/clear";
+import fetchHandler from "../handler";
 
-async function getAllCategories(args?: GetAllCategories): Promise<GetallCategoriesRouter[]> {
-    const res = await fetch(clear(`
-        ${process.env.GATEWAY_URL}/category/getall
-    `), {
-        signal: args?.signal,
-        credentials: 'include'
+async function getAllCategories({
+    signal,
+    onData,
+    onError,
+}: GetAllCategories): Promise<GetallCategoriesRouter> {
+    const response = await fetchHandler({
+        method: 'get',
+        url: '/category/getall',
+        signal,
+        onData,
+        onError
     });
     
-    const json = await res.json();
+    const json = await response.json();
 
     return json;
 }

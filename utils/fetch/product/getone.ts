@@ -1,17 +1,23 @@
 import { GetOneProductRouter } from "@/prisma-types/typings";
 import { GetOneProduct } from "@/typings";
-import clear from "@/utils/string/clear";
+import fetchHandler from "../handler";
 
-async function getOneProduct(args: GetOneProduct): Promise<GetOneProductRouter> {
-    const res = await fetch(clear(`
-        ${process.env.GATEWAY_URL}/product/getone?
-            id=${args.id}
-    `), {
-        signal: args.signal,
-        credentials: 'include',
+async function getOneProduct({
+    signal,
+    query,
+    onData,
+    onError
+}: GetOneProduct): Promise<GetOneProductRouter> {
+    const response = await fetchHandler({
+        method: 'get',
+        url: '/product/getone',
+        signal,
+        query,
+        onData,
+        onError
     });
 
-    const json = await res.json();
+    const json = await response.json();
 
     return json;
 }

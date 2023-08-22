@@ -8,12 +8,8 @@ export const metadata: Metadata = {
 }
 
 const ResetPass = () => {
-    const networkSecret = process.env.NETWORK_SECRET || 'none';
-
     return (
-        <Index
-            networkSecret={networkSecret}
-        />
+        <Index />
     );
 }
 

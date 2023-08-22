@@ -1,23 +1,34 @@
 'use client';
 import ROUTE from '@/constants/route';
 import { HeartIcon, PowerIcon, ShoppingBagIcon, TruckIcon, UserIcon } from '@heroicons/react/24/outline';
-import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useRef } from 'react';
 import SampleProfileIcon from '@/components/template/header/ProfileIcon';
 import { UserC } from '@/prisma-types/typings';
+import signout from '@/utils/fetch/auth/signout';
+import { toast } from 'react-hot-toast';
 
 type Prop = {
     user: UserC,
     onClickOutside: (evt: MouseEvent) => void
 }
 
-const UserPopover = ({ 
-    user,
-    onClickOutside
-}: Prop) => {
+const UserPopover = ({ user, onClickOutside }: Prop) => {
     const ref = useRef<HTMLDivElement>(null);
+
+    const onSignout = () => {
+        signout({ signal: null }).then(success => {
+            if (!success) {
+                toast.error(
+                    'Cannot signout',
+                    {
+                        position: 'bottom-center'
+                    }
+                );
+            }
+        });
+    }
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -88,7 +99,7 @@ const UserPopover = ({
                     <p className='MenuLabel'>Shipping</p>
                 </Link>
                 <Link
-                    href={ROUTE.FAVORITE}
+                    href={ROUTE.LOVE}
                     className='MenuItem'>
                     <HeartIcon className='MenuIcon' />
                     <p className='MenuLabel'>Favorite</p>
@@ -100,7 +111,7 @@ const UserPopover = ({
             <div>
                 <div
                     className='MenuItem opacity-100 text-rose-500 hover:text-rose-600'
-                    onClick={() => signOut()}>
+                    onClick={onSignout}>
                     <PowerIcon className='MenuIcon' />
                     <p className='MenuLabel'>Sign out</p>
                 </div>

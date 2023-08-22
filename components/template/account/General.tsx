@@ -1,10 +1,10 @@
-import { User } from '@/prisma-types/index';
 import Image from 'next/image';
 import React, { useRef, useState } from 'react';
 import { FieldErrors, FieldValues, RegisterOptions, UseFormRegister } from 'react-hook-form';
 import Error from "@/components/Error";
 import VARS from '@/constants/vars';
 import { CameraIcon } from '@heroicons/react/24/solid';
+import { UserC } from '@/prisma-types/typings';
 
 const Class = {
     Title: 'text-sm opacity-75 font-semibold',
@@ -13,7 +13,7 @@ const Class = {
 }
 
 type Props = {
-    user: User,
+    user: UserC,
     register: UseFormRegister<FieldValues>,
     errors: FieldErrors<FieldValues>,
     options: {[key: string]: RegisterOptions},

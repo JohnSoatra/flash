@@ -5,7 +5,6 @@ import { Brand, Category, Model } from "@/prisma-types/index";
 import { pushFilterBrand, pushFilterCategory, pushFilterModel, removeFilterBrand, removeFilterCategory, removeFilterModel, selectFilterBrands, selectFilterCategories, selectFilterModels, selectFilterPriceRange, updateFilterBrands, updateFilterModels, updateFilterPriceRage } from "@/redux/filter";
 import { useDispatch, useSelector } from "react-redux";
 import FilterGroup from "@/components/template/filter/Group";
-import Image from "next/image";
 import PriceRange from "@/components/template/filter/PriceRage";
 import { CurrencyDollarIcon, Squares2X2Icon, SwatchIcon, TagIcon } from "@heroicons/react/24/outline";
 

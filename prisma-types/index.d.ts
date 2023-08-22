@@ -120,20 +120,20 @@ export type CreditCard = runtime.Types.DefaultSelection<CreditCardPayload>
 export type PaymentPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
   name: "Payment"
   objects: {
+    order: OrderPayload<ExtArgs> | null
     user: UserPayload<ExtArgs>
-    order: OrderPayload<ExtArgs>
   }
   scalars: $Extensions.GetResult<{
     id: string
     user_id: string
-    order_id: string
     shipping_price: number
     tax_price: number
     discount: number
     sub_price: number
     total_price: number
+    card_type: number
+    card_last_four: string
     created_at: Date
-    updated_at: Date
   }, ExtArgs["result"]["payment"]>
   composites: {}
 }
@@ -147,13 +147,12 @@ export type ShippingPayload<ExtArgs extends $Extensions.Args = $Extensions.Defau
   name: "Shipping"
   objects: {
     user: UserPayload<ExtArgs>
-    order: OrderPayload<ExtArgs>
+    order: OrderPayload<ExtArgs> | null
   }
   scalars: $Extensions.GetResult<{
     id: string
     user_id: string
-    order_id: string
-    receiver_full_name: string
+    receiver_fullname: string
     receiver_phone_numbers: string[]
     receiver_address: string
     process: number
@@ -180,6 +179,10 @@ export type ProductOrderPayload<ExtArgs extends $Extensions.Args = $Extensions.D
     order_id: string
     product_id: string
     quantity: number
+    price: number
+    shipping_price: number
+    tax_price: number
+    created_at: Date
   }, ExtArgs["result"]["productOrder"]>
   composites: {}
 }
@@ -193,13 +196,15 @@ export type OrderPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultA
   name: "Order"
   objects: {
     product_orders: ProductOrderPayload<ExtArgs>[]
-    payment: PaymentPayload<ExtArgs> | null
-    shipping: ShippingPayload<ExtArgs> | null
     user: UserPayload<ExtArgs>
+    shipping: ShippingPayload<ExtArgs>
+    payment: PaymentPayload<ExtArgs>
   }
   scalars: $Extensions.GetResult<{
     id: string
     user_id: string
+    shipping_id: string
+    payment_id: string
     completed: boolean
     created_at: Date
     updated_at: Date
@@ -6949,6 +6954,7 @@ export namespace Prisma {
     discount: number | null
     sub_price: number | null
     total_price: number | null
+    card_type: number | null
   }
 
   export type PaymentSumAggregateOutputType = {
@@ -6957,45 +6963,46 @@ export namespace Prisma {
     discount: number | null
     sub_price: number | null
     total_price: number | null
+    card_type: number | null
   }
 
   export type PaymentMinAggregateOutputType = {
     id: string | null
     user_id: string | null
-    order_id: string | null
     shipping_price: number | null
     tax_price: number | null
     discount: number | null
     sub_price: number | null
     total_price: number | null
+    card_type: number | null
+    card_last_four: string | null
     created_at: Date | null
-    updated_at: Date | null
   }
 
   export type PaymentMaxAggregateOutputType = {
     id: string | null
     user_id: string | null
-    order_id: string | null
     shipping_price: number | null
     tax_price: number | null
     discount: number | null
     sub_price: number | null
     total_price: number | null
+    card_type: number | null
+    card_last_four: string | null
     created_at: Date | null
-    updated_at: Date | null
   }
 
   export type PaymentCountAggregateOutputType = {
     id: number
     user_id: number
-    order_id: number
     shipping_price: number
     tax_price: number
     discount: number
     sub_price: number
     total_price: number
+    card_type: number
+    card_last_four: number
     created_at: number
-    updated_at: number
     _all: number
   }
 
@@ -7006,6 +7013,7 @@ export namespace Prisma {
     discount?: true
     sub_price?: true
     total_price?: true
+    card_type?: true
   }
 
   export type PaymentSumAggregateInputType = {
@@ -7014,45 +7022,46 @@ export namespace Prisma {
     discount?: true
     sub_price?: true
     total_price?: true
+    card_type?: true
   }
 
   export type PaymentMinAggregateInputType = {
     id?: true
     user_id?: true
-    order_id?: true
     shipping_price?: true
     tax_price?: true
     discount?: true
     sub_price?: true
     total_price?: true
+    card_type?: true
+    card_last_four?: true
     created_at?: true
-    updated_at?: true
   }
 
   export type PaymentMaxAggregateInputType = {
     id?: true
     user_id?: true
-    order_id?: true
     shipping_price?: true
     tax_price?: true
     discount?: true
     sub_price?: true
     total_price?: true
+    card_type?: true
+    card_last_four?: true
     created_at?: true
-    updated_at?: true
   }
 
   export type PaymentCountAggregateInputType = {
     id?: true
     user_id?: true
-    order_id?: true
     shipping_price?: true
     tax_price?: true
     discount?: true
     sub_price?: true
     total_price?: true
+    card_type?: true
+    card_last_four?: true
     created_at?: true
-    updated_at?: true
     _all?: true
   }
 
@@ -7146,14 +7155,14 @@ export namespace Prisma {
   export type PaymentGroupByOutputType = {
     id: string
     user_id: string
-    order_id: string
     shipping_price: number
     tax_price: number
     discount: number
     sub_price: number
     total_price: number
+    card_type: number
+    card_last_four: string
     created_at: Date
-    updated_at: Date
     _count: PaymentCountAggregateOutputType | null
     _avg: PaymentAvgAggregateOutputType | null
     _sum: PaymentSumAggregateOutputType | null
@@ -7178,34 +7187,34 @@ export namespace Prisma {
   export type PaymentSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     user_id?: boolean
-    order_id?: boolean
     shipping_price?: boolean
     tax_price?: boolean
     discount?: boolean
     sub_price?: boolean
     total_price?: boolean
+    card_type?: boolean
+    card_last_four?: boolean
     created_at?: boolean
-    updated_at?: boolean
+    order?: boolean | Payment$orderArgs<ExtArgs>
     user?: boolean | UserArgs<ExtArgs>
-    order?: boolean | OrderArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
 
   export type PaymentSelectScalar = {
     id?: boolean
     user_id?: boolean
-    order_id?: boolean
     shipping_price?: boolean
     tax_price?: boolean
     discount?: boolean
     sub_price?: boolean
     total_price?: boolean
+    card_type?: boolean
+    card_last_four?: boolean
     created_at?: boolean
-    updated_at?: boolean
   }
 
   export type PaymentInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    order?: boolean | Payment$orderArgs<ExtArgs>
     user?: boolean | UserArgs<ExtArgs>
-    order?: boolean | OrderArgs<ExtArgs>
   }
 
 
@@ -7581,9 +7590,9 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
 
-    user<T extends UserArgs<ExtArgs> = {}>(args?: Subset<T, UserArgs<ExtArgs>>): Prisma__UserClient<$Types.GetResult<UserPayload<ExtArgs>, T, 'findUnique'> | Null, never, ExtArgs>;
+    order<T extends Payment$orderArgs<ExtArgs> = {}>(args?: Subset<T, Payment$orderArgs<ExtArgs>>): Prisma__OrderClient<$Types.GetResult<OrderPayload<ExtArgs>, T, 'findUnique'> | Null, never, ExtArgs>;
 
-    order<T extends OrderArgs<ExtArgs> = {}>(args?: Subset<T, OrderArgs<ExtArgs>>): Prisma__OrderClient<$Types.GetResult<OrderPayload<ExtArgs>, T, 'findUnique'> | Null, never, ExtArgs>;
+    user<T extends UserArgs<ExtArgs> = {}>(args?: Subset<T, UserArgs<ExtArgs>>): Prisma__UserClient<$Types.GetResult<UserPayload<ExtArgs>, T, 'findUnique'> | Null, never, ExtArgs>;
 
     private get _document();
     /**
@@ -7616,14 +7625,14 @@ export namespace Prisma {
   interface PaymentFieldRefs {
     readonly id: FieldRef<"Payment", 'String'>
     readonly user_id: FieldRef<"Payment", 'String'>
-    readonly order_id: FieldRef<"Payment", 'String'>
     readonly shipping_price: FieldRef<"Payment", 'Float'>
     readonly tax_price: FieldRef<"Payment", 'Float'>
     readonly discount: FieldRef<"Payment", 'Float'>
     readonly sub_price: FieldRef<"Payment", 'Float'>
     readonly total_price: FieldRef<"Payment", 'Float'>
+    readonly card_type: FieldRef<"Payment", 'Int'>
+    readonly card_last_four: FieldRef<"Payment", 'String'>
     readonly created_at: FieldRef<"Payment", 'DateTime'>
-    readonly updated_at: FieldRef<"Payment", 'DateTime'>
   }
     
 
@@ -7936,6 +7945,22 @@ export namespace Prisma {
 
 
   /**
+   * Payment.order
+   */
+  export type Payment$orderArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: OrderInclude<ExtArgs> | null
+    where?: OrderWhereInput
+  }
+
+
+  /**
    * Payment without action
    */
   export type PaymentArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
@@ -7975,8 +8000,7 @@ export namespace Prisma {
   export type ShippingMinAggregateOutputType = {
     id: string | null
     user_id: string | null
-    order_id: string | null
-    receiver_full_name: string | null
+    receiver_fullname: string | null
     receiver_address: string | null
     process: number | null
     received: Date | null
@@ -7987,8 +8011,7 @@ export namespace Prisma {
   export type ShippingMaxAggregateOutputType = {
     id: string | null
     user_id: string | null
-    order_id: string | null
-    receiver_full_name: string | null
+    receiver_fullname: string | null
     receiver_address: string | null
     process: number | null
     received: Date | null
@@ -7999,8 +8022,7 @@ export namespace Prisma {
   export type ShippingCountAggregateOutputType = {
     id: number
     user_id: number
-    order_id: number
-    receiver_full_name: number
+    receiver_fullname: number
     receiver_phone_numbers: number
     receiver_address: number
     process: number
@@ -8022,8 +8044,7 @@ export namespace Prisma {
   export type ShippingMinAggregateInputType = {
     id?: true
     user_id?: true
-    order_id?: true
-    receiver_full_name?: true
+    receiver_fullname?: true
     receiver_address?: true
     process?: true
     received?: true
@@ -8034,8 +8055,7 @@ export namespace Prisma {
   export type ShippingMaxAggregateInputType = {
     id?: true
     user_id?: true
-    order_id?: true
-    receiver_full_name?: true
+    receiver_fullname?: true
     receiver_address?: true
     process?: true
     received?: true
@@ -8046,8 +8066,7 @@ export namespace Prisma {
   export type ShippingCountAggregateInputType = {
     id?: true
     user_id?: true
-    order_id?: true
-    receiver_full_name?: true
+    receiver_fullname?: true
     receiver_phone_numbers?: true
     receiver_address?: true
     process?: true
@@ -8147,8 +8166,7 @@ export namespace Prisma {
   export type ShippingGroupByOutputType = {
     id: string
     user_id: string
-    order_id: string
-    receiver_full_name: string
+    receiver_fullname: string
     receiver_phone_numbers: string[]
     receiver_address: string
     process: number
@@ -8179,8 +8197,7 @@ export namespace Prisma {
   export type ShippingSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     user_id?: boolean
-    order_id?: boolean
-    receiver_full_name?: boolean
+    receiver_fullname?: boolean
     receiver_phone_numbers?: boolean
     receiver_address?: boolean
     process?: boolean
@@ -8188,14 +8205,13 @@ export namespace Prisma {
     created_at?: boolean
     updated_at?: boolean
     user?: boolean | UserArgs<ExtArgs>
-    order?: boolean | OrderArgs<ExtArgs>
+    order?: boolean | Shipping$orderArgs<ExtArgs>
   }, ExtArgs["result"]["shipping"]>
 
   export type ShippingSelectScalar = {
     id?: boolean
     user_id?: boolean
-    order_id?: boolean
-    receiver_full_name?: boolean
+    receiver_fullname?: boolean
     receiver_phone_numbers?: boolean
     receiver_address?: boolean
     process?: boolean
@@ -8206,7 +8222,7 @@ export namespace Prisma {
 
   export type ShippingInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     user?: boolean | UserArgs<ExtArgs>
-    order?: boolean | OrderArgs<ExtArgs>
+    order?: boolean | Shipping$orderArgs<ExtArgs>
   }
 
 
@@ -8584,7 +8600,7 @@ export namespace Prisma {
 
     user<T extends UserArgs<ExtArgs> = {}>(args?: Subset<T, UserArgs<ExtArgs>>): Prisma__UserClient<$Types.GetResult<UserPayload<ExtArgs>, T, 'findUnique'> | Null, never, ExtArgs>;
 
-    order<T extends OrderArgs<ExtArgs> = {}>(args?: Subset<T, OrderArgs<ExtArgs>>): Prisma__OrderClient<$Types.GetResult<OrderPayload<ExtArgs>, T, 'findUnique'> | Null, never, ExtArgs>;
+    order<T extends Shipping$orderArgs<ExtArgs> = {}>(args?: Subset<T, Shipping$orderArgs<ExtArgs>>): Prisma__OrderClient<$Types.GetResult<OrderPayload<ExtArgs>, T, 'findUnique'> | Null, never, ExtArgs>;
 
     private get _document();
     /**
@@ -8617,8 +8633,7 @@ export namespace Prisma {
   interface ShippingFieldRefs {
     readonly id: FieldRef<"Shipping", 'String'>
     readonly user_id: FieldRef<"Shipping", 'String'>
-    readonly order_id: FieldRef<"Shipping", 'String'>
-    readonly receiver_full_name: FieldRef<"Shipping", 'String'>
+    readonly receiver_fullname: FieldRef<"Shipping", 'String'>
     readonly receiver_phone_numbers: FieldRef<"Shipping", 'String[]'>
     readonly receiver_address: FieldRef<"Shipping", 'String'>
     readonly process: FieldRef<"Shipping", 'Int'>
@@ -8937,6 +8952,22 @@ export namespace Prisma {
 
 
   /**
+   * Shipping.order
+   */
+  export type Shipping$orderArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: OrderInclude<ExtArgs> | null
+    where?: OrderWhereInput
+  }
+
+
+  /**
    * Shipping without action
    */
   export type ShippingArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
@@ -8967,10 +8998,16 @@ export namespace Prisma {
 
   export type ProductOrderAvgAggregateOutputType = {
     quantity: number | null
+    price: number | null
+    shipping_price: number | null
+    tax_price: number | null
   }
 
   export type ProductOrderSumAggregateOutputType = {
     quantity: number | null
+    price: number | null
+    shipping_price: number | null
+    tax_price: number | null
   }
 
   export type ProductOrderMinAggregateOutputType = {
@@ -8978,6 +9015,10 @@ export namespace Prisma {
     order_id: string | null
     product_id: string | null
     quantity: number | null
+    price: number | null
+    shipping_price: number | null
+    tax_price: number | null
+    created_at: Date | null
   }
 
   export type ProductOrderMaxAggregateOutputType = {
@@ -8985,6 +9026,10 @@ export namespace Prisma {
     order_id: string | null
     product_id: string | null
     quantity: number | null
+    price: number | null
+    shipping_price: number | null
+    tax_price: number | null
+    created_at: Date | null
   }
 
   export type ProductOrderCountAggregateOutputType = {
@@ -8992,16 +9037,26 @@ export namespace Prisma {
     order_id: number
     product_id: number
     quantity: number
+    price: number
+    shipping_price: number
+    tax_price: number
+    created_at: number
     _all: number
   }
 
 
   export type ProductOrderAvgAggregateInputType = {
     quantity?: true
+    price?: true
+    shipping_price?: true
+    tax_price?: true
   }
 
   export type ProductOrderSumAggregateInputType = {
     quantity?: true
+    price?: true
+    shipping_price?: true
+    tax_price?: true
   }
 
   export type ProductOrderMinAggregateInputType = {
@@ -9009,6 +9064,10 @@ export namespace Prisma {
     order_id?: true
     product_id?: true
     quantity?: true
+    price?: true
+    shipping_price?: true
+    tax_price?: true
+    created_at?: true
   }
 
   export type ProductOrderMaxAggregateInputType = {
@@ -9016,6 +9075,10 @@ export namespace Prisma {
     order_id?: true
     product_id?: true
     quantity?: true
+    price?: true
+    shipping_price?: true
+    tax_price?: true
+    created_at?: true
   }
 
   export type ProductOrderCountAggregateInputType = {
@@ -9023,6 +9086,10 @@ export namespace Prisma {
     order_id?: true
     product_id?: true
     quantity?: true
+    price?: true
+    shipping_price?: true
+    tax_price?: true
+    created_at?: true
     _all?: true
   }
 
@@ -9118,6 +9185,10 @@ export namespace Prisma {
     order_id: string
     product_id: string
     quantity: number
+    price: number
+    shipping_price: number
+    tax_price: number
+    created_at: Date
     _count: ProductOrderCountAggregateOutputType | null
     _avg: ProductOrderAvgAggregateOutputType | null
     _sum: ProductOrderSumAggregateOutputType | null
@@ -9144,6 +9215,10 @@ export namespace Prisma {
     order_id?: boolean
     product_id?: boolean
     quantity?: boolean
+    price?: boolean
+    shipping_price?: boolean
+    tax_price?: boolean
+    created_at?: boolean
     product?: boolean | ProductArgs<ExtArgs>
     order?: boolean | OrderArgs<ExtArgs>
   }, ExtArgs["result"]["productOrder"]>
@@ -9153,6 +9228,10 @@ export namespace Prisma {
     order_id?: boolean
     product_id?: boolean
     quantity?: boolean
+    price?: boolean
+    shipping_price?: boolean
+    tax_price?: boolean
+    created_at?: boolean
   }
 
   export type ProductOrderInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
@@ -9570,6 +9649,10 @@ export namespace Prisma {
     readonly order_id: FieldRef<"ProductOrder", 'String'>
     readonly product_id: FieldRef<"ProductOrder", 'String'>
     readonly quantity: FieldRef<"ProductOrder", 'Int'>
+    readonly price: FieldRef<"ProductOrder", 'Float'>
+    readonly shipping_price: FieldRef<"ProductOrder", 'Float'>
+    readonly tax_price: FieldRef<"ProductOrder", 'Float'>
+    readonly created_at: FieldRef<"ProductOrder", 'DateTime'>
   }
     
 
@@ -9911,6 +9994,8 @@ export namespace Prisma {
   export type OrderMinAggregateOutputType = {
     id: string | null
     user_id: string | null
+    shipping_id: string | null
+    payment_id: string | null
     completed: boolean | null
     created_at: Date | null
     updated_at: Date | null
@@ -9919,6 +10004,8 @@ export namespace Prisma {
   export type OrderMaxAggregateOutputType = {
     id: string | null
     user_id: string | null
+    shipping_id: string | null
+    payment_id: string | null
     completed: boolean | null
     created_at: Date | null
     updated_at: Date | null
@@ -9927,6 +10014,8 @@ export namespace Prisma {
   export type OrderCountAggregateOutputType = {
     id: number
     user_id: number
+    shipping_id: number
+    payment_id: number
     completed: number
     created_at: number
     updated_at: number
@@ -9937,6 +10026,8 @@ export namespace Prisma {
   export type OrderMinAggregateInputType = {
     id?: true
     user_id?: true
+    shipping_id?: true
+    payment_id?: true
     completed?: true
     created_at?: true
     updated_at?: true
@@ -9945,6 +10036,8 @@ export namespace Prisma {
   export type OrderMaxAggregateInputType = {
     id?: true
     user_id?: true
+    shipping_id?: true
+    payment_id?: true
     completed?: true
     created_at?: true
     updated_at?: true
@@ -9953,6 +10046,8 @@ export namespace Prisma {
   export type OrderCountAggregateInputType = {
     id?: true
     user_id?: true
+    shipping_id?: true
+    payment_id?: true
     completed?: true
     created_at?: true
     updated_at?: true
@@ -10035,6 +10130,8 @@ export namespace Prisma {
   export type OrderGroupByOutputType = {
     id: string
     user_id: string
+    shipping_id: string
+    payment_id: string
     completed: boolean
     created_at: Date
     updated_at: Date
@@ -10060,19 +10157,23 @@ export namespace Prisma {
   export type OrderSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     user_id?: boolean
+    shipping_id?: boolean
+    payment_id?: boolean
     completed?: boolean
     created_at?: boolean
     updated_at?: boolean
     product_orders?: boolean | Order$product_ordersArgs<ExtArgs>
-    payment?: boolean | Order$paymentArgs<ExtArgs>
-    shipping?: boolean | Order$shippingArgs<ExtArgs>
     user?: boolean | UserArgs<ExtArgs>
+    shipping?: boolean | ShippingArgs<ExtArgs>
+    payment?: boolean | PaymentArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
   export type OrderSelectScalar = {
     id?: boolean
     user_id?: boolean
+    shipping_id?: boolean
+    payment_id?: boolean
     completed?: boolean
     created_at?: boolean
     updated_at?: boolean
@@ -10080,9 +10181,9 @@ export namespace Prisma {
 
   export type OrderInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     product_orders?: boolean | Order$product_ordersArgs<ExtArgs>
-    payment?: boolean | Order$paymentArgs<ExtArgs>
-    shipping?: boolean | Order$shippingArgs<ExtArgs>
     user?: boolean | UserArgs<ExtArgs>
+    shipping?: boolean | ShippingArgs<ExtArgs>
+    payment?: boolean | PaymentArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeArgs<ExtArgs>
   }
 
@@ -10461,11 +10562,11 @@ export namespace Prisma {
 
     product_orders<T extends Order$product_ordersArgs<ExtArgs> = {}>(args?: Subset<T, Order$product_ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Types.GetResult<ProductOrderPayload<ExtArgs>, T, 'findMany'>| Null>;
 
-    payment<T extends Order$paymentArgs<ExtArgs> = {}>(args?: Subset<T, Order$paymentArgs<ExtArgs>>): Prisma__PaymentClient<$Types.GetResult<PaymentPayload<ExtArgs>, T, 'findUnique'> | Null, never, ExtArgs>;
-
-    shipping<T extends Order$shippingArgs<ExtArgs> = {}>(args?: Subset<T, Order$shippingArgs<ExtArgs>>): Prisma__ShippingClient<$Types.GetResult<ShippingPayload<ExtArgs>, T, 'findUnique'> | Null, never, ExtArgs>;
-
     user<T extends UserArgs<ExtArgs> = {}>(args?: Subset<T, UserArgs<ExtArgs>>): Prisma__UserClient<$Types.GetResult<UserPayload<ExtArgs>, T, 'findUnique'> | Null, never, ExtArgs>;
+
+    shipping<T extends ShippingArgs<ExtArgs> = {}>(args?: Subset<T, ShippingArgs<ExtArgs>>): Prisma__ShippingClient<$Types.GetResult<ShippingPayload<ExtArgs>, T, 'findUnique'> | Null, never, ExtArgs>;
+
+    payment<T extends PaymentArgs<ExtArgs> = {}>(args?: Subset<T, PaymentArgs<ExtArgs>>): Prisma__PaymentClient<$Types.GetResult<PaymentPayload<ExtArgs>, T, 'findUnique'> | Null, never, ExtArgs>;
 
     private get _document();
     /**
@@ -10498,6 +10599,8 @@ export namespace Prisma {
   interface OrderFieldRefs {
     readonly id: FieldRef<"Order", 'String'>
     readonly user_id: FieldRef<"Order", 'String'>
+    readonly shipping_id: FieldRef<"Order", 'String'>
+    readonly payment_id: FieldRef<"Order", 'String'>
     readonly completed: FieldRef<"Order", 'Boolean'>
     readonly created_at: FieldRef<"Order", 'DateTime'>
     readonly updated_at: FieldRef<"Order", 'DateTime'>
@@ -10830,38 +10933,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ProductOrderScalarFieldEnum | ProductOrderScalarFieldEnum[]
-  }
-
-
-  /**
-   * Order.payment
-   */
-  export type Order$paymentArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Payment
-     */
-    select?: PaymentSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: PaymentInclude<ExtArgs> | null
-    where?: PaymentWhereInput
-  }
-
-
-  /**
-   * Order.shipping
-   */
-  export type Order$shippingArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Shipping
-     */
-    select?: ShippingSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: ShippingInclude<ExtArgs> | null
-    where?: ShippingWhereInput
   }
 
 
@@ -24331,14 +24402,14 @@ export namespace Prisma {
   export const PaymentScalarFieldEnum: {
     id: 'id',
     user_id: 'user_id',
-    order_id: 'order_id',
     shipping_price: 'shipping_price',
     tax_price: 'tax_price',
     discount: 'discount',
     sub_price: 'sub_price',
     total_price: 'total_price',
-    created_at: 'created_at',
-    updated_at: 'updated_at'
+    card_type: 'card_type',
+    card_last_four: 'card_last_four',
+    created_at: 'created_at'
   };
 
   export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
@@ -24347,8 +24418,7 @@ export namespace Prisma {
   export const ShippingScalarFieldEnum: {
     id: 'id',
     user_id: 'user_id',
-    order_id: 'order_id',
-    receiver_full_name: 'receiver_full_name',
+    receiver_fullname: 'receiver_fullname',
     receiver_phone_numbers: 'receiver_phone_numbers',
     receiver_address: 'receiver_address',
     process: 'process',
@@ -24364,7 +24434,11 @@ export namespace Prisma {
     id: 'id',
     order_id: 'order_id',
     product_id: 'product_id',
-    quantity: 'quantity'
+    quantity: 'quantity',
+    price: 'price',
+    shipping_price: 'shipping_price',
+    tax_price: 'tax_price',
+    created_at: 'created_at'
   };
 
   export type ProductOrderScalarFieldEnum = (typeof ProductOrderScalarFieldEnum)[keyof typeof ProductOrderScalarFieldEnum]
@@ -24373,6 +24447,8 @@ export namespace Prisma {
   export const OrderScalarFieldEnum: {
     id: 'id',
     user_id: 'user_id',
+    shipping_id: 'shipping_id',
+    payment_id: 'payment_id',
     completed: 'completed',
     created_at: 'created_at',
     updated_at: 'updated_at'
@@ -24618,7 +24694,7 @@ export namespace Prisma {
   export const PaymentOrderByRelevanceFieldEnum: {
     id: 'id',
     user_id: 'user_id',
-    order_id: 'order_id'
+    card_last_four: 'card_last_four'
   };
 
   export type PaymentOrderByRelevanceFieldEnum = (typeof PaymentOrderByRelevanceFieldEnum)[keyof typeof PaymentOrderByRelevanceFieldEnum]
@@ -24627,8 +24703,7 @@ export namespace Prisma {
   export const ShippingOrderByRelevanceFieldEnum: {
     id: 'id',
     user_id: 'user_id',
-    order_id: 'order_id',
-    receiver_full_name: 'receiver_full_name',
+    receiver_fullname: 'receiver_fullname',
     receiver_phone_numbers: 'receiver_phone_numbers',
     receiver_address: 'receiver_address'
   };
@@ -24647,7 +24722,9 @@ export namespace Prisma {
 
   export const OrderOrderByRelevanceFieldEnum: {
     id: 'id',
-    user_id: 'user_id'
+    user_id: 'user_id',
+    shipping_id: 'shipping_id',
+    payment_id: 'payment_id'
   };
 
   export type OrderOrderByRelevanceFieldEnum = (typeof OrderOrderByRelevanceFieldEnum)[keyof typeof OrderOrderByRelevanceFieldEnum]
@@ -25222,37 +25299,36 @@ export namespace Prisma {
     NOT?: PaymentWhereInput | PaymentWhereInput[]
     id?: StringFilter<"Payment"> | string
     user_id?: StringFilter<"Payment"> | string
-    order_id?: StringFilter<"Payment"> | string
     shipping_price?: FloatFilter<"Payment"> | number
     tax_price?: FloatFilter<"Payment"> | number
     discount?: FloatFilter<"Payment"> | number
     sub_price?: FloatFilter<"Payment"> | number
     total_price?: FloatFilter<"Payment"> | number
+    card_type?: IntFilter<"Payment"> | number
+    card_last_four?: StringFilter<"Payment"> | string
     created_at?: DateTimeFilter<"Payment"> | Date | string
-    updated_at?: DateTimeFilter<"Payment"> | Date | string
+    order?: XOR<OrderNullableRelationFilter, OrderWhereInput> | null
     user?: XOR<UserRelationFilter, UserWhereInput>
-    order?: XOR<OrderRelationFilter, OrderWhereInput>
   }
 
   export type PaymentOrderByWithRelationAndSearchRelevanceInput = {
     id?: SortOrder
     user_id?: SortOrder
-    order_id?: SortOrder
     shipping_price?: SortOrder
     tax_price?: SortOrder
     discount?: SortOrder
     sub_price?: SortOrder
     total_price?: SortOrder
+    card_type?: SortOrder
+    card_last_four?: SortOrder
     created_at?: SortOrder
-    updated_at?: SortOrder
-    user?: UserOrderByWithRelationAndSearchRelevanceInput
     order?: OrderOrderByWithRelationAndSearchRelevanceInput
+    user?: UserOrderByWithRelationAndSearchRelevanceInput
     _relevance?: PaymentOrderByRelevanceInput
   }
 
   export type PaymentWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    order_id?: string
     AND?: PaymentWhereInput | PaymentWhereInput[]
     OR?: PaymentWhereInput[]
     NOT?: PaymentWhereInput | PaymentWhereInput[]
@@ -25262,23 +25338,24 @@ export namespace Prisma {
     discount?: FloatFilter<"Payment"> | number
     sub_price?: FloatFilter<"Payment"> | number
     total_price?: FloatFilter<"Payment"> | number
+    card_type?: IntFilter<"Payment"> | number
+    card_last_four?: StringFilter<"Payment"> | string
     created_at?: DateTimeFilter<"Payment"> | Date | string
-    updated_at?: DateTimeFilter<"Payment"> | Date | string
+    order?: XOR<OrderNullableRelationFilter, OrderWhereInput> | null
     user?: XOR<UserRelationFilter, UserWhereInput>
-    order?: XOR<OrderRelationFilter, OrderWhereInput>
-  }, "id" | "order_id">
+  }, "id">
 
   export type PaymentOrderByWithAggregationInput = {
     id?: SortOrder
     user_id?: SortOrder
-    order_id?: SortOrder
     shipping_price?: SortOrder
     tax_price?: SortOrder
     discount?: SortOrder
     sub_price?: SortOrder
     total_price?: SortOrder
+    card_type?: SortOrder
+    card_last_four?: SortOrder
     created_at?: SortOrder
-    updated_at?: SortOrder
     _count?: PaymentCountOrderByAggregateInput
     _avg?: PaymentAvgOrderByAggregateInput
     _max?: PaymentMaxOrderByAggregateInput
@@ -25292,14 +25369,14 @@ export namespace Prisma {
     NOT?: PaymentScalarWhereWithAggregatesInput | PaymentScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Payment"> | string
     user_id?: StringWithAggregatesFilter<"Payment"> | string
-    order_id?: StringWithAggregatesFilter<"Payment"> | string
     shipping_price?: FloatWithAggregatesFilter<"Payment"> | number
     tax_price?: FloatWithAggregatesFilter<"Payment"> | number
     discount?: FloatWithAggregatesFilter<"Payment"> | number
     sub_price?: FloatWithAggregatesFilter<"Payment"> | number
     total_price?: FloatWithAggregatesFilter<"Payment"> | number
+    card_type?: IntWithAggregatesFilter<"Payment"> | number
+    card_last_four?: StringWithAggregatesFilter<"Payment"> | string
     created_at?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
-    updated_at?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
   }
 
   export type ShippingWhereInput = {
@@ -25308,8 +25385,7 @@ export namespace Prisma {
     NOT?: ShippingWhereInput | ShippingWhereInput[]
     id?: StringFilter<"Shipping"> | string
     user_id?: StringFilter<"Shipping"> | string
-    order_id?: StringFilter<"Shipping"> | string
-    receiver_full_name?: StringFilter<"Shipping"> | string
+    receiver_fullname?: StringFilter<"Shipping"> | string
     receiver_phone_numbers?: StringNullableListFilter<"Shipping">
     receiver_address?: StringFilter<"Shipping"> | string
     process?: IntFilter<"Shipping"> | number
@@ -25317,14 +25393,13 @@ export namespace Prisma {
     created_at?: DateTimeFilter<"Shipping"> | Date | string
     updated_at?: DateTimeFilter<"Shipping"> | Date | string
     user?: XOR<UserRelationFilter, UserWhereInput>
-    order?: XOR<OrderRelationFilter, OrderWhereInput>
+    order?: XOR<OrderNullableRelationFilter, OrderWhereInput> | null
   }
 
   export type ShippingOrderByWithRelationAndSearchRelevanceInput = {
     id?: SortOrder
     user_id?: SortOrder
-    order_id?: SortOrder
-    receiver_full_name?: SortOrder
+    receiver_fullname?: SortOrder
     receiver_phone_numbers?: SortOrder
     receiver_address?: SortOrder
     process?: SortOrder
@@ -25338,12 +25413,11 @@ export namespace Prisma {
 
   export type ShippingWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    order_id?: string
     AND?: ShippingWhereInput | ShippingWhereInput[]
     OR?: ShippingWhereInput[]
     NOT?: ShippingWhereInput | ShippingWhereInput[]
     user_id?: StringFilter<"Shipping"> | string
-    receiver_full_name?: StringFilter<"Shipping"> | string
+    receiver_fullname?: StringFilter<"Shipping"> | string
     receiver_phone_numbers?: StringNullableListFilter<"Shipping">
     receiver_address?: StringFilter<"Shipping"> | string
     process?: IntFilter<"Shipping"> | number
@@ -25351,14 +25425,13 @@ export namespace Prisma {
     created_at?: DateTimeFilter<"Shipping"> | Date | string
     updated_at?: DateTimeFilter<"Shipping"> | Date | string
     user?: XOR<UserRelationFilter, UserWhereInput>
-    order?: XOR<OrderRelationFilter, OrderWhereInput>
-  }, "id" | "order_id">
+    order?: XOR<OrderNullableRelationFilter, OrderWhereInput> | null
+  }, "id">
 
   export type ShippingOrderByWithAggregationInput = {
     id?: SortOrder
     user_id?: SortOrder
-    order_id?: SortOrder
-    receiver_full_name?: SortOrder
+    receiver_fullname?: SortOrder
     receiver_phone_numbers?: SortOrder
     receiver_address?: SortOrder
     process?: SortOrder
@@ -25378,8 +25451,7 @@ export namespace Prisma {
     NOT?: ShippingScalarWhereWithAggregatesInput | ShippingScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Shipping"> | string
     user_id?: StringWithAggregatesFilter<"Shipping"> | string
-    order_id?: StringWithAggregatesFilter<"Shipping"> | string
-    receiver_full_name?: StringWithAggregatesFilter<"Shipping"> | string
+    receiver_fullname?: StringWithAggregatesFilter<"Shipping"> | string
     receiver_phone_numbers?: StringNullableListFilter<"Shipping">
     receiver_address?: StringWithAggregatesFilter<"Shipping"> | string
     process?: IntWithAggregatesFilter<"Shipping"> | number
@@ -25396,6 +25468,10 @@ export namespace Prisma {
     order_id?: StringFilter<"ProductOrder"> | string
     product_id?: StringFilter<"ProductOrder"> | string
     quantity?: IntFilter<"ProductOrder"> | number
+    price?: FloatFilter<"ProductOrder"> | number
+    shipping_price?: FloatFilter<"ProductOrder"> | number
+    tax_price?: FloatFilter<"ProductOrder"> | number
+    created_at?: DateTimeFilter<"ProductOrder"> | Date | string
     product?: XOR<ProductRelationFilter, ProductWhereInput>
     order?: XOR<OrderRelationFilter, OrderWhereInput>
   }
@@ -25405,6 +25481,10 @@ export namespace Prisma {
     order_id?: SortOrder
     product_id?: SortOrder
     quantity?: SortOrder
+    price?: SortOrder
+    shipping_price?: SortOrder
+    tax_price?: SortOrder
+    created_at?: SortOrder
     product?: ProductOrderByWithRelationAndSearchRelevanceInput
     order?: OrderOrderByWithRelationAndSearchRelevanceInput
     _relevance?: ProductOrderOrderByRelevanceInput
@@ -25419,6 +25499,10 @@ export namespace Prisma {
     order_id?: StringFilter<"ProductOrder"> | string
     product_id?: StringFilter<"ProductOrder"> | string
     quantity?: IntFilter<"ProductOrder"> | number
+    price?: FloatFilter<"ProductOrder"> | number
+    shipping_price?: FloatFilter<"ProductOrder"> | number
+    tax_price?: FloatFilter<"ProductOrder"> | number
+    created_at?: DateTimeFilter<"ProductOrder"> | Date | string
     product?: XOR<ProductRelationFilter, ProductWhereInput>
     order?: XOR<OrderRelationFilter, OrderWhereInput>
   }, "id" | "order_id_product_id">
@@ -25428,6 +25512,10 @@ export namespace Prisma {
     order_id?: SortOrder
     product_id?: SortOrder
     quantity?: SortOrder
+    price?: SortOrder
+    shipping_price?: SortOrder
+    tax_price?: SortOrder
+    created_at?: SortOrder
     _count?: ProductOrderCountOrderByAggregateInput
     _avg?: ProductOrderAvgOrderByAggregateInput
     _max?: ProductOrderMaxOrderByAggregateInput
@@ -25443,6 +25531,10 @@ export namespace Prisma {
     order_id?: StringWithAggregatesFilter<"ProductOrder"> | string
     product_id?: StringWithAggregatesFilter<"ProductOrder"> | string
     quantity?: IntWithAggregatesFilter<"ProductOrder"> | number
+    price?: FloatWithAggregatesFilter<"ProductOrder"> | number
+    shipping_price?: FloatWithAggregatesFilter<"ProductOrder"> | number
+    tax_price?: FloatWithAggregatesFilter<"ProductOrder"> | number
+    created_at?: DateTimeWithAggregatesFilter<"ProductOrder"> | Date | string
   }
 
   export type OrderWhereInput = {
@@ -25451,30 +25543,36 @@ export namespace Prisma {
     NOT?: OrderWhereInput | OrderWhereInput[]
     id?: StringFilter<"Order"> | string
     user_id?: StringFilter<"Order"> | string
+    shipping_id?: StringFilter<"Order"> | string
+    payment_id?: StringFilter<"Order"> | string
     completed?: BoolFilter<"Order"> | boolean
     created_at?: DateTimeFilter<"Order"> | Date | string
     updated_at?: DateTimeFilter<"Order"> | Date | string
     product_orders?: ProductOrderListRelationFilter
-    payment?: XOR<PaymentNullableRelationFilter, PaymentWhereInput> | null
-    shipping?: XOR<ShippingNullableRelationFilter, ShippingWhereInput> | null
     user?: XOR<UserRelationFilter, UserWhereInput>
+    shipping?: XOR<ShippingRelationFilter, ShippingWhereInput>
+    payment?: XOR<PaymentRelationFilter, PaymentWhereInput>
   }
 
   export type OrderOrderByWithRelationAndSearchRelevanceInput = {
     id?: SortOrder
     user_id?: SortOrder
+    shipping_id?: SortOrder
+    payment_id?: SortOrder
     completed?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     product_orders?: ProductOrderOrderByRelationAggregateInput
-    payment?: PaymentOrderByWithRelationAndSearchRelevanceInput
-    shipping?: ShippingOrderByWithRelationAndSearchRelevanceInput
     user?: UserOrderByWithRelationAndSearchRelevanceInput
+    shipping?: ShippingOrderByWithRelationAndSearchRelevanceInput
+    payment?: PaymentOrderByWithRelationAndSearchRelevanceInput
     _relevance?: OrderOrderByRelevanceInput
   }
 
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    shipping_id?: string
+    payment_id?: string
     AND?: OrderWhereInput | OrderWhereInput[]
     OR?: OrderWhereInput[]
     NOT?: OrderWhereInput | OrderWhereInput[]
@@ -25483,14 +25581,16 @@ export namespace Prisma {
     created_at?: DateTimeFilter<"Order"> | Date | string
     updated_at?: DateTimeFilter<"Order"> | Date | string
     product_orders?: ProductOrderListRelationFilter
-    payment?: XOR<PaymentNullableRelationFilter, PaymentWhereInput> | null
-    shipping?: XOR<ShippingNullableRelationFilter, ShippingWhereInput> | null
     user?: XOR<UserRelationFilter, UserWhereInput>
-  }, "id">
+    shipping?: XOR<ShippingRelationFilter, ShippingWhereInput>
+    payment?: XOR<PaymentRelationFilter, PaymentWhereInput>
+  }, "id" | "shipping_id" | "payment_id">
 
   export type OrderOrderByWithAggregationInput = {
     id?: SortOrder
     user_id?: SortOrder
+    shipping_id?: SortOrder
+    payment_id?: SortOrder
     completed?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
@@ -25505,6 +25605,8 @@ export namespace Prisma {
     NOT?: OrderScalarWhereWithAggregatesInput | OrderScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Order"> | string
     user_id?: StringWithAggregatesFilter<"Order"> | string
+    shipping_id?: StringWithAggregatesFilter<"Order"> | string
+    payment_id?: StringWithAggregatesFilter<"Order"> | string
     completed?: BoolWithAggregatesFilter<"Order"> | boolean
     created_at?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"Order"> | Date | string
@@ -26811,23 +26913,25 @@ export namespace Prisma {
     discount?: number
     sub_price: number
     total_price: number
+    card_type: number
+    card_last_four: string
     created_at?: Date | string
-    updated_at?: Date | string
+    order?: OrderCreateNestedOneWithoutPaymentInput
     user: UserCreateNestedOneWithoutPaymentsInput
-    order: OrderCreateNestedOneWithoutPaymentInput
   }
 
   export type PaymentUncheckedCreateInput = {
     id?: string
     user_id: string
-    order_id: string
     shipping_price?: number
     tax_price?: number
     discount?: number
     sub_price: number
     total_price: number
+    card_type: number
+    card_last_four: string
     created_at?: Date | string
-    updated_at?: Date | string
+    order?: OrderUncheckedCreateNestedOneWithoutPaymentInput
   }
 
   export type PaymentUpdateInput = {
@@ -26837,36 +26941,38 @@ export namespace Prisma {
     discount?: FloatFieldUpdateOperationsInput | number
     sub_price?: FloatFieldUpdateOperationsInput | number
     total_price?: FloatFieldUpdateOperationsInput | number
+    card_type?: IntFieldUpdateOperationsInput | number
+    card_last_four?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneWithoutPaymentNestedInput
     user?: UserUpdateOneRequiredWithoutPaymentsNestedInput
-    order?: OrderUpdateOneRequiredWithoutPaymentNestedInput
   }
 
   export type PaymentUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
-    order_id?: StringFieldUpdateOperationsInput | string
     shipping_price?: FloatFieldUpdateOperationsInput | number
     tax_price?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     sub_price?: FloatFieldUpdateOperationsInput | number
     total_price?: FloatFieldUpdateOperationsInput | number
+    card_type?: IntFieldUpdateOperationsInput | number
+    card_last_four?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUncheckedUpdateOneWithoutPaymentNestedInput
   }
 
   export type PaymentCreateManyInput = {
     id?: string
     user_id: string
-    order_id: string
     shipping_price?: number
     tax_price?: number
     discount?: number
     sub_price: number
     total_price: number
+    card_type: number
+    card_last_four: string
     created_at?: Date | string
-    updated_at?: Date | string
   }
 
   export type PaymentUpdateManyMutationInput = {
@@ -26876,52 +26982,53 @@ export namespace Prisma {
     discount?: FloatFieldUpdateOperationsInput | number
     sub_price?: FloatFieldUpdateOperationsInput | number
     total_price?: FloatFieldUpdateOperationsInput | number
+    card_type?: IntFieldUpdateOperationsInput | number
+    card_last_four?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PaymentUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
-    order_id?: StringFieldUpdateOperationsInput | string
     shipping_price?: FloatFieldUpdateOperationsInput | number
     tax_price?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     sub_price?: FloatFieldUpdateOperationsInput | number
     total_price?: FloatFieldUpdateOperationsInput | number
+    card_type?: IntFieldUpdateOperationsInput | number
+    card_last_four?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ShippingCreateInput = {
     id?: string
-    receiver_full_name: string
+    receiver_fullname: string
     receiver_phone_numbers?: ShippingCreatereceiver_phone_numbersInput | string[]
     receiver_address: string
     process?: number
     received?: Date | string | null
-    created_at: Date | string
-    updated_at: Date | string
+    created_at?: Date | string
+    updated_at?: Date | string
     user: UserCreateNestedOneWithoutShippingsInput
-    order: OrderCreateNestedOneWithoutShippingInput
+    order?: OrderCreateNestedOneWithoutShippingInput
   }
 
   export type ShippingUncheckedCreateInput = {
     id?: string
     user_id: string
-    order_id: string
-    receiver_full_name: string
+    receiver_fullname: string
     receiver_phone_numbers?: ShippingCreatereceiver_phone_numbersInput | string[]
     receiver_address: string
     process?: number
     received?: Date | string | null
-    created_at: Date | string
-    updated_at: Date | string
+    created_at?: Date | string
+    updated_at?: Date | string
+    order?: OrderUncheckedCreateNestedOneWithoutShippingInput
   }
 
   export type ShippingUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    receiver_full_name?: StringFieldUpdateOperationsInput | string
+    receiver_fullname?: StringFieldUpdateOperationsInput | string
     receiver_phone_numbers?: ShippingUpdatereceiver_phone_numbersInput | string[]
     receiver_address?: StringFieldUpdateOperationsInput | string
     process?: IntFieldUpdateOperationsInput | number
@@ -26929,38 +27036,37 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutShippingsNestedInput
-    order?: OrderUpdateOneRequiredWithoutShippingNestedInput
+    order?: OrderUpdateOneWithoutShippingNestedInput
   }
 
   export type ShippingUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
-    order_id?: StringFieldUpdateOperationsInput | string
-    receiver_full_name?: StringFieldUpdateOperationsInput | string
+    receiver_fullname?: StringFieldUpdateOperationsInput | string
     receiver_phone_numbers?: ShippingUpdatereceiver_phone_numbersInput | string[]
     receiver_address?: StringFieldUpdateOperationsInput | string
     process?: IntFieldUpdateOperationsInput | number
     received?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUncheckedUpdateOneWithoutShippingNestedInput
   }
 
   export type ShippingCreateManyInput = {
     id?: string
     user_id: string
-    order_id: string
-    receiver_full_name: string
+    receiver_fullname: string
     receiver_phone_numbers?: ShippingCreatereceiver_phone_numbersInput | string[]
     receiver_address: string
     process?: number
     received?: Date | string | null
-    created_at: Date | string
-    updated_at: Date | string
+    created_at?: Date | string
+    updated_at?: Date | string
   }
 
   export type ShippingUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    receiver_full_name?: StringFieldUpdateOperationsInput | string
+    receiver_fullname?: StringFieldUpdateOperationsInput | string
     receiver_phone_numbers?: ShippingUpdatereceiver_phone_numbersInput | string[]
     receiver_address?: StringFieldUpdateOperationsInput | string
     process?: IntFieldUpdateOperationsInput | number
@@ -26972,8 +27078,7 @@ export namespace Prisma {
   export type ShippingUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
-    order_id?: StringFieldUpdateOperationsInput | string
-    receiver_full_name?: StringFieldUpdateOperationsInput | string
+    receiver_fullname?: StringFieldUpdateOperationsInput | string
     receiver_phone_numbers?: ShippingUpdatereceiver_phone_numbersInput | string[]
     receiver_address?: StringFieldUpdateOperationsInput | string
     process?: IntFieldUpdateOperationsInput | number
@@ -26985,6 +27090,10 @@ export namespace Prisma {
   export type ProductOrderCreateInput = {
     id?: string
     quantity: number
+    price: number
+    shipping_price?: number
+    tax_price?: number
+    created_at?: Date | string
     product: ProductCreateNestedOneWithoutProduct_ordersInput
     order: OrderCreateNestedOneWithoutProduct_ordersInput
   }
@@ -26994,11 +27103,19 @@ export namespace Prisma {
     order_id: string
     product_id: string
     quantity: number
+    price: number
+    shipping_price?: number
+    tax_price?: number
+    created_at?: Date | string
   }
 
   export type ProductOrderUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    shipping_price?: FloatFieldUpdateOperationsInput | number
+    tax_price?: FloatFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     product?: ProductUpdateOneRequiredWithoutProduct_ordersNestedInput
     order?: OrderUpdateOneRequiredWithoutProduct_ordersNestedInput
   }
@@ -27008,6 +27125,10 @@ export namespace Prisma {
     order_id?: StringFieldUpdateOperationsInput | string
     product_id?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    shipping_price?: FloatFieldUpdateOperationsInput | number
+    tax_price?: FloatFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProductOrderCreateManyInput = {
@@ -27015,11 +27136,19 @@ export namespace Prisma {
     order_id: string
     product_id: string
     quantity: number
+    price: number
+    shipping_price?: number
+    tax_price?: number
+    created_at?: Date | string
   }
 
   export type ProductOrderUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    shipping_price?: FloatFieldUpdateOperationsInput | number
+    tax_price?: FloatFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProductOrderUncheckedUpdateManyInput = {
@@ -27027,6 +27156,10 @@ export namespace Prisma {
     order_id?: StringFieldUpdateOperationsInput | string
     product_id?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    shipping_price?: FloatFieldUpdateOperationsInput | number
+    tax_price?: FloatFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrderCreateInput = {
@@ -27035,20 +27168,20 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     product_orders?: ProductOrderCreateNestedManyWithoutOrderInput
-    payment?: PaymentCreateNestedOneWithoutOrderInput
-    shipping?: ShippingCreateNestedOneWithoutOrderInput
     user: UserCreateNestedOneWithoutOrdersInput
+    shipping: ShippingCreateNestedOneWithoutOrderInput
+    payment: PaymentCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateInput = {
     id?: string
     user_id: string
+    shipping_id: string
+    payment_id: string
     completed?: boolean
     created_at?: Date | string
     updated_at?: Date | string
     product_orders?: ProductOrderUncheckedCreateNestedManyWithoutOrderInput
-    payment?: PaymentUncheckedCreateNestedOneWithoutOrderInput
-    shipping?: ShippingUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUpdateInput = {
@@ -27057,25 +27190,27 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     product_orders?: ProductOrderUpdateManyWithoutOrderNestedInput
-    payment?: PaymentUpdateOneWithoutOrderNestedInput
-    shipping?: ShippingUpdateOneWithoutOrderNestedInput
     user?: UserUpdateOneRequiredWithoutOrdersNestedInput
+    shipping?: ShippingUpdateOneRequiredWithoutOrderNestedInput
+    payment?: PaymentUpdateOneRequiredWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
+    shipping_id?: StringFieldUpdateOperationsInput | string
+    payment_id?: StringFieldUpdateOperationsInput | string
     completed?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     product_orders?: ProductOrderUncheckedUpdateManyWithoutOrderNestedInput
-    payment?: PaymentUncheckedUpdateOneWithoutOrderNestedInput
-    shipping?: ShippingUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderCreateManyInput = {
     id?: string
     user_id: string
+    shipping_id: string
+    payment_id: string
     completed?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -27091,6 +27226,8 @@ export namespace Prisma {
   export type OrderUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
+    shipping_id?: StringFieldUpdateOperationsInput | string
+    payment_id?: StringFieldUpdateOperationsInput | string
     completed?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27918,7 +28055,7 @@ export namespace Prisma {
     id?: string
     email: string
     type: number
-    token?: string
+    token: string
     created_at?: Date | string
     updated_at?: Date | string
     expired_at?: Date | string
@@ -27928,7 +28065,7 @@ export namespace Prisma {
     id?: string
     email: string
     type: number
-    token?: string
+    token: string
     created_at?: Date | string
     updated_at?: Date | string
     expired_at?: Date | string
@@ -27958,7 +28095,7 @@ export namespace Prisma {
     id?: string
     email: string
     type: number
-    token?: string
+    token: string
     created_at?: Date | string
     updated_at?: Date | string
     expired_at?: Date | string
@@ -28514,9 +28651,9 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
-  export type OrderRelationFilter = {
-    is?: OrderWhereInput
-    isNot?: OrderWhereInput
+  export type OrderNullableRelationFilter = {
+    is?: OrderWhereInput | null
+    isNot?: OrderWhereInput | null
   }
 
   export type PaymentOrderByRelevanceInput = {
@@ -28528,14 +28665,14 @@ export namespace Prisma {
   export type PaymentCountOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
-    order_id?: SortOrder
     shipping_price?: SortOrder
     tax_price?: SortOrder
     discount?: SortOrder
     sub_price?: SortOrder
     total_price?: SortOrder
+    card_type?: SortOrder
+    card_last_four?: SortOrder
     created_at?: SortOrder
-    updated_at?: SortOrder
   }
 
   export type PaymentAvgOrderByAggregateInput = {
@@ -28544,32 +28681,33 @@ export namespace Prisma {
     discount?: SortOrder
     sub_price?: SortOrder
     total_price?: SortOrder
+    card_type?: SortOrder
   }
 
   export type PaymentMaxOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
-    order_id?: SortOrder
     shipping_price?: SortOrder
     tax_price?: SortOrder
     discount?: SortOrder
     sub_price?: SortOrder
     total_price?: SortOrder
+    card_type?: SortOrder
+    card_last_four?: SortOrder
     created_at?: SortOrder
-    updated_at?: SortOrder
   }
 
   export type PaymentMinOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
-    order_id?: SortOrder
     shipping_price?: SortOrder
     tax_price?: SortOrder
     discount?: SortOrder
     sub_price?: SortOrder
     total_price?: SortOrder
+    card_type?: SortOrder
+    card_last_four?: SortOrder
     created_at?: SortOrder
-    updated_at?: SortOrder
   }
 
   export type PaymentSumOrderByAggregateInput = {
@@ -28578,6 +28716,7 @@ export namespace Prisma {
     discount?: SortOrder
     sub_price?: SortOrder
     total_price?: SortOrder
+    card_type?: SortOrder
   }
 
   export type StringNullableListFilter<$PrismaModel = never> = {
@@ -28597,8 +28736,7 @@ export namespace Prisma {
   export type ShippingCountOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
-    order_id?: SortOrder
-    receiver_full_name?: SortOrder
+    receiver_fullname?: SortOrder
     receiver_phone_numbers?: SortOrder
     receiver_address?: SortOrder
     process?: SortOrder
@@ -28614,8 +28752,7 @@ export namespace Prisma {
   export type ShippingMaxOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
-    order_id?: SortOrder
-    receiver_full_name?: SortOrder
+    receiver_fullname?: SortOrder
     receiver_address?: SortOrder
     process?: SortOrder
     received?: SortOrder
@@ -28626,8 +28763,7 @@ export namespace Prisma {
   export type ShippingMinOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
-    order_id?: SortOrder
-    receiver_full_name?: SortOrder
+    receiver_fullname?: SortOrder
     receiver_address?: SortOrder
     process?: SortOrder
     received?: SortOrder
@@ -28642,6 +28778,11 @@ export namespace Prisma {
   export type ProductRelationFilter = {
     is?: ProductWhereInput
     isNot?: ProductWhereInput
+  }
+
+  export type OrderRelationFilter = {
+    is?: OrderWhereInput
+    isNot?: OrderWhereInput
   }
 
   export type ProductOrderOrderByRelevanceInput = {
@@ -28660,10 +28801,17 @@ export namespace Prisma {
     order_id?: SortOrder
     product_id?: SortOrder
     quantity?: SortOrder
+    price?: SortOrder
+    shipping_price?: SortOrder
+    tax_price?: SortOrder
+    created_at?: SortOrder
   }
 
   export type ProductOrderAvgOrderByAggregateInput = {
     quantity?: SortOrder
+    price?: SortOrder
+    shipping_price?: SortOrder
+    tax_price?: SortOrder
   }
 
   export type ProductOrderMaxOrderByAggregateInput = {
@@ -28671,6 +28819,10 @@ export namespace Prisma {
     order_id?: SortOrder
     product_id?: SortOrder
     quantity?: SortOrder
+    price?: SortOrder
+    shipping_price?: SortOrder
+    tax_price?: SortOrder
+    created_at?: SortOrder
   }
 
   export type ProductOrderMinOrderByAggregateInput = {
@@ -28678,10 +28830,17 @@ export namespace Prisma {
     order_id?: SortOrder
     product_id?: SortOrder
     quantity?: SortOrder
+    price?: SortOrder
+    shipping_price?: SortOrder
+    tax_price?: SortOrder
+    created_at?: SortOrder
   }
 
   export type ProductOrderSumOrderByAggregateInput = {
     quantity?: SortOrder
+    price?: SortOrder
+    shipping_price?: SortOrder
+    tax_price?: SortOrder
   }
 
   export type BoolFilter<$PrismaModel = never> = {
@@ -28689,14 +28848,14 @@ export namespace Prisma {
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
-  export type PaymentNullableRelationFilter = {
-    is?: PaymentWhereInput | null
-    isNot?: PaymentWhereInput | null
+  export type ShippingRelationFilter = {
+    is?: ShippingWhereInput
+    isNot?: ShippingWhereInput
   }
 
-  export type ShippingNullableRelationFilter = {
-    is?: ShippingWhereInput | null
-    isNot?: ShippingWhereInput | null
+  export type PaymentRelationFilter = {
+    is?: PaymentWhereInput
+    isNot?: PaymentWhereInput
   }
 
   export type OrderOrderByRelevanceInput = {
@@ -28708,6 +28867,8 @@ export namespace Prisma {
   export type OrderCountOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
+    shipping_id?: SortOrder
+    payment_id?: SortOrder
     completed?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
@@ -28716,6 +28877,8 @@ export namespace Prisma {
   export type OrderMaxOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
+    shipping_id?: SortOrder
+    payment_id?: SortOrder
     completed?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
@@ -28724,6 +28887,8 @@ export namespace Prisma {
   export type OrderMinOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
+    shipping_id?: SortOrder
+    payment_id?: SortOrder
     completed?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
@@ -30081,16 +30246,32 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCredit_cardInput, UserUpdateWithoutCredit_cardInput>, UserUncheckedUpdateWithoutCredit_cardInput>
   }
 
+  export type OrderCreateNestedOneWithoutPaymentInput = {
+    create?: XOR<OrderCreateWithoutPaymentInput, OrderUncheckedCreateWithoutPaymentInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutPaymentInput
+    connect?: OrderWhereUniqueInput
+  }
+
   export type UserCreateNestedOneWithoutPaymentsInput = {
     create?: XOR<UserCreateWithoutPaymentsInput, UserUncheckedCreateWithoutPaymentsInput>
     connectOrCreate?: UserCreateOrConnectWithoutPaymentsInput
     connect?: UserWhereUniqueInput
   }
 
-  export type OrderCreateNestedOneWithoutPaymentInput = {
+  export type OrderUncheckedCreateNestedOneWithoutPaymentInput = {
     create?: XOR<OrderCreateWithoutPaymentInput, OrderUncheckedCreateWithoutPaymentInput>
     connectOrCreate?: OrderCreateOrConnectWithoutPaymentInput
     connect?: OrderWhereUniqueInput
+  }
+
+  export type OrderUpdateOneWithoutPaymentNestedInput = {
+    create?: XOR<OrderCreateWithoutPaymentInput, OrderUncheckedCreateWithoutPaymentInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutPaymentInput
+    upsert?: OrderUpsertWithoutPaymentInput
+    disconnect?: OrderWhereInput | boolean
+    delete?: OrderWhereInput | boolean
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutPaymentInput, OrderUpdateWithoutPaymentInput>, OrderUncheckedUpdateWithoutPaymentInput>
   }
 
   export type UserUpdateOneRequiredWithoutPaymentsNestedInput = {
@@ -30101,10 +30282,12 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPaymentsInput, UserUpdateWithoutPaymentsInput>, UserUncheckedUpdateWithoutPaymentsInput>
   }
 
-  export type OrderUpdateOneRequiredWithoutPaymentNestedInput = {
+  export type OrderUncheckedUpdateOneWithoutPaymentNestedInput = {
     create?: XOR<OrderCreateWithoutPaymentInput, OrderUncheckedCreateWithoutPaymentInput>
     connectOrCreate?: OrderCreateOrConnectWithoutPaymentInput
     upsert?: OrderUpsertWithoutPaymentInput
+    disconnect?: OrderWhereInput | boolean
+    delete?: OrderWhereInput | boolean
     connect?: OrderWhereUniqueInput
     update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutPaymentInput, OrderUpdateWithoutPaymentInput>, OrderUncheckedUpdateWithoutPaymentInput>
   }
@@ -30125,6 +30308,12 @@ export namespace Prisma {
     connect?: OrderWhereUniqueInput
   }
 
+  export type OrderUncheckedCreateNestedOneWithoutShippingInput = {
+    create?: XOR<OrderCreateWithoutShippingInput, OrderUncheckedCreateWithoutShippingInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutShippingInput
+    connect?: OrderWhereUniqueInput
+  }
+
   export type ShippingUpdatereceiver_phone_numbersInput = {
     set?: string[]
     push?: string | string[]
@@ -30138,10 +30327,22 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutShippingsInput, UserUpdateWithoutShippingsInput>, UserUncheckedUpdateWithoutShippingsInput>
   }
 
-  export type OrderUpdateOneRequiredWithoutShippingNestedInput = {
+  export type OrderUpdateOneWithoutShippingNestedInput = {
     create?: XOR<OrderCreateWithoutShippingInput, OrderUncheckedCreateWithoutShippingInput>
     connectOrCreate?: OrderCreateOrConnectWithoutShippingInput
     upsert?: OrderUpsertWithoutShippingInput
+    disconnect?: OrderWhereInput | boolean
+    delete?: OrderWhereInput | boolean
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutShippingInput, OrderUpdateWithoutShippingInput>, OrderUncheckedUpdateWithoutShippingInput>
+  }
+
+  export type OrderUncheckedUpdateOneWithoutShippingNestedInput = {
+    create?: XOR<OrderCreateWithoutShippingInput, OrderUncheckedCreateWithoutShippingInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutShippingInput
+    upsert?: OrderUpsertWithoutShippingInput
+    disconnect?: OrderWhereInput | boolean
+    delete?: OrderWhereInput | boolean
     connect?: OrderWhereUniqueInput
     update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutShippingInput, OrderUpdateWithoutShippingInput>, OrderUncheckedUpdateWithoutShippingInput>
   }
@@ -30181,10 +30382,10 @@ export namespace Prisma {
     connect?: ProductOrderWhereUniqueInput | ProductOrderWhereUniqueInput[]
   }
 
-  export type PaymentCreateNestedOneWithoutOrderInput = {
-    create?: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput>
-    connectOrCreate?: PaymentCreateOrConnectWithoutOrderInput
-    connect?: PaymentWhereUniqueInput
+  export type UserCreateNestedOneWithoutOrdersInput = {
+    create?: XOR<UserCreateWithoutOrdersInput, UserUncheckedCreateWithoutOrdersInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOrdersInput
+    connect?: UserWhereUniqueInput
   }
 
   export type ShippingCreateNestedOneWithoutOrderInput = {
@@ -30193,10 +30394,10 @@ export namespace Prisma {
     connect?: ShippingWhereUniqueInput
   }
 
-  export type UserCreateNestedOneWithoutOrdersInput = {
-    create?: XOR<UserCreateWithoutOrdersInput, UserUncheckedCreateWithoutOrdersInput>
-    connectOrCreate?: UserCreateOrConnectWithoutOrdersInput
-    connect?: UserWhereUniqueInput
+  export type PaymentCreateNestedOneWithoutOrderInput = {
+    create?: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: PaymentCreateOrConnectWithoutOrderInput
+    connect?: PaymentWhereUniqueInput
   }
 
   export type ProductOrderUncheckedCreateNestedManyWithoutOrderInput = {
@@ -30204,18 +30405,6 @@ export namespace Prisma {
     connectOrCreate?: ProductOrderCreateOrConnectWithoutOrderInput | ProductOrderCreateOrConnectWithoutOrderInput[]
     createMany?: ProductOrderCreateManyOrderInputEnvelope
     connect?: ProductOrderWhereUniqueInput | ProductOrderWhereUniqueInput[]
-  }
-
-  export type PaymentUncheckedCreateNestedOneWithoutOrderInput = {
-    create?: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput>
-    connectOrCreate?: PaymentCreateOrConnectWithoutOrderInput
-    connect?: PaymentWhereUniqueInput
-  }
-
-  export type ShippingUncheckedCreateNestedOneWithoutOrderInput = {
-    create?: XOR<ShippingCreateWithoutOrderInput, ShippingUncheckedCreateWithoutOrderInput>
-    connectOrCreate?: ShippingCreateOrConnectWithoutOrderInput
-    connect?: ShippingWhereUniqueInput
   }
 
   export type BoolFieldUpdateOperationsInput = {
@@ -30236,32 +30425,28 @@ export namespace Prisma {
     deleteMany?: ProductOrderScalarWhereInput | ProductOrderScalarWhereInput[]
   }
 
-  export type PaymentUpdateOneWithoutOrderNestedInput = {
-    create?: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput>
-    connectOrCreate?: PaymentCreateOrConnectWithoutOrderInput
-    upsert?: PaymentUpsertWithoutOrderInput
-    disconnect?: PaymentWhereInput | boolean
-    delete?: PaymentWhereInput | boolean
-    connect?: PaymentWhereUniqueInput
-    update?: XOR<XOR<PaymentUpdateToOneWithWhereWithoutOrderInput, PaymentUpdateWithoutOrderInput>, PaymentUncheckedUpdateWithoutOrderInput>
-  }
-
-  export type ShippingUpdateOneWithoutOrderNestedInput = {
-    create?: XOR<ShippingCreateWithoutOrderInput, ShippingUncheckedCreateWithoutOrderInput>
-    connectOrCreate?: ShippingCreateOrConnectWithoutOrderInput
-    upsert?: ShippingUpsertWithoutOrderInput
-    disconnect?: ShippingWhereInput | boolean
-    delete?: ShippingWhereInput | boolean
-    connect?: ShippingWhereUniqueInput
-    update?: XOR<XOR<ShippingUpdateToOneWithWhereWithoutOrderInput, ShippingUpdateWithoutOrderInput>, ShippingUncheckedUpdateWithoutOrderInput>
-  }
-
   export type UserUpdateOneRequiredWithoutOrdersNestedInput = {
     create?: XOR<UserCreateWithoutOrdersInput, UserUncheckedCreateWithoutOrdersInput>
     connectOrCreate?: UserCreateOrConnectWithoutOrdersInput
     upsert?: UserUpsertWithoutOrdersInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutOrdersInput, UserUpdateWithoutOrdersInput>, UserUncheckedUpdateWithoutOrdersInput>
+  }
+
+  export type ShippingUpdateOneRequiredWithoutOrderNestedInput = {
+    create?: XOR<ShippingCreateWithoutOrderInput, ShippingUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: ShippingCreateOrConnectWithoutOrderInput
+    upsert?: ShippingUpsertWithoutOrderInput
+    connect?: ShippingWhereUniqueInput
+    update?: XOR<XOR<ShippingUpdateToOneWithWhereWithoutOrderInput, ShippingUpdateWithoutOrderInput>, ShippingUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type PaymentUpdateOneRequiredWithoutOrderNestedInput = {
+    create?: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: PaymentCreateOrConnectWithoutOrderInput
+    upsert?: PaymentUpsertWithoutOrderInput
+    connect?: PaymentWhereUniqueInput
+    update?: XOR<XOR<PaymentUpdateToOneWithWhereWithoutOrderInput, PaymentUpdateWithoutOrderInput>, PaymentUncheckedUpdateWithoutOrderInput>
   }
 
   export type ProductOrderUncheckedUpdateManyWithoutOrderNestedInput = {
@@ -30276,26 +30461,6 @@ export namespace Prisma {
     update?: ProductOrderUpdateWithWhereUniqueWithoutOrderInput | ProductOrderUpdateWithWhereUniqueWithoutOrderInput[]
     updateMany?: ProductOrderUpdateManyWithWhereWithoutOrderInput | ProductOrderUpdateManyWithWhereWithoutOrderInput[]
     deleteMany?: ProductOrderScalarWhereInput | ProductOrderScalarWhereInput[]
-  }
-
-  export type PaymentUncheckedUpdateOneWithoutOrderNestedInput = {
-    create?: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput>
-    connectOrCreate?: PaymentCreateOrConnectWithoutOrderInput
-    upsert?: PaymentUpsertWithoutOrderInput
-    disconnect?: PaymentWhereInput | boolean
-    delete?: PaymentWhereInput | boolean
-    connect?: PaymentWhereUniqueInput
-    update?: XOR<XOR<PaymentUpdateToOneWithWhereWithoutOrderInput, PaymentUpdateWithoutOrderInput>, PaymentUncheckedUpdateWithoutOrderInput>
-  }
-
-  export type ShippingUncheckedUpdateOneWithoutOrderNestedInput = {
-    create?: XOR<ShippingCreateWithoutOrderInput, ShippingUncheckedCreateWithoutOrderInput>
-    connectOrCreate?: ShippingCreateOrConnectWithoutOrderInput
-    upsert?: ShippingUpsertWithoutOrderInput
-    disconnect?: ShippingWhereInput | boolean
-    delete?: ShippingWhereInput | boolean
-    connect?: ShippingWhereUniqueInput
-    update?: XOR<XOR<ShippingUpdateToOneWithWhereWithoutOrderInput, ShippingUpdateWithoutOrderInput>, ShippingUncheckedUpdateWithoutOrderInput>
   }
 
   export type CardCreateproduct_quantitiesInput = {
@@ -31228,18 +31393,18 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     product_orders?: ProductOrderCreateNestedManyWithoutOrderInput
-    payment?: PaymentCreateNestedOneWithoutOrderInput
-    shipping?: ShippingCreateNestedOneWithoutOrderInput
+    shipping: ShippingCreateNestedOneWithoutOrderInput
+    payment: PaymentCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutUserInput = {
     id?: string
+    shipping_id: string
+    payment_id: string
     completed?: boolean
     created_at?: Date | string
     updated_at?: Date | string
     product_orders?: ProductOrderUncheckedCreateNestedManyWithoutOrderInput
-    payment?: PaymentUncheckedCreateNestedOneWithoutOrderInput
-    shipping?: ShippingUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutUserInput = {
@@ -31259,21 +31424,23 @@ export namespace Prisma {
     discount?: number
     sub_price: number
     total_price: number
+    card_type: number
+    card_last_four: string
     created_at?: Date | string
-    updated_at?: Date | string
-    order: OrderCreateNestedOneWithoutPaymentInput
+    order?: OrderCreateNestedOneWithoutPaymentInput
   }
 
   export type PaymentUncheckedCreateWithoutUserInput = {
     id?: string
-    order_id: string
     shipping_price?: number
     tax_price?: number
     discount?: number
     sub_price: number
     total_price: number
+    card_type: number
+    card_last_four: string
     created_at?: Date | string
-    updated_at?: Date | string
+    order?: OrderUncheckedCreateNestedOneWithoutPaymentInput
   }
 
   export type PaymentCreateOrConnectWithoutUserInput = {
@@ -31288,26 +31455,26 @@ export namespace Prisma {
 
   export type ShippingCreateWithoutUserInput = {
     id?: string
-    receiver_full_name: string
+    receiver_fullname: string
     receiver_phone_numbers?: ShippingCreatereceiver_phone_numbersInput | string[]
     receiver_address: string
     process?: number
     received?: Date | string | null
-    created_at: Date | string
-    updated_at: Date | string
-    order: OrderCreateNestedOneWithoutShippingInput
+    created_at?: Date | string
+    updated_at?: Date | string
+    order?: OrderCreateNestedOneWithoutShippingInput
   }
 
   export type ShippingUncheckedCreateWithoutUserInput = {
     id?: string
-    order_id: string
-    receiver_full_name: string
+    receiver_fullname: string
     receiver_phone_numbers?: ShippingCreatereceiver_phone_numbersInput | string[]
     receiver_address: string
     process?: number
     received?: Date | string | null
-    created_at: Date | string
-    updated_at: Date | string
+    created_at?: Date | string
+    updated_at?: Date | string
+    order?: OrderUncheckedCreateNestedOneWithoutShippingInput
   }
 
   export type ShippingCreateOrConnectWithoutUserInput = {
@@ -31480,6 +31647,8 @@ export namespace Prisma {
     NOT?: OrderScalarWhereInput | OrderScalarWhereInput[]
     id?: StringFilter<"Order"> | string
     user_id?: StringFilter<"Order"> | string
+    shipping_id?: StringFilter<"Order"> | string
+    payment_id?: StringFilter<"Order"> | string
     completed?: BoolFilter<"Order"> | boolean
     created_at?: DateTimeFilter<"Order"> | Date | string
     updated_at?: DateTimeFilter<"Order"> | Date | string
@@ -31507,14 +31676,14 @@ export namespace Prisma {
     NOT?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
     id?: StringFilter<"Payment"> | string
     user_id?: StringFilter<"Payment"> | string
-    order_id?: StringFilter<"Payment"> | string
     shipping_price?: FloatFilter<"Payment"> | number
     tax_price?: FloatFilter<"Payment"> | number
     discount?: FloatFilter<"Payment"> | number
     sub_price?: FloatFilter<"Payment"> | number
     total_price?: FloatFilter<"Payment"> | number
+    card_type?: IntFilter<"Payment"> | number
+    card_last_four?: StringFilter<"Payment"> | string
     created_at?: DateTimeFilter<"Payment"> | Date | string
-    updated_at?: DateTimeFilter<"Payment"> | Date | string
   }
 
   export type ShippingUpsertWithWhereUniqueWithoutUserInput = {
@@ -31539,8 +31708,7 @@ export namespace Prisma {
     NOT?: ShippingScalarWhereInput | ShippingScalarWhereInput[]
     id?: StringFilter<"Shipping"> | string
     user_id?: StringFilter<"Shipping"> | string
-    order_id?: StringFilter<"Shipping"> | string
-    receiver_full_name?: StringFilter<"Shipping"> | string
+    receiver_fullname?: StringFilter<"Shipping"> | string
     receiver_phone_numbers?: StringNullableListFilter<"Shipping">
     receiver_address?: StringFilter<"Shipping"> | string
     process?: IntFilter<"Shipping"> | number
@@ -31736,6 +31904,10 @@ export namespace Prisma {
   export type ProductOrderCreateWithoutProductInput = {
     id?: string
     quantity: number
+    price: number
+    shipping_price?: number
+    tax_price?: number
+    created_at?: Date | string
     order: OrderCreateNestedOneWithoutProduct_ordersInput
   }
 
@@ -31743,6 +31915,10 @@ export namespace Prisma {
     id?: string
     order_id: string
     quantity: number
+    price: number
+    shipping_price?: number
+    tax_price?: number
+    created_at?: Date | string
   }
 
   export type ProductOrderCreateOrConnectWithoutProductInput = {
@@ -32064,6 +32240,10 @@ export namespace Prisma {
     order_id?: StringFilter<"ProductOrder"> | string
     product_id?: StringFilter<"ProductOrder"> | string
     quantity?: IntFilter<"ProductOrder"> | number
+    price?: FloatFilter<"ProductOrder"> | number
+    shipping_price?: FloatFilter<"ProductOrder"> | number
+    tax_price?: FloatFilter<"ProductOrder"> | number
+    created_at?: DateTimeFilter<"ProductOrder"> | Date | string
   }
 
   export type CardUpsertWithWhereUniqueWithoutProductsInput = {
@@ -32252,6 +32432,31 @@ export namespace Prisma {
     shippings?: ShippingUncheckedUpdateManyWithoutUserNestedInput
   }
 
+  export type OrderCreateWithoutPaymentInput = {
+    id?: string
+    completed?: boolean
+    created_at?: Date | string
+    updated_at?: Date | string
+    product_orders?: ProductOrderCreateNestedManyWithoutOrderInput
+    user: UserCreateNestedOneWithoutOrdersInput
+    shipping: ShippingCreateNestedOneWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutPaymentInput = {
+    id?: string
+    user_id: string
+    shipping_id: string
+    completed?: boolean
+    created_at?: Date | string
+    updated_at?: Date | string
+    product_orders?: ProductOrderUncheckedCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutPaymentInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutPaymentInput, OrderUncheckedCreateWithoutPaymentInput>
+  }
+
   export type UserCreateWithoutPaymentsInput = {
     id?: string
     username: string
@@ -32299,29 +32504,35 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutPaymentsInput, UserUncheckedCreateWithoutPaymentsInput>
   }
 
-  export type OrderCreateWithoutPaymentInput = {
-    id?: string
-    completed?: boolean
-    created_at?: Date | string
-    updated_at?: Date | string
-    product_orders?: ProductOrderCreateNestedManyWithoutOrderInput
-    shipping?: ShippingCreateNestedOneWithoutOrderInput
-    user: UserCreateNestedOneWithoutOrdersInput
-  }
-
-  export type OrderUncheckedCreateWithoutPaymentInput = {
-    id?: string
-    user_id: string
-    completed?: boolean
-    created_at?: Date | string
-    updated_at?: Date | string
-    product_orders?: ProductOrderUncheckedCreateNestedManyWithoutOrderInput
-    shipping?: ShippingUncheckedCreateNestedOneWithoutOrderInput
-  }
-
-  export type OrderCreateOrConnectWithoutPaymentInput = {
-    where: OrderWhereUniqueInput
+  export type OrderUpsertWithoutPaymentInput = {
+    update: XOR<OrderUpdateWithoutPaymentInput, OrderUncheckedUpdateWithoutPaymentInput>
     create: XOR<OrderCreateWithoutPaymentInput, OrderUncheckedCreateWithoutPaymentInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutPaymentInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutPaymentInput, OrderUncheckedUpdateWithoutPaymentInput>
+  }
+
+  export type OrderUpdateWithoutPaymentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    completed?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    product_orders?: ProductOrderUpdateManyWithoutOrderNestedInput
+    user?: UserUpdateOneRequiredWithoutOrdersNestedInput
+    shipping?: ShippingUpdateOneRequiredWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutPaymentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    shipping_id?: StringFieldUpdateOperationsInput | string
+    completed?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    product_orders?: ProductOrderUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type UserUpsertWithoutPaymentsInput = {
@@ -32377,37 +32588,6 @@ export namespace Prisma {
     shippings?: ShippingUncheckedUpdateManyWithoutUserNestedInput
   }
 
-  export type OrderUpsertWithoutPaymentInput = {
-    update: XOR<OrderUpdateWithoutPaymentInput, OrderUncheckedUpdateWithoutPaymentInput>
-    create: XOR<OrderCreateWithoutPaymentInput, OrderUncheckedCreateWithoutPaymentInput>
-    where?: OrderWhereInput
-  }
-
-  export type OrderUpdateToOneWithWhereWithoutPaymentInput = {
-    where?: OrderWhereInput
-    data: XOR<OrderUpdateWithoutPaymentInput, OrderUncheckedUpdateWithoutPaymentInput>
-  }
-
-  export type OrderUpdateWithoutPaymentInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    completed?: BoolFieldUpdateOperationsInput | boolean
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    product_orders?: ProductOrderUpdateManyWithoutOrderNestedInput
-    shipping?: ShippingUpdateOneWithoutOrderNestedInput
-    user?: UserUpdateOneRequiredWithoutOrdersNestedInput
-  }
-
-  export type OrderUncheckedUpdateWithoutPaymentInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    user_id?: StringFieldUpdateOperationsInput | string
-    completed?: BoolFieldUpdateOperationsInput | boolean
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    product_orders?: ProductOrderUncheckedUpdateManyWithoutOrderNestedInput
-    shipping?: ShippingUncheckedUpdateOneWithoutOrderNestedInput
-  }
-
   export type UserCreateWithoutShippingsInput = {
     id?: string
     username: string
@@ -32461,18 +32641,18 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     product_orders?: ProductOrderCreateNestedManyWithoutOrderInput
-    payment?: PaymentCreateNestedOneWithoutOrderInput
     user: UserCreateNestedOneWithoutOrdersInput
+    payment: PaymentCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutShippingInput = {
     id?: string
     user_id: string
+    payment_id: string
     completed?: boolean
     created_at?: Date | string
     updated_at?: Date | string
     product_orders?: ProductOrderUncheckedCreateNestedManyWithoutOrderInput
-    payment?: PaymentUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutShippingInput = {
@@ -32550,18 +32730,18 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     product_orders?: ProductOrderUpdateManyWithoutOrderNestedInput
-    payment?: PaymentUpdateOneWithoutOrderNestedInput
     user?: UserUpdateOneRequiredWithoutOrdersNestedInput
+    payment?: PaymentUpdateOneRequiredWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutShippingInput = {
     id?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
+    payment_id?: StringFieldUpdateOperationsInput | string
     completed?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     product_orders?: ProductOrderUncheckedUpdateManyWithoutOrderNestedInput
-    payment?: PaymentUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type ProductCreateWithoutProduct_ordersInput = {
@@ -32636,19 +32816,19 @@ export namespace Prisma {
     completed?: boolean
     created_at?: Date | string
     updated_at?: Date | string
-    payment?: PaymentCreateNestedOneWithoutOrderInput
-    shipping?: ShippingCreateNestedOneWithoutOrderInput
     user: UserCreateNestedOneWithoutOrdersInput
+    shipping: ShippingCreateNestedOneWithoutOrderInput
+    payment: PaymentCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutProduct_ordersInput = {
     id?: string
     user_id: string
+    shipping_id: string
+    payment_id: string
     completed?: boolean
     created_at?: Date | string
     updated_at?: Date | string
-    payment?: PaymentUncheckedCreateNestedOneWithoutOrderInput
-    shipping?: ShippingUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutProduct_ordersInput = {
@@ -32745,24 +32925,28 @@ export namespace Prisma {
     completed?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    payment?: PaymentUpdateOneWithoutOrderNestedInput
-    shipping?: ShippingUpdateOneWithoutOrderNestedInput
     user?: UserUpdateOneRequiredWithoutOrdersNestedInput
+    shipping?: ShippingUpdateOneRequiredWithoutOrderNestedInput
+    payment?: PaymentUpdateOneRequiredWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutProduct_ordersInput = {
     id?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
+    shipping_id?: StringFieldUpdateOperationsInput | string
+    payment_id?: StringFieldUpdateOperationsInput | string
     completed?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    payment?: PaymentUncheckedUpdateOneWithoutOrderNestedInput
-    shipping?: ShippingUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type ProductOrderCreateWithoutOrderInput = {
     id?: string
     quantity: number
+    price: number
+    shipping_price?: number
+    tax_price?: number
+    created_at?: Date | string
     product: ProductCreateNestedOneWithoutProduct_ordersInput
   }
 
@@ -32770,6 +32954,10 @@ export namespace Prisma {
     id?: string
     product_id: string
     quantity: number
+    price: number
+    shipping_price?: number
+    tax_price?: number
+    created_at?: Date | string
   }
 
   export type ProductOrderCreateOrConnectWithoutOrderInput = {
@@ -32780,64 +32968,6 @@ export namespace Prisma {
   export type ProductOrderCreateManyOrderInputEnvelope = {
     data: ProductOrderCreateManyOrderInput | ProductOrderCreateManyOrderInput[]
     skipDuplicates?: boolean
-  }
-
-  export type PaymentCreateWithoutOrderInput = {
-    id?: string
-    shipping_price?: number
-    tax_price?: number
-    discount?: number
-    sub_price: number
-    total_price: number
-    created_at?: Date | string
-    updated_at?: Date | string
-    user: UserCreateNestedOneWithoutPaymentsInput
-  }
-
-  export type PaymentUncheckedCreateWithoutOrderInput = {
-    id?: string
-    user_id: string
-    shipping_price?: number
-    tax_price?: number
-    discount?: number
-    sub_price: number
-    total_price: number
-    created_at?: Date | string
-    updated_at?: Date | string
-  }
-
-  export type PaymentCreateOrConnectWithoutOrderInput = {
-    where: PaymentWhereUniqueInput
-    create: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput>
-  }
-
-  export type ShippingCreateWithoutOrderInput = {
-    id?: string
-    receiver_full_name: string
-    receiver_phone_numbers?: ShippingCreatereceiver_phone_numbersInput | string[]
-    receiver_address: string
-    process?: number
-    received?: Date | string | null
-    created_at: Date | string
-    updated_at: Date | string
-    user: UserCreateNestedOneWithoutShippingsInput
-  }
-
-  export type ShippingUncheckedCreateWithoutOrderInput = {
-    id?: string
-    user_id: string
-    receiver_full_name: string
-    receiver_phone_numbers?: ShippingCreatereceiver_phone_numbersInput | string[]
-    receiver_address: string
-    process?: number
-    received?: Date | string | null
-    created_at: Date | string
-    updated_at: Date | string
-  }
-
-  export type ShippingCreateOrConnectWithoutOrderInput = {
-    where: ShippingWhereUniqueInput
-    create: XOR<ShippingCreateWithoutOrderInput, ShippingUncheckedCreateWithoutOrderInput>
   }
 
   export type UserCreateWithoutOrdersInput = {
@@ -32887,6 +33017,66 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutOrdersInput, UserUncheckedCreateWithoutOrdersInput>
   }
 
+  export type ShippingCreateWithoutOrderInput = {
+    id?: string
+    receiver_fullname: string
+    receiver_phone_numbers?: ShippingCreatereceiver_phone_numbersInput | string[]
+    receiver_address: string
+    process?: number
+    received?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    user: UserCreateNestedOneWithoutShippingsInput
+  }
+
+  export type ShippingUncheckedCreateWithoutOrderInput = {
+    id?: string
+    user_id: string
+    receiver_fullname: string
+    receiver_phone_numbers?: ShippingCreatereceiver_phone_numbersInput | string[]
+    receiver_address: string
+    process?: number
+    received?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type ShippingCreateOrConnectWithoutOrderInput = {
+    where: ShippingWhereUniqueInput
+    create: XOR<ShippingCreateWithoutOrderInput, ShippingUncheckedCreateWithoutOrderInput>
+  }
+
+  export type PaymentCreateWithoutOrderInput = {
+    id?: string
+    shipping_price?: number
+    tax_price?: number
+    discount?: number
+    sub_price: number
+    total_price: number
+    card_type: number
+    card_last_four: string
+    created_at?: Date | string
+    user: UserCreateNestedOneWithoutPaymentsInput
+  }
+
+  export type PaymentUncheckedCreateWithoutOrderInput = {
+    id?: string
+    user_id: string
+    shipping_price?: number
+    tax_price?: number
+    discount?: number
+    sub_price: number
+    total_price: number
+    card_type: number
+    card_last_four: string
+    created_at?: Date | string
+  }
+
+  export type PaymentCreateOrConnectWithoutOrderInput = {
+    where: PaymentWhereUniqueInput
+    create: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput>
+  }
+
   export type ProductOrderUpsertWithWhereUniqueWithoutOrderInput = {
     where: ProductOrderWhereUniqueInput
     update: XOR<ProductOrderUpdateWithoutOrderInput, ProductOrderUncheckedUpdateWithoutOrderInput>
@@ -32901,76 +33091,6 @@ export namespace Prisma {
   export type ProductOrderUpdateManyWithWhereWithoutOrderInput = {
     where: ProductOrderScalarWhereInput
     data: XOR<ProductOrderUpdateManyMutationInput, ProductOrderUncheckedUpdateManyWithoutOrderInput>
-  }
-
-  export type PaymentUpsertWithoutOrderInput = {
-    update: XOR<PaymentUpdateWithoutOrderInput, PaymentUncheckedUpdateWithoutOrderInput>
-    create: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput>
-    where?: PaymentWhereInput
-  }
-
-  export type PaymentUpdateToOneWithWhereWithoutOrderInput = {
-    where?: PaymentWhereInput
-    data: XOR<PaymentUpdateWithoutOrderInput, PaymentUncheckedUpdateWithoutOrderInput>
-  }
-
-  export type PaymentUpdateWithoutOrderInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    shipping_price?: FloatFieldUpdateOperationsInput | number
-    tax_price?: FloatFieldUpdateOperationsInput | number
-    discount?: FloatFieldUpdateOperationsInput | number
-    sub_price?: FloatFieldUpdateOperationsInput | number
-    total_price?: FloatFieldUpdateOperationsInput | number
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutPaymentsNestedInput
-  }
-
-  export type PaymentUncheckedUpdateWithoutOrderInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    user_id?: StringFieldUpdateOperationsInput | string
-    shipping_price?: FloatFieldUpdateOperationsInput | number
-    tax_price?: FloatFieldUpdateOperationsInput | number
-    discount?: FloatFieldUpdateOperationsInput | number
-    sub_price?: FloatFieldUpdateOperationsInput | number
-    total_price?: FloatFieldUpdateOperationsInput | number
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type ShippingUpsertWithoutOrderInput = {
-    update: XOR<ShippingUpdateWithoutOrderInput, ShippingUncheckedUpdateWithoutOrderInput>
-    create: XOR<ShippingCreateWithoutOrderInput, ShippingUncheckedCreateWithoutOrderInput>
-    where?: ShippingWhereInput
-  }
-
-  export type ShippingUpdateToOneWithWhereWithoutOrderInput = {
-    where?: ShippingWhereInput
-    data: XOR<ShippingUpdateWithoutOrderInput, ShippingUncheckedUpdateWithoutOrderInput>
-  }
-
-  export type ShippingUpdateWithoutOrderInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    receiver_full_name?: StringFieldUpdateOperationsInput | string
-    receiver_phone_numbers?: ShippingUpdatereceiver_phone_numbersInput | string[]
-    receiver_address?: StringFieldUpdateOperationsInput | string
-    process?: IntFieldUpdateOperationsInput | number
-    received?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutShippingsNestedInput
-  }
-
-  export type ShippingUncheckedUpdateWithoutOrderInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    user_id?: StringFieldUpdateOperationsInput | string
-    receiver_full_name?: StringFieldUpdateOperationsInput | string
-    receiver_phone_numbers?: ShippingUpdatereceiver_phone_numbersInput | string[]
-    receiver_address?: StringFieldUpdateOperationsInput | string
-    process?: IntFieldUpdateOperationsInput | number
-    received?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserUpsertWithoutOrdersInput = {
@@ -33024,6 +33144,78 @@ export namespace Prisma {
     views?: ViewUncheckedUpdateManyWithoutUserNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput
     shippings?: ShippingUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type ShippingUpsertWithoutOrderInput = {
+    update: XOR<ShippingUpdateWithoutOrderInput, ShippingUncheckedUpdateWithoutOrderInput>
+    create: XOR<ShippingCreateWithoutOrderInput, ShippingUncheckedCreateWithoutOrderInput>
+    where?: ShippingWhereInput
+  }
+
+  export type ShippingUpdateToOneWithWhereWithoutOrderInput = {
+    where?: ShippingWhereInput
+    data: XOR<ShippingUpdateWithoutOrderInput, ShippingUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type ShippingUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    receiver_fullname?: StringFieldUpdateOperationsInput | string
+    receiver_phone_numbers?: ShippingUpdatereceiver_phone_numbersInput | string[]
+    receiver_address?: StringFieldUpdateOperationsInput | string
+    process?: IntFieldUpdateOperationsInput | number
+    received?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutShippingsNestedInput
+  }
+
+  export type ShippingUncheckedUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    receiver_fullname?: StringFieldUpdateOperationsInput | string
+    receiver_phone_numbers?: ShippingUpdatereceiver_phone_numbersInput | string[]
+    receiver_address?: StringFieldUpdateOperationsInput | string
+    process?: IntFieldUpdateOperationsInput | number
+    received?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentUpsertWithoutOrderInput = {
+    update: XOR<PaymentUpdateWithoutOrderInput, PaymentUncheckedUpdateWithoutOrderInput>
+    create: XOR<PaymentCreateWithoutOrderInput, PaymentUncheckedCreateWithoutOrderInput>
+    where?: PaymentWhereInput
+  }
+
+  export type PaymentUpdateToOneWithWhereWithoutOrderInput = {
+    where?: PaymentWhereInput
+    data: XOR<PaymentUpdateWithoutOrderInput, PaymentUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type PaymentUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    shipping_price?: FloatFieldUpdateOperationsInput | number
+    tax_price?: FloatFieldUpdateOperationsInput | number
+    discount?: FloatFieldUpdateOperationsInput | number
+    sub_price?: FloatFieldUpdateOperationsInput | number
+    total_price?: FloatFieldUpdateOperationsInput | number
+    card_type?: IntFieldUpdateOperationsInput | number
+    card_last_four?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutPaymentsNestedInput
+  }
+
+  export type PaymentUncheckedUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    shipping_price?: FloatFieldUpdateOperationsInput | number
+    tax_price?: FloatFieldUpdateOperationsInput | number
+    discount?: FloatFieldUpdateOperationsInput | number
+    sub_price?: FloatFieldUpdateOperationsInput | number
+    total_price?: FloatFieldUpdateOperationsInput | number
+    card_type?: IntFieldUpdateOperationsInput | number
+    card_last_four?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProductCreateWithoutCardsInput = {
@@ -35135,6 +35327,8 @@ export namespace Prisma {
 
   export type OrderCreateManyUserInput = {
     id?: string
+    shipping_id: string
+    payment_id: string
     completed?: boolean
     created_at?: Date | string
     updated_at?: Date | string
@@ -35142,26 +35336,25 @@ export namespace Prisma {
 
   export type PaymentCreateManyUserInput = {
     id?: string
-    order_id: string
     shipping_price?: number
     tax_price?: number
     discount?: number
     sub_price: number
     total_price: number
+    card_type: number
+    card_last_four: string
     created_at?: Date | string
-    updated_at?: Date | string
   }
 
   export type ShippingCreateManyUserInput = {
     id?: string
-    order_id: string
-    receiver_full_name: string
+    receiver_fullname: string
     receiver_phone_numbers?: ShippingCreatereceiver_phone_numbersInput | string[]
     receiver_address: string
     process?: number
     received?: Date | string | null
-    created_at: Date | string
-    updated_at: Date | string
+    created_at?: Date | string
+    updated_at?: Date | string
   }
 
   export type LoveUpdateWithoutUserInput = {
@@ -35230,22 +35423,24 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     product_orders?: ProductOrderUpdateManyWithoutOrderNestedInput
-    payment?: PaymentUpdateOneWithoutOrderNestedInput
-    shipping?: ShippingUpdateOneWithoutOrderNestedInput
+    shipping?: ShippingUpdateOneRequiredWithoutOrderNestedInput
+    payment?: PaymentUpdateOneRequiredWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
+    shipping_id?: StringFieldUpdateOperationsInput | string
+    payment_id?: StringFieldUpdateOperationsInput | string
     completed?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     product_orders?: ProductOrderUncheckedUpdateManyWithoutOrderNestedInput
-    payment?: PaymentUncheckedUpdateOneWithoutOrderNestedInput
-    shipping?: ShippingUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
+    shipping_id?: StringFieldUpdateOperationsInput | string
+    payment_id?: StringFieldUpdateOperationsInput | string
     completed?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -35258,63 +35453,64 @@ export namespace Prisma {
     discount?: FloatFieldUpdateOperationsInput | number
     sub_price?: FloatFieldUpdateOperationsInput | number
     total_price?: FloatFieldUpdateOperationsInput | number
+    card_type?: IntFieldUpdateOperationsInput | number
+    card_last_four?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    order?: OrderUpdateOneRequiredWithoutPaymentNestedInput
+    order?: OrderUpdateOneWithoutPaymentNestedInput
   }
 
   export type PaymentUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    order_id?: StringFieldUpdateOperationsInput | string
     shipping_price?: FloatFieldUpdateOperationsInput | number
     tax_price?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     sub_price?: FloatFieldUpdateOperationsInput | number
     total_price?: FloatFieldUpdateOperationsInput | number
+    card_type?: IntFieldUpdateOperationsInput | number
+    card_last_four?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUncheckedUpdateOneWithoutPaymentNestedInput
   }
 
   export type PaymentUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    order_id?: StringFieldUpdateOperationsInput | string
     shipping_price?: FloatFieldUpdateOperationsInput | number
     tax_price?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     sub_price?: FloatFieldUpdateOperationsInput | number
     total_price?: FloatFieldUpdateOperationsInput | number
+    card_type?: IntFieldUpdateOperationsInput | number
+    card_last_four?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ShippingUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    receiver_full_name?: StringFieldUpdateOperationsInput | string
+    receiver_fullname?: StringFieldUpdateOperationsInput | string
     receiver_phone_numbers?: ShippingUpdatereceiver_phone_numbersInput | string[]
     receiver_address?: StringFieldUpdateOperationsInput | string
     process?: IntFieldUpdateOperationsInput | number
     received?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    order?: OrderUpdateOneRequiredWithoutShippingNestedInput
+    order?: OrderUpdateOneWithoutShippingNestedInput
   }
 
   export type ShippingUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    order_id?: StringFieldUpdateOperationsInput | string
-    receiver_full_name?: StringFieldUpdateOperationsInput | string
+    receiver_fullname?: StringFieldUpdateOperationsInput | string
     receiver_phone_numbers?: ShippingUpdatereceiver_phone_numbersInput | string[]
     receiver_address?: StringFieldUpdateOperationsInput | string
     process?: IntFieldUpdateOperationsInput | number
     received?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUncheckedUpdateOneWithoutShippingNestedInput
   }
 
   export type ShippingUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    order_id?: StringFieldUpdateOperationsInput | string
-    receiver_full_name?: StringFieldUpdateOperationsInput | string
+    receiver_fullname?: StringFieldUpdateOperationsInput | string
     receiver_phone_numbers?: ShippingUpdatereceiver_phone_numbersInput | string[]
     receiver_address?: StringFieldUpdateOperationsInput | string
     process?: IntFieldUpdateOperationsInput | number
@@ -35341,6 +35537,10 @@ export namespace Prisma {
     id?: string
     order_id: string
     quantity: number
+    price: number
+    shipping_price?: number
+    tax_price?: number
+    created_at?: Date | string
   }
 
   export type VideoCreateManyProductInput = {
@@ -35433,6 +35633,10 @@ export namespace Prisma {
   export type ProductOrderUpdateWithoutProductInput = {
     id?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    shipping_price?: FloatFieldUpdateOperationsInput | number
+    tax_price?: FloatFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     order?: OrderUpdateOneRequiredWithoutProduct_ordersNestedInput
   }
 
@@ -35440,12 +35644,20 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     order_id?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    shipping_price?: FloatFieldUpdateOperationsInput | number
+    tax_price?: FloatFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProductOrderUncheckedUpdateManyWithoutProductInput = {
     id?: StringFieldUpdateOperationsInput | string
     order_id?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    shipping_price?: FloatFieldUpdateOperationsInput | number
+    tax_price?: FloatFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CardUpdateWithoutProductsInput = {
@@ -35535,11 +35747,19 @@ export namespace Prisma {
     id?: string
     product_id: string
     quantity: number
+    price: number
+    shipping_price?: number
+    tax_price?: number
+    created_at?: Date | string
   }
 
   export type ProductOrderUpdateWithoutOrderInput = {
     id?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    shipping_price?: FloatFieldUpdateOperationsInput | number
+    tax_price?: FloatFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     product?: ProductUpdateOneRequiredWithoutProduct_ordersNestedInput
   }
 
@@ -35547,12 +35767,20 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     product_id?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    shipping_price?: FloatFieldUpdateOperationsInput | number
+    tax_price?: FloatFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProductOrderUncheckedUpdateManyWithoutOrderInput = {
     id?: StringFieldUpdateOperationsInput | string
     product_id?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    shipping_price?: FloatFieldUpdateOperationsInput | number
+    tax_price?: FloatFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProductUpdateWithoutCardsInput = {

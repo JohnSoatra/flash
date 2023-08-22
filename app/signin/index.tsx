@@ -6,25 +6,25 @@ import { RegisterOptions, useForm } from "react-hook-form";
 import { useState } from "react";
 import Image from "next/image";
 import Error from "@/components/Error";
-import getOneUser from "@/utils/fetch/user/getone";
-import { signIn } from "next-auth/react";
+import signin from "@/utils/fetch/auth/signin";
+import { useRouter } from "next/navigation";
 
 const OPTIONS: { [key: string]: RegisterOptions } = {
-    'username': {
+    'email': {
         required: {
             value: true,
             message: 'is required.'
         },
         minLength: {
-            value: 3,
-            message: 'must be at lease 3 characters.'
+            value: 5,
+            message: 'must be at lease 5 characters.'
         },
         maxLength: {
-            value: 30,
-            message: 'must not be more then 30 characters.'
+            value: 40,
+            message: 'must not be more then 40 characters.'
         },
         pattern: {
-            value: /^(?=.{3,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/,
+            value: /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/,
             message: 'is in wrong format.'
         }
     },
@@ -45,10 +45,8 @@ const OPTIONS: { [key: string]: RegisterOptions } = {
 }
 
 type Fields = {
-    condition: boolean,
     email: string,
     password: string,
-    username: string
 }
    
 const Index = () => {
@@ -60,40 +58,36 @@ const Index = () => {
         formState: { errors }
     } = useForm();
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     const onSubmit = async (data: any) => {
-        clearErrors('signin');
+        clearErrors(['email', 'password', 'signin']);
         setLoading(true);
 
         const dataField = data as Fields;
+        const email = dataField.email;
+        const password = dataField.password;
 
-        const userRes = await getOneUser({
-            username: dataField.username,
-            password: dataField.password
+        const result = await signin({
+            body: {
+                email,
+                password,
+            },
+            signal: null
         });
 
-        if (userRes?.error) {
-            
-            setError('signin', { message: 'Input wrong information.' });
-
-        } else if (userRes?.user) {
-
-            const res = await signIn(
-                'credentials',
+        if (result) {
+            router.push(ROUTE.HOME);
+        } else {
+            setError(
+                'signin',
                 {
-                    username: dataField.username,
-                    password: dataField.password,
-                    callbackUrl: ROUTE.HOME,
+                    message: 'Input wrong information.'
                 }
             );
-
-            if (res?.error) {
-                setError('signin', { message: 'There are problem with signing in.' });
-            }
-
         }
 
-        setLoading(false);        
+        setLoading(false);
     };
 
     return (
@@ -131,19 +125,19 @@ const Index = () => {
                 
                             <div>
                                 <div className="mb-2 text-sm font-medium flex items-start ">
-                                    <label htmlFor="username">
-                                        Username&nbsp;
+                                    <label htmlFor="email">
+                                        Email&nbsp;
                                     </label>
                                     {
-                                        errors['username'] &&
-                                        <Error message={String(errors['username']['message'])} />
+                                        errors['email'] &&
+                                        <Error message={String(errors['email']['message'])} />
                                     }
                                 </div>
                                 <input
                                     type="text"
-                                    id="username"
+                                    id="email"
                                     className="w-full block p-2.5 transition text-sm bg-transparent border border-midmain rounded-lg focus:border-blue-500"
-                                    { ...register('username', OPTIONS['username']) }
+                                    { ...register('email', OPTIONS['email']) }
                                 />
                             </div>
 

@@ -17,7 +17,7 @@ const userSlice = createSlice({
     clearUser: (state: UserState) => {
         state.data = null;
     },
-    setUser: (state: UserState, user: PayloadAction<UserC>) => {
+    setUser: (state: UserState, user: PayloadAction<UserC|null>) => {
         state.data = user.payload;
     },
     updateUser: (

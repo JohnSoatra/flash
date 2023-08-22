@@ -1,18 +1,23 @@
-import clear from "@/utils/string/clear";
 import { GetManyOrders } from "@/typings";
 import { GetManyOrdersRouter } from "@/prisma-types/typings";
+import fetchHandler from "../handler";
 
-async function getManyOrders(args: GetManyOrders): Promise<GetManyOrdersRouter> {
-    const res = await fetch(clear(`
-        ${process.env.GATEWAY_URL}order/getmany?
-            limit=${args.limit || ''}&
-            sort_by=${args.sortBy || ''}&
-            order_by=${args.orderBy || ''}`
-    ), {
-        signal: args.signal,
-        credentials: 'include'
+async function getManyOrders({
+    signal,
+    query,
+    onData,
+    onError,
+}: GetManyOrders): Promise<GetManyOrdersRouter> {
+    const response = await fetchHandler({
+        method: 'get',
+        url: '/order/getmany',
+        signal,
+        query,
+        onData,
+        onError
     });
-    const json = await res.json();
+
+    const json = await response.json();
 
     return json;
 }

@@ -1,23 +1,23 @@
 import { DeleteCookieRouter } from "@/prisma-types/typings";
 import { DeleteCookie } from "@/typings";
-import clear from "@/utils/string/clear";
+import fetchHandler from "../handler";
 
-async function deleteCookie(args: DeleteCookie): Promise<DeleteCookieRouter> {
-    const res = await fetch(clear(`
-        ${process.env.GATEWAY_URL}/cookie/delete
-    `), {
-        signal: args.signal,
-        credentials: 'include',
+async function deleteCookie({
+    signal,
+    body,
+    onData,
+    onError,
+}: DeleteCookie): Promise<DeleteCookieRouter> {
+    const response = await fetchHandler({
         method: 'post',
-        headers: {
-            'content-type': 'application/json'
-        },
-        body: JSON.stringify({
-            name: args.name
-        })
+        url: '/cookie/delete',
+        signal,
+        body,
+        onData,
+        onError
     });
 
-    const json = await res.json();
+    const json = await response.json();
 
     return json;
 }

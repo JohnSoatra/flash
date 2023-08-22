@@ -1,23 +1,36 @@
 import { SigninRouter } from "@/prisma-types/typings";
 import { Signin } from "@/typings";
-import networkEncrypt from "@/utils/crypto/encrypt/network";
-import clear from "@/utils/string/clear";
+import fetchHandler from "../handler";
+import store from "@/redux/store";
+import { setUser } from "@/redux/user";
+import getOneUser from "../user/getone";
 
-async function signin(args: Signin): Promise<SigninRouter> {
-    const res = await fetch(clear(`${process.env.GATEWAY_URL}/auth/signin`), {
-        signal: args.signal,
-        credentials: 'include',
+async function signin({
+    signal,
+    body,
+    onData,
+    onError,
+}: Signin): Promise<SigninRouter> {
+    const response = await fetchHandler({
         method: 'post',
-        headers: {
-            'content-type': 'application/json'
-        },
-        body: JSON.stringify({
-            email: args.email,
-            password: networkEncrypt(args.password)
-        })
+        url: '/auth/signin',
+        signal,
+        body,
+        onData,
+        onError
     });
 
-    const json = await res.json();
+    const json = await response.json();
+
+    if (json) {
+        const response = await getOneUser({
+            signal,
+            onData,
+            onError
+        });
+
+        store.dispatch(setUser(response));
+    }
 
     return json;
 }

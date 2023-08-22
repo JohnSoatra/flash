@@ -1,24 +1,23 @@
 import { UpdateoneGeneralRouter } from "@/prisma-types/typings";
-import { UpdateGeneral } from "@/typings";
-import clear from "@/utils/string/clear";
+import { UpdateContact } from "@/typings";
+import fetchHandler from "../../handler";
 
-async function updateContact(args: UpdateGeneral): Promise<UpdateoneGeneralRouter> {
-    const res = await fetch(clear(`
-        ${process.env.GATEWAY_URL}/user/updateone/contact
-    `), {
-        signal: args.signal,
-        credentials: 'include',
+async function updateContact({
+    signal,
+    body,
+    onData,
+    onError,
+}: UpdateContact): Promise<UpdateoneGeneralRouter> {
+    const response = await fetchHandler({
         method: 'post',
-        headers: {
-            'content-type': 'application/json'
-        },
-        body: JSON.stringify({
-            'image_url': args.imageUrl,
-            'username': args.username,
-        })
+        url: '/user/updateone/contact',
+        signal,
+        body,
+        onData,
+        onError
     });
 
-    const json = await res.json();
+    const json = await response.json();
 
     return json;
 }

@@ -18,15 +18,15 @@ const cookieSlice = createSlice({
   reducers: {
     changeVolume: (
         state: CookieState,
-        action: PayloadAction<{volume: number}>
+        action: PayloadAction<number>
     ) => {
-        state.volume = action.payload.volume;
+        state.volume = action.payload;
     },
     changeMuted: (
         state: CookieState,
-        action: PayloadAction<{muted: boolean}>
+        action: PayloadAction<boolean>
     ) => {
-        state.muted = action.payload.muted;
+        state.muted = action.payload;
     },
   },
 });

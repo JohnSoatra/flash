@@ -1,11 +1,11 @@
-import { User } from '@/prisma-types/index';
 import React from 'react';
 import Error from "@/components/Error";
 import { Class } from './var';
 import { FieldErrors, FieldValues, RegisterOptions, UseFormRegister } from 'react-hook-form';
+import { UserC } from '@/prisma-types/typings';
 
 type Props = {
-    user: User,
+    user: UserC,
     register: UseFormRegister<FieldValues>,
     errors: FieldErrors<FieldValues>,
     options: {[key: string]: RegisterOptions},

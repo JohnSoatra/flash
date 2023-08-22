@@ -1,16 +1,21 @@
 import { GetAllModels } from "@/typings";
-import clear from "@/utils/string/clear";
 import { GetallModelsRouter } from "@/prisma-types/typings";
+import fetchHandler from "../handler";
 
-async function getAllModels(args?: GetAllModels): Promise<GetallModelsRouter> {
-    const res = await fetch(clear(`
-        ${process.env.GATEWAY_URL}/model/getall
-    `), {
-        signal: args?.signal,
-        credentials: 'include'
+async function getAllModels({
+    signal,
+    onData,
+    onError,
+}: GetAllModels): Promise<GetallModelsRouter> {
+    const response = await fetchHandler({
+        method: 'get',
+        url: '/model/getall',
+        signal,
+        onData,
+        onError
     });
 
-    const json = await res.json();
+    const json = await response.json();
 
     return json;
 }

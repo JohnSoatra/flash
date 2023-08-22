@@ -1,7 +1,7 @@
-import { UseFetchLazy, PropUseFetch, PropUseFetchNoArgs, UseFetch } from "@/typings";
+import { UseFetchLazy, PropUseFetch, PropUseFetchNoArgs, UseFetch, ArgsWithContent, WithBody, WithQuery, FetchOptions } from "@/typings";
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 
-function useFetch<T=any, K=any>({
+function useFetch<T, K extends (WithQuery | WithBody)>({
     func,
     args
 }: PropUseFetch<T, K> | PropUseFetchNoArgs<T>
@@ -19,7 +19,7 @@ function useFetch<T=any, K=any>({
         func({
             ...(args || {}),
             signal: controllerRef.current.signal,
-        })
+        } as ArgsWithContent<K>)
             .then(res => {
                 controllerRef.current.abort();
                 setResult(res);
@@ -37,10 +37,11 @@ function useFetch<T=any, K=any>({
     };
 }
 
-function useFetchLazy<T=any, K=any>({
+function useFetchLazy<T, K extends (WithQuery | WithBody)>({
     func,
     args
-}: PropUseFetch<T, K> | PropUseFetchNoArgs<T>): UseFetchLazy<T, K> {
+}: PropUseFetch<T, K> | PropUseFetchNoArgs<T>
+): UseFetchLazy<T, K> {
     const [ fetching, setFetching ] = useState(true);
     const [result, setResult] = useState(undefined as T|null|undefined);
     const controllerRef: MutableRefObject<AbortController> = useRef(new AbortController());
@@ -55,7 +56,7 @@ function useFetchLazy<T=any, K=any>({
             ...(args || {}),
             ...(_args || {}),
             signal: controllerRef.current.signal
-        })
+        } as ArgsWithContent<K>)
             .then(res => {
                 setResult(res);
             })
@@ -67,7 +68,7 @@ function useFetchLazy<T=any, K=any>({
     }
 
     useEffect(() => {
-        refetch(args);
+        refetch(args as Partial<K>|undefined);
     }, []);
 
     return ({

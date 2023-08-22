@@ -24,7 +24,9 @@ const InputSearch = () => {
     const {result: suggestions} = useFetch({
         func: getManyProductNames,
         args: {
-            string: requestString
+            query: {
+                string: requestString
+            }
         }
     });
 

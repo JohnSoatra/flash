@@ -1,10 +1,9 @@
 import './globals.css'
 import { Metadata } from 'next'
-import SessionProvider from '@/components/provider/Session';
 import { Toaster } from 'react-hot-toast';
-import { Provider } from '@/redux/provider';
+import { ReduxProvider } from '@/redux/provider';
 import Head from 'next/head';
-import Compose from '@/components/template/compose/Compose';
+import Composer from '@/components/template/composer/Composer';
 
 type Prop = { children: React.ReactNode }
 
@@ -20,14 +19,12 @@ const RootLayout = ({ children }: Prop) => {
         <link ref={'icon'} href="/favicon.ico"></link>
       </Head>
       <body className='bg-lightmain'>
-        <SessionProvider>
-          <Provider>
+          <ReduxProvider>
             <Toaster />
-            <Compose>
+            <Composer>
               {children}
-            </Compose>
-          </Provider>
-        </SessionProvider>
+            </Composer>
+          </ReduxProvider>
       </body>
     </html>
   )

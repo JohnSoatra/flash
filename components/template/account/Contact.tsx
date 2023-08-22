@@ -1,14 +1,14 @@
-import { User } from '@/prisma-types/index';
 import Error from "@/components/Error";
 import React from 'react';
 import { FieldErrors, FieldValues, RegisterOptions, UseFormRegister } from 'react-hook-form';
 import { Class } from './var';
+import { UserC } from '@/prisma-types/typings';
 
 type Props = {
+    user: UserC,
     register: UseFormRegister<FieldValues>,
     errors: FieldErrors<FieldValues>,
     options: {[key: string]: RegisterOptions},
-    user: User
 }
 
 const ContactAccount = ({

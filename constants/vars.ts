@@ -1,6 +1,5 @@
 import { ReleasedAt, ReloadReason } from "@/typings";
 import path from 'path';
-import store from "@/redux/store";
 
 const rootPath = path.dirname(__dirname);
 
@@ -78,10 +77,6 @@ const VARS = {
     DURATION: {
         DBCLICK: 200,
         HIDE_CONTROL: 2500
-    },
-    ENV: {
-        networkSecret: '',
-        gate_url: ''
     }
 }
 

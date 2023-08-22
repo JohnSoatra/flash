@@ -1,16 +1,14 @@
 'use client';
-import Love from '@/components/Favorite';
+import Love from '@/components/Love';
 import ShippingPrice from '@/components/ShippingPrice';
 import Slider from '@/components/template/carousel/Slider';
 import RelatedProducts from '@/components/template/product/Related';
 import VideoList from '@/components/template/product/VideoList';
 import { ProductX } from '@/typings';
-import { useSession } from 'next-auth/react';
 import { MDXRemote } from 'next-mdx-remote';
 import Image from 'next/image';
 
 type Prop = {
-  csrfToken: string,
   product: ProductX,
   mdxSource: any
 }
@@ -54,11 +52,7 @@ const Index = ({
       
               <div className='mt-5 space-y-1'>
                 <ShippingPrice shippingPrice={product.shipping_price} />
-                <Love
-                  loved={product.favorited}
-                  productId={product.id}
-                  count={product.love_count}
-                />
+                <Love product={product} />
               </div>
             </div>
             <div>

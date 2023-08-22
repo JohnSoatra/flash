@@ -1,25 +1,57 @@
 import { User, Product, Rate, Order, CreditCard, CreditCardType , ProductOrder, Payment, Shipping, Card, Image, Video, Poster } from "@/prisma-types/index";
 import VARS from "@/constants/vars";
 import { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/headers";
-
+import { PhoneNumbers, ProductOrders } from "./prisma-types/typings";
 
 // Fetch Types
 interface FetchOptions {
-  signal?: AbortSignal
+  signal: AbortSignal|null,
+  onError?: (response: Response) => void,
+  onData?: (response: Response) => void,
 }
 
-interface FetchPost extends FetchOptions {
-  csrfToken: string
+// -> MyFetch
+interface Json {
+  [key: string]: any
 }
 
-interface GetAllcount {
-  releasedAt?: ReleasedAt
+interface MyFetchPropGet {
+    method: 'get',
+    url: string,
+    signal: AbortSignal|null,
+    body?: Json,
+    query?: Json,
 }
 
-interface BestChoiceProducts {
-  skip?: number,
-  limit?: number,
-  releasedAt?: ReleasedAt
+interface MyFetchPropPost {
+    method: 'post',
+    url: string,
+    signal: AbortSignal|null,
+    body: Json,
+    query?: Json,
+}
+
+type MyFetchProp = MyFetchPropGet|MyFetchPropPost;
+
+interface WithQuery {
+  query: Json
+}
+
+interface WithBody {
+  body: Json
+}
+
+interface GetAllcount extends FetchOptions {
+  query: {
+    released_at?: ReleasedAt
+  }
+}
+
+interface BestChoiceProducts extends FetchOptions {
+  query: GetAllcount['query'] & {
+    skip?: number,
+    limit?: number,
+  }
 }
 
 interface Fetch<T> {
@@ -28,34 +60,68 @@ interface Fetch<T> {
 }
 
 type Signin = FetchOptions & {
-  email: string,
-  password: string
+  body: {
+    email: string,
+    password: string
+  }
 }
 
 type Signout = FetchOptions
 
 type Signup = FetchOptions & {
-  email: string,
-  password: string
+  body: {
+    email: string,
+    email_token: string,
+    password: string
+  }
 }
 
-type GetOneCreditCard = FetchOptions
+type SendEmailVerifyEmail = FetchOptions & {
+  body: {
+    email: string
+  }
+}
+
+type VerifyTokenEmail = FetchOptions & {
+  body: {
+    email: string,
+    token: string
+  }
+}
+
+type VerifyTokenRequest = FetchOptions & {
+  body: {
+    email: string,
+    token: string
+  }
+}
+
+type SendEmailVerifyRequest = FetchOptions & {
+  body: {
+    email: string
+  }
+}
+
+type GetOneCreditCard = FetchOptions;
 
 type GetAllcountSearchProducts = FetchOptions & {
-  string: string,
-  releasedAt?: ReleasedAt
+  query: GetAllcount['query'] & {
+    string: string
+  }
 }
 
 type GetManySearchProduct = FetchOptions & {
-  string: string,
-  skip?: number,
-  limit?: number,
-  releasedAt?: ReleasedAt
+  query: GetAllcountSearchProducts['query'] & {
+    skip?: number,
+    limit?: number,
+  }
 }
 
 type GetManyProductNames = FetchOptions & {
-  string: string,
-  limit?: string,
+  query: {
+    string: string,
+    limit?: string,
+  }
 }
 
 type GetManyNewProducts = FetchOptions & BestChoiceProducts;
@@ -63,116 +129,151 @@ type GetManyToprateProducts = FetchOptions & BestChoiceProducts;
 type GetManyPopularProducts = FetchOptions & BestChoiceProducts;
 
 type GetManyRelatedProducts = FetchOptions & {
-  productId: string,
-  limit?: string
+  query: {
+    product_id: string,
+    limit?: string
+  }
 }
 
 type GetOneProduct = FetchOptions & {
-  id: string
+  query: {
+    id: string
+  }
 }
 
 type GetOneCsrf = FetchOptions;
 
-type GetAllcountNewProducts = FetchOptions & GetAllcount
-type GetAllcountPopularProducts = FetchOptions & GetAllcount
-type GetAllcountToprateProducts = FetchOptions & GetAllcount
+type GetAllcountNewProducts = FetchOptions & GetAllcount;
+type GetAllcountPopularProducts = FetchOptions & GetAllcount;
+type GetAllcountToprateProducts = FetchOptions & GetAllcount;
 
-type GetAllBrands = FetchOptions
-type GetAllCategories = FetchOptions
-type GetAllModels = FetchOptions
+type GetAllBrands = FetchOptions;
+type GetAllCategories = FetchOptions;
+type GetAllCollections = FetchOptions;
+type GetAllModels = FetchOptions;
 
 type GetOneCard = FetchOptions;
 
 type GetOneUser = FetchOptions;
 
 type GetManyOrders = FetchOptions & {
-  limit?: number,
-  sortBy?: string,
-  orderBy?: string,
-}
-
-type PostOneResetCode = FetchOptions & {
-  email: string,
-  code: string,
-  csrfToken: string
-}
-type PostOneUser = FetchOptions & {
-  username: string,
-  email: string,
-  password: string,
-  csrfToken: string,
-}
-type PostOneVerifyToken = FetchOptions & {
-  email: string,
-  csrfToken: string
+  query: {
+    limit?: number,
+    sort_by?: string,
+    order_by?: string,
+  }
 }
 
 type ToggleLove = FetchOptions & {
-  productId: string,
-  prevFavorited?: boolean
+  body: {
+    product_id: string,
+    prev_loved?: boolean
+  }
 }
 
+type CreateOneOrder = FetchOptions & {
+  body: {
+    product_orders: ProductOrders,
+    receiver_fullname: string,
+    receiver_address: string,
+    receiver_phone_numbers: PhoneNumbers
+  }
+}
+
+type ResetPassword = FetchOptions & {
+  body: {
+    email: string,
+    email_token: string,
+    new_password: string
+  }
+};
 
 interface CreditCardInfo {
-  cardNumber: string;
-  expiredMonth: string;
-  expiredYear: string;
+  card_number: string;
+  expired_month: string;
+  expired_year: string;
   cvc: string;
 }
 
 type CreateBilling = FetchOptions & {
-  password: string
-} & {
-  [P in keyof CreditCardInfo]: CreditCardInfo[P]
+  body: {
+    password: string
+  } & {
+    [P in keyof CreditCardInfo]: CreditCardInfo[P]
+  }
 }
 
 type UpdateBilling = FetchOptions & {
-  password: string
-} & {
-  [P in keyof CreditCardInfo]?: CreditCardInfo[P]
+  body: {
+    password: string
+  } & {
+    [P in keyof CreditCardInfo]?: CreditCardInfo[P]
+  }
 }
 
-type UpdateGeneral = FetchPost & {
-  imageUrl: string?;
-  username: string?;
-  fullname: string?,
-  address: string?
+type UpdateGeneral = FetchOptions & {
+  body: {
+    image_url: string?;
+    username: string?;
+    fullname: string?,
+    address: string?
+  }
 }
 
 type UpdateContact = FetchOptions & {
-  password: string?,
-  
+  body : {
+    password: string,
+    phone_number: string?,
+    email: string?,
+    email_token: string?
+  }
+}
+
+type UpdateSecurity = FetchOptions & {
+  body: {
+    old_password: string,
+    new_password: string,
+  }
 }
 
 type GetCookie = FetchOptions & {
-  name: string,
+  query: {
+    name: string,
+  }
 }
 
 type SetCookie = FetchOptions & {
-  name: string,
-  value: string
+  body: {
+    name: string,
+    value: string
+  }
 }
 
 
 type DeleteCookie = FetchOptions & {
-  name: string
+  body: {
+    name: string
+  }
 }
-
 
 // -------------------
-type PropUseFetch<Type=any, KType=any> = {
-  func: (args: KType & FetchOptions) => Promise<Type|null>,
-  args: KType & FetchOptions
+type ArgsWithContent<T extends (WithQuery | WithBody)> = T & FetchOptions;
+type ArgsNoContent = FetchOptions;
+
+type PropUseFetch<T, K extends (WithQuery | WithBody)> = {
+  func: (args: ArgsWithContent<K>) => Promise<T|null>,
+  args: Omit<ArgsWithContent<K>, 'signal'>
 }
 
-type PropUseFetchNoArgs<Type=any> = {
-  func: () => Promise<Type|null>,
-  args?: any
+type PropUseFetchNoArgs<T> = {
+  func: (args: ArgsNoContent) => Promise<T|null>,
+  args?: Omit<ArgsNoContent, 'signal'>
 }
 
 type UseFetch<T> = Fetch<T>;
-type UseFetchLazy<T, K> = Fetch<T> & {
-  refetch: (args?: Partial<K & FetchOptions>) => void
+
+type UseFetchLazy<T, K extends (WithQuery | WithBody)> = Fetch<T> & {
+  refetch: (args?: Partial<K>) => void
 }
 
 type ReloadReason = 'Change string'|'Increase skip';
@@ -262,17 +363,3 @@ type ImageProp = {
 type Many = {
   allCount: number
 }
-
-// Crypto
-// type Encrypt = 'raw'|'hash'
-// type SecretField =
-//   'user.username'|
-//   'user.email'|
-//   'user.password'|
-//   'user.fullname'|
-//   'user.phone_number'|
-//   'user.address'|
-
-//   'creditcard.number'|
-//   'creditcard.last_four'|
-//   'creditcard.cvc'

@@ -1,26 +1,22 @@
 import React, { useState } from 'react';
 import Error from "@/components/Error";
-import { CreditCard, User } from '@/prisma-types/index';
 import CardIcon from '@/components/template/account/CardIcon';
 import { PencilSquareIcon, PlusIcon } from '@heroicons/react/24/solid';
 import { Class } from './var';
 import { FieldErrors, FieldValues, RegisterOptions, UseFormRegister } from 'react-hook-form';
-import getCurrentMonth from '@/utils/date/get_month';
-import getNext5Year from '@/utils/date/get_next5year';
 import formatCardNumber from '@/utils/number/format';
 import formatExpires from '@/utils/number/expires';
 import formatCvc from '@/utils/number/cvc';
+import { CreditCardC } from '@/prisma-types/typings';
 
 type Props = {
-    user: User,
-    creditCard: CreditCard|null,
+    creditCard: CreditCardC|null,
     register: UseFormRegister<FieldValues>,
     errors: FieldErrors<FieldValues>,
     options: {[key: string]: RegisterOptions},
 }
 
 const BillingAccount = ({
-    user,
     creditCard,
     errors,
     register,
