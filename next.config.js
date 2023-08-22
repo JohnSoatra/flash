@@ -1,17 +1,14 @@
 
 const ContentSecurityPolicy = `
-    default-src 'self' flash.soatra.com localhost;
-    script-src 'self' 'unsafe-eval' 'unsafe-inline' cdn.flash-insights.soatra.com flash.soatra.com;
-    style-src 'self' 'unsafe-inline';
+    default-src 'self';
+    script-src 'self';
+    style-src 'self';
     img-src * blob: data:;
-    media-src localhost:9999;
+    media-src localhost:9997;
     connect-src *;
     font-src 'self';
 `.replace(/\n/g, '');
 
-
-// origin-when-cross-origin
- 
 const securityHeaders = [
     { 
         key: 'Content-Security-Policy',
@@ -42,6 +39,7 @@ const securityHeaders = [
         value: 'camera=(), microphone=(), geolocation=()'
     },
 ];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {

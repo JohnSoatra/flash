@@ -1,5 +1,4 @@
 import { Brand, Card, Category, Collection, Image, Model, Order, Payment, Poster, Product, ProductOrder, Shipping, User, Video } from "./index";
-import { JwtPayload } from "jsonwebtoken";
 
 // XType
 // -> Product
@@ -69,14 +68,6 @@ type RefreshArgs = {
     userId: string,
     visitorId: string,
     browserId: string
-}
-
-type AccessContent = JwtPayload & {
-    [P in keyof AccessArgs]: AccessArgs[P]
-}
-
-type RefreshContent = JwtPayload & {
-    [P in keyof RefreshArgs]
 }
 
 

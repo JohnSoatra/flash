@@ -16,7 +16,8 @@ const Index = ({
     pc,
     smartphone,
     earphone,
-}: Props) => {
+}: Props
+) => {
     return (
         <div className="max-w-5xl mx-auto">
             <div>
@@ -42,7 +43,6 @@ const Index = ({
             <section>
                 <BuyNow />
             </section>
-
         </div>
   )
 }
