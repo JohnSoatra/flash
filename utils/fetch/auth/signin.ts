@@ -4,6 +4,7 @@ import fetchHandler from "../handler";
 import store from "@/redux/store";
 import { setUser } from "@/redux/user";
 import getOneUser from "../user/getone";
+import getJson from "@/utils/json/get";
 
 async function signin({
     signal,
@@ -20,7 +21,7 @@ async function signin({
         onError
     });
 
-    const json = await response.json();
+    const json = await getJson(response);
 
     if (json) {
         const response = await getOneUser({

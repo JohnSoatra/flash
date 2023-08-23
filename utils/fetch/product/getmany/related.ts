@@ -1,6 +1,7 @@
 import { GetmanyRelatedProductsRouter } from "@/prisma-types/typings";
 import { GetManyRelatedProducts } from "@/typings";
 import fetchHandler from "../../handler";
+import getJson from "@/utils/json/get";
 
 async function getManyRelatedProducts({
     signal,
@@ -17,7 +18,7 @@ async function getManyRelatedProducts({
         onError
     });
 
-    const json = await response.json();
+    const json = await getJson(response);
 
     return json;
 }

@@ -1,6 +1,7 @@
 import { GetManyOrders } from "@/typings";
 import { GetManyOrdersRouter } from "@/prisma-types/typings";
 import fetchHandler from "../handler";
+import getJson from "@/utils/json/get";
 
 async function getManyOrders({
     signal,
@@ -17,7 +18,7 @@ async function getManyOrders({
         onError
     });
 
-    const json = await response.json();
+    const json = await getJson(response);
 
     return json;
 }

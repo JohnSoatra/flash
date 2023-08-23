@@ -1,6 +1,7 @@
 import { GetmanyPopularProductsRouter } from "@/prisma-types/typings";
 import { GetManyPopularProducts } from "@/typings";
 import fetchHandler from "@/utils/fetch/handler";
+import getJson from "@/utils/json/get";
 
 async function getManyPopularProducts({
     signal,
@@ -17,7 +18,7 @@ async function getManyPopularProducts({
         onError
     });
 
-    const json = await response.json();
+    const json = await getJson(response);
 
     return json;
 }

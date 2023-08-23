@@ -5,3 +5,5 @@ function getGatewayUrl() {
 
     throw Error('Env file has no NEXT_PUBLIC_GATEWAY_URL.');
 }
+
+export default getGatewayUrl;

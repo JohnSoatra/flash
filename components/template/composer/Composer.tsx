@@ -1,13 +1,15 @@
-import initializeJob from "@/utils/compose/initialize";
 import Index from "./Index";
+import Initializer from "./Initializer";
 
-const Composer = async ({ children }: { children: React.ReactNode }) => {
-    await initializeJob();
-
+const Composer = ({ children }: { children: React.ReactNode }) => {
     return (
-        <Index>
+        <div>
+            <Initializer />
             {children}
-        </Index>
+        </div>
+        // <Index>
+        //     {children}
+        // </Index>
     )
 }
 

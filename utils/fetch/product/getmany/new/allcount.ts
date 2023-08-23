@@ -1,6 +1,7 @@
 import { GetmanyNewProductsAllCountRouter } from "@/prisma-types/typings";
 import { GetAllcountNewProducts } from "@/typings";
 import fetchHandler from "@/utils/fetch/handler";
+import getJson from "@/utils/json/get";
 
 async function getAllcountNewProducts({
     signal,
@@ -17,7 +18,7 @@ async function getAllcountNewProducts({
         onError
     });
 
-    const json = await response.json();
+    const json = await getJson(response);
 
     return json;
 }

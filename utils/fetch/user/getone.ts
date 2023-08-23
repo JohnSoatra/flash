@@ -1,6 +1,7 @@
 import { GetoneUserRouter } from "@/prisma-types/typings";
 import { GetOneUser } from "@/typings";
 import fetchHandler from "@/utils/fetch/handler";
+import getJson from "@/utils/json/get";
 
 async function getOneUser({
     signal,
@@ -15,7 +16,7 @@ async function getOneUser({
         onError
     });
 
-    const json = await response.json();
+    const json = await getJson(response);
 
     return json;
 }

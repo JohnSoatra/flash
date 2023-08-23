@@ -1,6 +1,7 @@
 import { SendEmailVerifyEmailRouter } from "@/prisma-types/typings";
 import { SendEmailVerifyEmail } from "@/typings";
 import fetchHandler from "../../handler";
+import getJson from "@/utils/json/get";
 
 async function sendEmailVerifyEmail({
     signal,
@@ -17,7 +18,7 @@ async function sendEmailVerifyEmail({
         onError
     });
 
-    const json = await response.json();
+    const json = await getJson(response);
 
     return json;
 }

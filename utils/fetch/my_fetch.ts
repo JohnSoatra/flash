@@ -1,8 +1,9 @@
 import { Json, MyFetchProp } from "@/typings";
-import cleanUrl from "@/utils/url/clean";
-import getBrowserId from "@/utils/browser/get_id";
-import getBrowserFingerprint from 'get-browser-fingerprint';
 import store from "@/redux/store";
+import cleanUrl from "@/utils/url/clean";
+import getBrowserId from "@/utils/browser/get_browser_id";
+import getVisitorId from "@/utils/browser/get_visitor_id";
+import getGatewayUrl from "@/utils/env/public/gateway_url";
 
 function httpChecker(url: string): string {
     if (url.startsWith('http://') || url.startsWith('https://')) {
@@ -52,7 +53,7 @@ async function myFetch({
             headers: {
                 'content-type': 'application/json',
                 'browser-id': await getBrowserId(),
-                'visitor-id': getBrowserFingerprint(),
+                'visitor-id': await getVisitorId(),
                 ...(
                     method === 'post' ? {
                         'csrf-token': store.getState().csrf.value

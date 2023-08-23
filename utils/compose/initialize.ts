@@ -7,11 +7,12 @@ import { changeMuted, changeVolume } from "@/redux/cookie";
 import { isNumber } from "../number/number";
 import { setUser } from "@/redux/user";
 
-async function initializeJob() {
+async function initialize() {
     const dispatch = store.dispatch;
     const csrfToken = await getOneCsrf({
       signal: null
     });
+
     const muted = await getCookie({
       query: {
         name: 'muted'
@@ -27,11 +28,12 @@ async function initializeJob() {
     const user = await getOneUser({
       signal: null
     });
-  
+
+    dispatch(setCsrf(csrfToken));
+
     dispatch(changeMuted(muted ? (muted === 'true') : false));
     dispatch(changeVolume((volume && isNumber(volume)) ? +volume : 1));
-    dispatch(setCsrf(csrfToken));
     dispatch(setUser(user));
 }
 
-export default initializeJob;
+export default initialize;

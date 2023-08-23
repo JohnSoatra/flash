@@ -1,6 +1,7 @@
 import { UpdateoneGeneralRouter } from "@/prisma-types/typings";
 import { UpdateGeneral } from "@/typings";
 import fetchHandler from "../../handler";
+import getJson from "@/utils/json/get";
 
 async function updateGeneral({
     signal,
@@ -17,7 +18,7 @@ async function updateGeneral({
         onError
     });
 
-    const json = await response.json();
+    const json = await getJson(response);
 
     return json;
 }

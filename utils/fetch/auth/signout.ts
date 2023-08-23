@@ -3,6 +3,7 @@ import { Signout } from "@/typings";
 import fetchHandler from "../handler";
 import store from "@/redux/store";
 import { setUser } from "@/redux/user";
+import getJson from "@/utils/json/get";
 
 async function signout({
     signal,
@@ -17,7 +18,7 @@ async function signout({
         onError
     });
 
-    const json = await response.json();
+    const json = await getJson(response);
 
     if (json) {
         store.dispatch(setUser(null));

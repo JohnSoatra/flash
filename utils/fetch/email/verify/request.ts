@@ -1,6 +1,7 @@
 import { VerifyTokenRequestRouter } from "@/prisma-types/typings";
 import { VerifyTokenRequest } from "@/typings";
 import fetchHandler from "../../handler";
+import getJson from "@/utils/json/get";
 
 async function verifyRequestToken({
     signal,
@@ -17,7 +18,7 @@ async function verifyRequestToken({
         onError
     });
 
-    const json = await response.json();
+    const json = await getJson(response);
 
     return json;
 }

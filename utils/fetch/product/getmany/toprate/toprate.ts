@@ -1,6 +1,7 @@
 import { GetmanyToprateProductsRouter } from "@/prisma-types/typings";
 import { GetManyToprateProducts } from "@/typings";
 import fetchHandler from "@/utils/fetch/handler";
+import getJson from "@/utils/json/get";
 
 async function getManyToprateProducts({
     signal,
@@ -17,7 +18,7 @@ async function getManyToprateProducts({
         onError
     });
 
-    const json = await response.json();
+    const json = await getJson(response);
 
     return json;
 }

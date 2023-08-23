@@ -1,6 +1,7 @@
 import { SetCookieRouter } from "@/prisma-types/typings";
 import { SetCookie } from "@/typings";
 import fetchHandler from "../handler";
+import getJson from "@/utils/json/get";
 
 async function setCookie({
     signal,
@@ -17,7 +18,7 @@ async function setCookie({
         onError
     });
 
-    const json = await response.json();
+    const json = await getJson(response);
 
     return json;
 }
