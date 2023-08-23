@@ -1,4 +1,5 @@
 import { Brand, Card, Category, Collection, Image, Model, Order, Payment, Poster, Product, ProductOrder, Shipping, User, Video } from "./index";
+import { JwtPayload } from "jsonwebtoken";
 
 // XType
 // -> Product
@@ -70,6 +71,14 @@ type RefreshArgs = {
     browserId: string
 }
 
+type AccessContent = JwtPayload & {
+    [P in keyof AccessArgs]: AccessArgs[P]
+}
+
+type RefreshContent = JwtPayload & {
+    [P in keyof RefreshArgs]
+}
+
 
 // Router
 // -> Auth
@@ -119,18 +128,18 @@ type GetOneProductRouter = ProductX|null;
 type GetmanyProductNamesRouter = Suggestion[];
 
 type GetmanyNewProductsRouter = ProductX[];
-type GetmanyNewProductsAllCountRouter = number;
+type GetmanyNewProductsAllCountRouter = string;
 
 type GetmanyPopularProductsRouter = ProductX[];
-type GetmanyPopularProductsAllCountRouter = number;
+type GetmanyPopularProductsAllCountRouter = string;
 
 type GetmanyRelatedProductsRouter = ProductX[];
 
 type GetmanySearchProductsRouter = ProductX[];
-type GetmanySearchProductsAllCountRouter = number;
+type GetmanySearchProductsAllCountRouter = string;
 
 type GetmanyToprateProductsRouter = ProductX[];
-type GetmanyToprateProductsAllCountRouter = number;
+type GetmanyToprateProductsAllCountRouter = string;
 
 // -> User
 type UpdateoneBillingRouter = boolean;
@@ -174,6 +183,7 @@ type ProductOrders = {
 
 type PhoneNumbers = string[];
 
+type DataResponse = null|string|boolean|{[key: string]: any};
 
 // Cookie
 type CookieName = 'access-token'|'refresh-token'|'csrf-token';

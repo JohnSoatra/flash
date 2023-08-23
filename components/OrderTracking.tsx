@@ -1,5 +1,6 @@
 'use client';
 import ShippingProcess from "@/components/template/shipping/ShippingProcess";
+import VARS from "@/constants/vars";
 import { OrderX } from "@/prisma-types/typings";
 import { cardTypeString } from "@/utils/number/cardtype";
 import Image from "next/image";
@@ -62,7 +63,7 @@ const OrderTracking = ({ order }: { order: OrderX }) => {
                                     className="flex space-x-5 items-center">
                                     <div className="relative w-28 h-28 md:w-36 md:h-36">
                                         <Image
-                                            src={productOrder.product.images[0].url}
+                                            src={VARS.MEDIA_SERVER + productOrder.product.images[0].url}
                                             alt={productOrder.product.name}
                                             fill={true}
                                             sizes="100%"

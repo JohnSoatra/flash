@@ -84,7 +84,7 @@ const GeneralAccount = ({
                         {
                             (imageUrl || user.image_url) ?
                                 <Image
-                                    src={(imageUrl || user.image_url)!}
+                                    src={(imageUrl || user.image_url && (VARS.MEDIA_SERVER + user.image_url))!}
                                     alt="user"
                                     fill={true}
                                     sizes='100%'

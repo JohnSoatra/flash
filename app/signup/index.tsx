@@ -72,6 +72,10 @@ const OPTIONS: { [key: string]: RegisterOptions } = {
     }
 }
 
+const Class = {
+    Input: "w-full block p-2.5 transition text-sm bg-transparent border border-light-200 rounded-lg focus:border-blue-500"
+}
+
 type Fields = {
     email: string,
     code: string,
@@ -186,12 +190,12 @@ const Index = () => {
 
     return (
         <div className="min-h-screen flex justify-center items-center">
-            <div className="border border-midmain shadow-lg h-fit py-5 px-10 rounded-lg">
+            <div className="border border-light-200 shadow-lg h-fit py-5 px-10 rounded-lg">
                 <Card color="transparent" shadow={false}>
                     
                     <div className="flex justify-center items-center space-x-3 mb-3 md:mb-5">
                         <Link href={ROUTE.HOME}>
-                            <div className='relative border border-midmain rounded-full h-12 w-12 md:w-14 md:h-14 cursor-pointer opacity-80 transition hover:opacity-100'>
+                            <div className='relative border border-light-300 rounded-full h-12 w-12 md:w-14 md:h-14 cursor-pointer opacity-80 transition hover:opacity-100'>
                                 <Image
                                     priority
                                     src={'/flash-wb.png'}
@@ -236,7 +240,7 @@ const Index = () => {
                                     <input
                                         type="text"
                                         id="email"
-                                        className="w-full block pr-10 p-2.5 transition text-sm bg-transparent border border-midmain rounded-lg focus:border-blue-500"
+                                        className={Class.Input}
                                         { ...register('email', OPTIONS['email']) }
                                     />
                                     <Tooltip
@@ -250,7 +254,11 @@ const Index = () => {
                                             type="button"
                                             className="absolute inset-y-0 right-0 flex items-center pr-3"
                                             onClick={requestCode}>
-                                            <FontAwesomeIcon icon={faPaperPlane} size="1x" className="text-blue-500 shadow-blue-500/20 hover:shadow-blue-500/40"/>
+                                            <FontAwesomeIcon
+                                                icon={faPaperPlane}
+                                                size="1x"
+                                                className="text-sky-600 shadow-sky-500/20 hover:shadow-sky-500/40 opacity-90"
+                                            />
                                         </button>
                                     </Tooltip>
                                 </div>
@@ -272,7 +280,7 @@ const Index = () => {
                                 <input
                                     type="text"
                                     id="code"
-                                    className="w-full block p-2.5 transition text-sm bg-transparent border border-midmain rounded-lg focus:border-blue-500"
+                                    className={Class.Input}
                                     { ...register('code', OPTIONS['code']) }
                                 />
                             </div>
@@ -293,7 +301,7 @@ const Index = () => {
                                 <input
                                     type="password"
                                     id="password"
-                                    className="w-full block p-2.5 transition text-sm bg-transparent border border-midmain rounded-lg focus:border-blue-500"
+                                    className={Class.Input}
                                     { ...register('password', OPTIONS['password']) }
                                 />
                             </div>
@@ -302,7 +310,7 @@ const Index = () => {
 
                         <Button
                             type="submit"
-                            className="flex items-center justify-center space-x-2 mt-6"
+                            className="flex items-center justify-center space-x-2 mt-10"
                             fullWidth
                             disabled={loading}>
                             {

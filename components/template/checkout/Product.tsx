@@ -1,4 +1,5 @@
 import ROUTE from '@/constants/route';
+import VARS from '@/constants/vars';
 import { removeFromBasket } from '@/redux/basket';
 import { ProductX } from '@/typings';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
@@ -29,7 +30,7 @@ const Product = ({ id, products }: Prop) => {
             <div className='h-44 w-44 relative'>
                 <Link href={ROUTE.PRODUCT(product.id)}>
                     <Image
-                        src={product.images[0].url}
+                        src={VARS.MEDIA_SERVER + product.images[0].url}
                         alt={product.name}
                         fill={true}
                         sizes="100%"

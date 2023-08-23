@@ -2,6 +2,7 @@
 import React from 'react';
 import VideoPlayer from './Player';
 import { VideoX } from '@/typings';
+import VARS from '@/constants/vars';
 
 type Props = {
     video: VideoX,
@@ -15,7 +16,7 @@ const VideoPopover = ({
     return (
         <div className='relative w-full h-full bg-black'>
             <VideoPlayer
-                src={video.url}
+                src={VARS.MEDIA_SERVER + video.url}
                 fullDuration={video.duration}
                 title={video.title}
                 playStarting={true}

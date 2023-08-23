@@ -8,6 +8,8 @@ import SampleProfileIcon from '@/components/template/header/ProfileIcon';
 import { UserC } from '@/prisma-types/typings';
 import signout from '@/utils/fetch/auth/signout';
 import { toast } from 'react-hot-toast';
+import VARS from '@/constants/vars';
+import { useRouter } from 'next/navigation';
 
 type Prop = {
     user: UserC,
@@ -15,6 +17,7 @@ type Prop = {
 }
 
 const UserPopover = ({ user, onClickOutside }: Prop) => {
+    const router = useRouter();
     const ref = useRef<HTMLDivElement>(null);
 
     const onSignout = () => {
@@ -26,6 +29,8 @@ const UserPopover = ({ user, onClickOutside }: Prop) => {
                         position: 'bottom-center'
                     }
                 );
+            } else {
+                router.push(ROUTE.HOME);
             }
         });
     }
@@ -57,7 +62,7 @@ const UserPopover = ({ user, onClickOutside }: Prop) => {
                             {
                                 user.image_url ?
                                     <Image
-                                        src={user.image_url}
+                                        src={VARS.MEDIA_SERVER + user.image_url}
                                         alt="user"
                                         fill={true}
                                         sizes='100%'

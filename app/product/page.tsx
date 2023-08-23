@@ -3,6 +3,7 @@ import React from 'react';
 import Index from './index';
 import getOneProduct from '@/utils/fetch/product/getone';
 import { serialize } from 'next-mdx-remote/serialize';
+import VARS from '@/constants/vars';
 
 type Prop = {
     searchParams?: { [key: string]: string | string[] | undefined }
@@ -30,7 +31,7 @@ const ProductDetail = async ({ searchParams }: Prop) => {
             let mdxSource = null;
             
             if (product.readme_url) {
-                const res = await fetch(product.readme_url);
+                const res = await fetch(VARS.MEDIA_SERVER + product.readme_url);
                 
                 if (res.status === 200) {
                     let readme = await res.text();

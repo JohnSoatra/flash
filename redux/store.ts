@@ -4,6 +4,8 @@ import filterReducer from '@/redux/filter';
 import userReducer from '@/redux/user';
 import cookieReducer from '@/redux/cookie';
 import csrfReducer from '@/redux/csrf';
+import initialedReducer from '@/redux/initialed';
+import browserReducer from '@/redux/browser';
 
 const store = configureStore({
   reducer: {
@@ -11,7 +13,9 @@ const store = configureStore({
     filter: filterReducer,
     cookie: cookieReducer,
     user: userReducer,
-    csrf: csrfReducer
+    csrf: csrfReducer,
+    initialed: initialedReducer,
+    browser: browserReducer
   },
 });
 

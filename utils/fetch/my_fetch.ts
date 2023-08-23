@@ -1,8 +1,6 @@
 import { Json, MyFetchProp } from "@/typings";
 import store from "@/redux/store";
 import cleanUrl from "@/utils/url/clean";
-import getBrowserId from "@/utils/browser/get_browser_id";
-import getVisitorId from "@/utils/browser/get_visitor_id";
 import getGatewayUrl from "@/utils/env/public/gateway_url";
 
 function httpChecker(url: string): string {
@@ -40,6 +38,7 @@ async function myFetch({
     body,
     query
 }: MyFetchProp) {
+    const state = store.getState();
     let _url = cleanUrl(url);
     _url = httpChecker(_url);
     _url = appendQuery(_url, query);
@@ -52,11 +51,11 @@ async function myFetch({
             credentials: 'include',
             headers: {
                 'content-type': 'application/json',
-                'browser-id': await getBrowserId(),
-                'visitor-id': await getVisitorId(),
+                'browser-id': state.browser.browserId,
+                'visitor-id': state.browser.visitorId,
                 ...(
                     method === 'post' ? {
-                        'csrf-token': store.getState().csrf.value
+                        'csrf-token': state.csrf.value
                     } : {}
                 ),
             },

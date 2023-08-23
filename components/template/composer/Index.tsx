@@ -3,6 +3,9 @@ import VARS from "@/constants/vars";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { ReadonlyURLSearchParams, usePathname, useSearchParams } from "next/navigation";
+import { useSelector } from "react-redux";
+import { selectInitialed } from "@/redux/initialed";
+import SplashScreen from "./SplashScreen";
 
 function isEmptySearchPage(
     pathName: string,
@@ -18,11 +21,18 @@ function isEmptySearchPage(
 }
 
 const Index = ({ children }: { children: React.ReactNode }) => {
+    const initialed = useSelector(selectInitialed);
     const pathName = usePathname();
     const param = useSearchParams();
     const includeHeader = VARS.HIDE_HEADER.findIndex(header => pathName.startsWith(header)) < 0;
     const includeFooter = VARS.HIDE_FOOTER.findIndex(footer => pathName.startsWith(footer)) < 0;
     const emptySearchPage = isEmptySearchPage(pathName, param);
+
+    if (initialed === false) {
+        return (
+            <SplashScreen />
+        );
+    }
 
     return (
         <>

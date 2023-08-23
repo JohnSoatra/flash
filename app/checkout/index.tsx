@@ -2,6 +2,7 @@
 import Error from '@/components/Error';
 import QuantityCounter from '@/components/template/product/Counter';
 import ROUTE from '@/constants/route';
+import VARS from '@/constants/vars';
 import { CardX } from '@/typings';
 import { isNumber } from '@/utils/number/number';
 import { CheckIcon, ChevronDownIcon, TrashIcon } from '@heroicons/react/24/solid';
@@ -254,7 +255,7 @@ const Index = ({ card }: { card: CardX }) => {
                                             className="flex space-x-5 items-center py-3 px-5">
                                             <div className="relative w-28 h-28 md:w-36 md:h-36">
                                                 <Image
-                                                    src={product.images[0].url}
+                                                    src={VARS.MEDIA_SERVER + product.images[0].url}
                                                     alt={product.name}
                                                     fill={true}
                                                     sizes="100%"

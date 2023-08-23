@@ -1,6 +1,7 @@
 'use client';
 import Rating from '@/components/RatingCount';
 import ROUTE from '@/constants/route';
+import VARS from '@/constants/vars';
 import {useFetch} from '@/hooks/useFetch';
 import getManyRelatedProducts from '@/utils/fetch/product/getmany/related';
 import Image from 'next/image';
@@ -36,7 +37,7 @@ const RelatedProducts = ({ productId }: Props) => {
                             <Link href={ROUTE.PRODUCT(product.id)}>
                                 <div className='w-full h-40 md:h-52 relative'>
                                     <Image
-                                        src={product.images[0].url}
+                                        src={VARS.MEDIA_SERVER + product.images[0].url}
                                         alt="product image"
                                         fill={true}
                                         sizes="100%"

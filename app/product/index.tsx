@@ -4,6 +4,7 @@ import ShippingPrice from '@/components/ShippingPrice';
 import Slider from '@/components/template/carousel/Slider';
 import RelatedProducts from '@/components/template/product/Related';
 import VideoList from '@/components/template/product/VideoList';
+import VARS from '@/constants/vars';
 import { ProductX } from '@/typings';
 import { MDXRemote } from 'next-mdx-remote';
 import Image from 'next/image';
@@ -33,7 +34,7 @@ const Index = ({
                     key={index}
                     className='w-full h-full relative'>
                     <Image
-                      src={image.url}
+                      src={VARS.MEDIA_SERVER + image.url}
                       alt={product.name}
                       fill={true}
                       sizes="100%"

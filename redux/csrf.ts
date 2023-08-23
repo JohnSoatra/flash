@@ -21,6 +21,4 @@ const csrfSlice = createSlice({
 
 export const { setCsrf } = csrfSlice.actions;
 
-export const selectCsrf = (state: RootState) => state.user.data;
-
 export default csrfSlice.reducer;

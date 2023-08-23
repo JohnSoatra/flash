@@ -5,6 +5,7 @@ import React, { Fragment, useState } from 'react';
 import VideoPopover from './Popover';
 import toMinutes from '@/utils/number/to_minute';
 import { VideoX } from '@/typings';
+import VARS from '@/constants/vars';
 
 type Props = {
     video: VideoX
@@ -19,9 +20,9 @@ const VideoThumbnail = ({ video }: Props) => {
                 className='w-full h-full cursor-pointer'
                 onClick={() => setShowPopup(true)}>
                 <video
-                    src={video.url}
+                    src={VARS.MEDIA_SERVER + video.url}
                     className='object-cover w-full h-full'
-                    poster={video.poster?.url}
+                    poster={video.poster?.url && (VARS.MEDIA_SERVER + video.poster?.url)}
                 />
                 <div className='absolute bg-white rounded-full p-2 top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 flex justify-center items-center'>
                     <PlayIcon className='w-5 h-5 text-light-50' />

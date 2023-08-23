@@ -1,5 +1,6 @@
 'use client'
 import ROUTE from "@/constants/route";
+import VARS from "@/constants/vars";
 import { addToBasket } from "@/redux/basket";
 import { ProductX } from "@/typings";
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
@@ -27,7 +28,7 @@ const Product = ({ product }: Prop) => {
             <div className="relative h-64 w-full md:h-72">
                 <Link href={ROUTE.PRODUCT(product.id)}>
                     <Image
-                        src={product.images[0].url}
+                        src={VARS.MEDIA_SERVER + product.images[0].url}
                         alt={product.name}
                         fill={true}
                         sizes="100%"

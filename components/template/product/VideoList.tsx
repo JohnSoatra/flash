@@ -16,7 +16,7 @@ const VideoList = ({ videos }: Prop) => {
       {
         videos.map(video =>
           <div
-            key={video.url}
+            key={video.id}
             className="flex justify-center w-full h-full">
             
             <div className='space-y-2.5'>

@@ -1,4 +1,5 @@
 import ROUTE from '@/constants/route';
+import VARS from '@/constants/vars';
 import { ProductX } from '@/typings';
 import { ChevronRightIcon } from '@heroicons/react/24/solid';
 import Image from 'next/image';
@@ -36,7 +37,7 @@ const Collection = ({ pc, smartphone, earphone }: Props) => {
                             }
                         `}>
                         <Image
-                            src={pc.images[0].url}
+                            src={VARS.MEDIA_SERVER + pc.images[0].url}
                             alt={pc.name}
                             fill={true}
                             sizes='100%'
@@ -87,7 +88,7 @@ const Collection = ({ pc, smartphone, earphone }: Props) => {
                                             }
                                         `}>
                                         <Image
-                                            src={item.images[0].url}
+                                            src={VARS.MEDIA_SERVER + item.images[0].url}
                                             alt={item.name}
                                             fill={true}
                                             sizes='100%'

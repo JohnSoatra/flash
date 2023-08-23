@@ -12,6 +12,7 @@ import { useDispatch } from 'react-redux';
 import Wrapper from '@/components/Wrapper';
 import Tooltip from '@/components/Tooltip';
 import useUser from '@/hooks/useUser';
+import VARS from '@/constants/vars';
 
 
 type Props = {
@@ -42,7 +43,7 @@ const EachProduct = ({
                 <Link href={ROUTE.PRODUCT(product.id)}>
                     <div className='w-full h-48 sm:h-56 md:h-64 lg:h-72 relative'>
                         <Image
-                            src={product.images[0].url}
+                            src={VARS.MEDIA_SERVER + product.images[0].url}
                             alt="product image"
                             fill={true}
                             sizes="100%"

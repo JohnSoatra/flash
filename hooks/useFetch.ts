@@ -1,4 +1,5 @@
-import { UseFetchLazy, PropUseFetch, PropUseFetchNoArgs, UseFetch, ArgsWithContent, WithBody, WithQuery, FetchOptions } from "@/typings";
+import { UseFetchLazy, PropUseFetch, PropUseFetchNoArgs, UseFetch, ArgsWithContent, WithBody, WithQuery } from "@/typings";
+import objectValues from "@/utils/object/object_value";
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 
 function useFetch<T, K extends (WithQuery | WithBody)>({
@@ -29,7 +30,7 @@ function useFetch<T, K extends (WithQuery | WithBody)>({
                 setFetching(false);
             });
 
-    }, [func, ...(args ? Object.values(args) : [])]);
+    }, [func, ...(args ? objectValues(args): [])]);
 
     return {
         result,

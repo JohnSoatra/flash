@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import ROUTE from '@/constants/route';
 import getManyProductNames from '@/utils/fetch/product/getmany/name';
 import { Transition } from '@headlessui/react';
+
 const Class = {
     SEARCH_BUTTON: 'text-sm font-medium rounded-r-lg',
     SEARCH_ICON: 'h-6 w-6 cursor-pointer opacity-60 transition hover:opacity-90',
@@ -21,7 +22,7 @@ const InputSearch = () => {
     const [ requestString, setRequestString ] = useState('');
     const refSearch = useRef<HTMLInputElement>(null);
     
-    const {result: suggestions} = useFetch({
+    const { result: suggestions } = useFetch({
         func: getManyProductNames,
         args: {
             query: {
@@ -74,6 +75,7 @@ const InputSearch = () => {
                     }}
                     onKeyUp={(evt) => {
                         if (keyEffect(evt)) {
+                            setHoverIndex(-1);
                             setRequestString(refSearch.current?.value || '');
                         }
                     }}

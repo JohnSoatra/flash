@@ -8,6 +8,7 @@ import Link from "next/link";
 import SampleProfileIcon from "./ProfileIcon";
 import UserPopover from "./UserPopover";
 import useUser from "@/hooks/useUser";
+import VARS from "@/constants/vars";
  
 const UserProfile = () => {
   const [ open, setOpen ] = useState(false);
@@ -32,7 +33,7 @@ const UserProfile = () => {
           {
             user.image_url ?
                 <Image
-                    src={user.image_url}
+                    src={VARS.MEDIA_SERVER + user.image_url}
                     alt="user"
                     sizes="100%"
                     fill={true}
