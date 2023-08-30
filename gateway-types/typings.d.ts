@@ -1,5 +1,4 @@
 import { Brand, Card, Category, Collection, Image, Model, Order, Payment, Poster, Product, ProductOrder, Shipping, User, Video } from "./index";
-import { JwtPayload } from "jsonwebtoken";
 
 // XType
 // -> Product
@@ -12,7 +11,7 @@ type ProductX = Product & {
 type ProductOrderX = ProductOrder & {
     product: ProductX
 }
-  
+
 type OrderX = Order & {
     product_orders: ProductOrderX[],
     payment: Payment,
@@ -26,7 +25,7 @@ type VideoX = Video & {
 
 // -> Card
 type CardX = Card & {
-    products: ProductX[]
+    product: ProductX
 }
 
 // CType
@@ -42,6 +41,7 @@ type UserC = {
 
     image_url: string|null,
     image_color: string,
+    type: number
 }
 
 // -> Creditcard
@@ -49,36 +49,6 @@ type CreditCardC = {
     type: number;
     last_four: string;
 }
-
-// Response
-type ResponseMessage = {
-    status?: number,
-    reason?: string,
-}
-
-type ResponseResult<T=any> = { data: T } & ResponseMessage;
-
-// JWT
-type AccessArgs = {
-    userId: string,
-    visitorId: string,
-    browserId: string
-}
-
-type RefreshArgs = {
-    userId: string,
-    visitorId: string,
-    browserId: string
-}
-
-type AccessContent = JwtPayload & {
-    [P in keyof AccessArgs]: AccessArgs[P]
-}
-
-type RefreshContent = JwtPayload & {
-    [P in keyof RefreshArgs]
-}
-
 
 // Router
 // -> Auth
@@ -92,6 +62,10 @@ type GetallBrandsRouter = Brand[];
 
 // -> Card
 type GetoneCardRouter = CardX|null;
+type GetmanyCardsRouter = CardX[];
+type AddProductToCardRouter = CardX|string|null;
+type RemoveProductFromCardRouter = boolean;
+type RemoveAllProductsFromCardRouter = boolean;
 
 // -> Category
 type GetallCategoriesRouter = Category[];
@@ -114,7 +88,7 @@ type VerifyTokenEmailRouter = string|false;
 type VerifyTokenRequestRouter = string|false;
 
 // -> Love
-type ToggleLoveRouter = boolean|null;
+type ToggleLoveRouter = boolean;
 
 // -> Model
 type GetallModelsRouter = Model[];
@@ -128,18 +102,22 @@ type GetOneProductRouter = ProductX|null;
 type GetmanyProductNamesRouter = Suggestion[];
 
 type GetmanyNewProductsRouter = ProductX[];
-type GetmanyNewProductsAllCountRouter = string;
+type GetmanyNewProductsAllCountRouter = number;
 
 type GetmanyPopularProductsRouter = ProductX[];
-type GetmanyPopularProductsAllCountRouter = string;
+type GetmanyPopularProductsAllCountRouter = number;
+
 
 type GetmanyRelatedProductsRouter = ProductX[];
 
 type GetmanySearchProductsRouter = ProductX[];
-type GetmanySearchProductsAllCountRouter = string;
+type GetmanySearchProductsAllCountRouter = number;
 
 type GetmanyToprateProductsRouter = ProductX[];
-type GetmanyToprateProductsAllCountRouter = string;
+type GetmanyToprateProductsAllCountRouter = number;
+
+type GetmanyLoveProductsRouter = ProductX[];
+type GetmanyLoveProductsAllCountRouter = number;
 
 // -> User
 type UpdateoneBillingRouter = boolean;
@@ -148,6 +126,8 @@ type UpdateoneGeneralRouter = { message: FieldMessage }|boolean;
 type UpdateoneSecurity = boolean;
 type GetoneUserRouter = UserC|null;
 type ResetPasswordRouter = boolean;
+type VerifyPasswordRouter = boolean;
+type UploadImageRouter = boolean;
 
 // -> CSRF
 type GetCsrfRouter = string;
@@ -170,11 +150,6 @@ type Suggestion = {
     searched?: boolean
 }
 
-type FetchResult = {
-    data?: string,
-    reason?: string
-}
-
 type ProductOrders = {
     product_id: string,
     quantity: number,
@@ -182,11 +157,3 @@ type ProductOrders = {
 }[];
 
 type PhoneNumbers = string[];
-
-type DataResponse = null|string|boolean|{[key: string]: any};
-
-// Cookie
-type CookieName = 'access-token'|'refresh-token'|'csrf-token';
-
-// Email
-type Email = 'email'|'request'

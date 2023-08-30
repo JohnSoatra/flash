@@ -1,4 +1,4 @@
-import { UpdateoneBillingRouter } from "@/prisma-types/typings";
+import { UpdateoneBillingRouter } from "@/gateway-types/typings";
 import { UpdateBilling } from "@/typings";
 import fetchHandler from "../../handler";
 import getJson from "@/utils/json/get";

@@ -35,6 +35,9 @@ const Header = ({ isEmptySearchPage }: Props) => {
             {
                 !isEmptySearchPage &&
                 <div className='h-full flex flex-1 justify-center items-center'>
+                    <div className='w-fit h-fit'>
+                        <FilterPopover />
+                    </div>
                     <div className='h-full w-full max-h-[2.3rem] max-w-[25rem] md:max-h-[2.7rem] lg:max-h-[2.8rem] md:max-w-[50rem] flex justify-center items-center mx-2'>
                         <InputSearch />
                     </div>
@@ -42,13 +45,6 @@ const Header = ({ isEmptySearchPage }: Props) => {
             }
 
             <div className='flex items-center justify-center gap-x-2 md:gap-x-4 md:w-1/5'>
-                {
-                    !isEmptySearchPage &&
-                    <div className='w-fit h-fit'>
-                        <FilterPopover />
-                    </div>
-                }
-
                 <UserProfile />
             </div>
         </header>

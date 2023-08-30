@@ -1,4 +1,4 @@
-import { GetallBrandsRouter } from "@/prisma-types/typings";
+import { GetallBrandsRouter } from "@/gateway-types/typings";
 import { GetAllBrands } from "@/typings";
 import fetchHandler from "../handler";
 import getJson from "@/utils/json/get";

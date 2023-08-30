@@ -3,8 +3,8 @@ import React from 'react';
 import Index from './index';
 
 export const metadata: Metadata = {
-    title: 'Flash | New Product',
-    description: 'New Added Products'
+    title: 'Flash | Popular Product',
+    description: 'Popular Products'
 }
 
 const ProductPopular = () => {

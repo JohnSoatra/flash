@@ -1,6 +1,7 @@
 'use client';
 import Button from '@/components/Button';
 import useUser from '@/hooks/useUser';
+import round from '@/utils/number/round';
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -31,16 +32,16 @@ const testPro: StripeProduct = {
 }
 
 const Index = ({ products=[testPro] }: Props) => {
+    const user = useUser({ require: true });
     const param = useSearchParams();
-    const user = useUser();
     const isTabletOrMobile = useMediaQuery({ query: "(max-width: 1024px)" });
     const [mounted, setMounted] = useState(false);
     const [showOrderSummary, setShowOrderSummary] = useState(false);
     const showOrderSummaryCondition = isTabletOrMobile ? showOrderSummary : true;
-    const subtotal = products.reduce(
+    const subtotal = round(products.reduce(
         (acc, product) => acc + product.price.unit_amount / 100,
         0
-    );
+    ));
     const session_id = param.get('session_id');
 
     const handleShowOrderSummary = () => {
@@ -50,6 +51,10 @@ const Index = ({ products=[testPro] }: Props) => {
     useEffect(() => {
         setMounted(true);
     }, []);
+
+    if (user === null) {
+        return null;
+    }
 
     return (
         <div>
@@ -160,7 +165,7 @@ const Index = ({ products=[testPro] }: Props) => {
                                                     </div>
                                                 </div>
                                                 <p className="flex-1">{product.description}</p>
-                                                <p>${product.price.unit_amount / 100}</p>
+                                                <p>${round(product.price.unit_amount / 100)}</p>
                                             </div>
                                         )
                                     }

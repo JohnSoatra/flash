@@ -2,14 +2,20 @@ import { Json, MyFetchProp } from "@/typings";
 import store from "@/redux/store";
 import cleanUrl from "@/utils/url/clean";
 import getGatewayUrl from "@/utils/env/public/gateway_url";
+import isFormData from "../json/is_formdata";
+import getStoreUrl from "../env/public/store_url";
 
-function httpChecker(url: string): string {
+function httpChecker(url: string, formData: boolean): string {
     if (url.startsWith('http://') || url.startsWith('https://')) {
         return url;
     }
 
     if (url.startsWith('/')) {
-        return getGatewayUrl() + url;
+        if (formData) {
+            return getStoreUrl() + url;
+        } else {
+            return getGatewayUrl() + url;
+        }
     }
     
     throw Error('myFetch url must start with /');
@@ -36,11 +42,12 @@ async function myFetch({
     url,
     signal,
     body,
-    query
+    query,
 }: MyFetchProp) {
     const state = store.getState();
+    const formData = method === 'post' && isFormData(body);
     let _url = cleanUrl(url);
-    _url = httpChecker(_url);
+    _url = httpChecker(_url, formData);
     _url = appendQuery(_url, query);
 
     return fetch(
@@ -50,16 +57,20 @@ async function myFetch({
             signal: signal,
             credentials: 'include',
             headers: {
-                'content-type': 'application/json',
                 'browser-id': state.browser.browserId,
                 'visitor-id': state.browser.visitorId,
+                ...(
+                    formData ? {} : {
+                        'content-type': 'application/json'
+                    }
+                ),
                 ...(
                     method === 'post' ? {
                         'csrf-token': state.csrf.value
                     } : {}
                 ),
             },
-            body: method === 'post' ? JSON.stringify(body) : undefined
+            body: method === 'get' ? undefined : formData ? body as FormData : JSON.stringify(body)
         }
     );
 }

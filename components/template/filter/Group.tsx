@@ -1,6 +1,6 @@
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { Accordion, AccordionBody, AccordionHeader } from "@material-tailwind/react";
-import { Brand, Category, Collection } from "@/prisma-types/index";
+import { Brand, Category, Collection } from "@/gateway-types/index";
 import { MouseEvent, useState } from "react";
 
 type TakeType = Collection|Category|Brand;

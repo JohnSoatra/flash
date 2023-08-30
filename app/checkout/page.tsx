@@ -1,8 +1,6 @@
 import { Metadata } from 'next';
 import React from 'react';
 import Index from './index';
-import getOneCard from '@/utils/fetch/card/getone';
-import Empty from './empty';
 
 export const metadata: Metadata = {
     title: 'Flash | Checkout',
@@ -10,17 +8,8 @@ export const metadata: Metadata = {
 }
 
 const Checkout = async () => {
-    // const card = await getOneCard({
-    //     signal: null
-    // });
-
-    // if (!card) {
-    //     return <Empty />
-    // }
-
     return (
-        'sdf'
-        // <Index card={card} />
+        <Index />
     );
 }
 

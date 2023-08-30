@@ -1,7 +1,11 @@
-import { User, Product, Rate, Order, CreditCard, CreditCardType , ProductOrder, Payment, Shipping, Card, Image, Video, Poster } from "@/prisma-types/index";
+import { User, Product, Rate, Order, CreditCard, CreditCardType , ProductOrder, Payment, Shipping, Card, Image, Video, Poster } from "@/gateway-types/index";
 import VARS from "@/constants/vars";
 import { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/headers";
-import { PhoneNumbers, ProductOrders } from "./prisma-types/typings";
+import { PhoneNumbers, ProductOrders, UserC } from "./gateway-types/typings";
+
+// General
+type UserOmit = Omit<UserC, 'image_color'|'id'>
+type UpdateField = keyof UserOmit;
 
 // Fetch Types
 interface FetchOptions {
@@ -27,7 +31,7 @@ interface MyFetchPropPost {
     method: 'post',
     url: string,
     signal: AbortSignal|null,
-    body: Json,
+    body: Json|FormData,
     query?: Json,
 }
 
@@ -127,6 +131,7 @@ type GetManyProductNames = FetchOptions & {
 type GetManyNewProducts = FetchOptions & BestChoiceProducts;
 type GetManyToprateProducts = FetchOptions & BestChoiceProducts;
 type GetManyPopularProducts = FetchOptions & BestChoiceProducts;
+type GetManyLoveProducts = FetchOptions & BestChoiceProducts;
 
 type GetManyRelatedProducts = FetchOptions & {
   query: {
@@ -146,6 +151,7 @@ type GetOneCsrf = FetchOptions;
 type GetAllcountNewProducts = FetchOptions & GetAllcount;
 type GetAllcountPopularProducts = FetchOptions & GetAllcount;
 type GetAllcountToprateProducts = FetchOptions & GetAllcount;
+type GetAllcountLoveProducts = FetchOptions;
 
 type GetAllBrands = FetchOptions;
 type GetAllCategories = FetchOptions;
@@ -153,6 +159,25 @@ type GetAllCollections = FetchOptions;
 type GetAllModels = FetchOptions;
 
 type GetOneCard = FetchOptions;
+type GetManyCards = FetchOptions;
+
+type AddProductToCard = FetchOptions & {
+  body: {
+    product_id: string
+  }
+};
+
+type RemoveProductFromCard = FetchOptions & {
+  body: {
+    product_id: string
+  }
+};
+
+type RemoveAllProductsFromCard = FetchOptions & {
+  body: {
+    product_id: string
+  }
+};
 
 type GetOneUser = FetchOptions;
 
@@ -188,44 +213,37 @@ type ResetPassword = FetchOptions & {
   }
 };
 
-interface CreditCardInfo {
-  card_number: string;
-  expired_month: string;
-  expired_year: string;
-  cvc: string;
-}
-
-type CreateBilling = FetchOptions & {
+type VerifyPassword = FetchOptions & {
   body: {
     password: string
-  } & {
-    [P in keyof CreditCardInfo]: CreditCardInfo[P]
   }
-}
+};
 
 type UpdateBilling = FetchOptions & {
   body: {
-    password: string
-  } & {
-    [P in keyof CreditCardInfo]?: CreditCardInfo[P]
+    password: string,
+    card_number: string,
+    expired_month: string,
+    expired_year: string,
+    cvc: string,
   }
 }
 
 type UpdateGeneral = FetchOptions & {
   body: {
-    image_url: string?;
-    username: string?;
-    fullname: string?,
-    address: string?
+    image_url?: string,
+    username?: string,
+    fullname?: string,
+    address?: string,
   }
 }
 
 type UpdateContact = FetchOptions & {
   body : {
     password: string,
-    phone_number: string?,
-    email: string?,
-    email_token: string?
+    phone_number?: string,
+    email?: string,
+    email_token?: string
   }
 }
 
@@ -234,6 +252,10 @@ type UpdateSecurity = FetchOptions & {
     old_password: string,
     new_password: string,
   }
+}
+
+type UpdateImage = FetchOptions & {
+  body: FormData
 }
 
 type GetCookie = FetchOptions & {
@@ -333,7 +355,7 @@ type VideoX = Video & {
 type ProductX = Product & {
   images: Image[],
   videos: VideoX[],
-  favorited?: boolean
+  loved?: boolean
 }
 
 type PaymentX = Payment & {
@@ -348,18 +370,4 @@ type OrderX = Order & {
   product_orders: ProductOrderX[],
   payment: PaymentX|null,
   shipping: Shipping|null
-}
-
-type CardX = Card & {
-  products: ProductX[]
-}
-
-type ImageProp = {
-  title: string,
-  description: string,
-  urls: StaticImageData|string
-}
-
-type Many = {
-  allCount: number
 }

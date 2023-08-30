@@ -1,7 +1,7 @@
 'use client';
 import React, { ChangeEvent, MouseEvent, useEffect, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
-import { Brand, Category, Model } from "@/prisma-types/index";
+import { Brand, Category, Model } from "@/gateway-types/index";
 import { pushFilterBrand, pushFilterCategory, pushFilterModel, removeFilterBrand, removeFilterCategory, removeFilterModel, selectFilterBrands, selectFilterCategories, selectFilterModels, selectFilterPriceRange, updateFilterBrands, updateFilterModels, updateFilterPriceRage } from "@/redux/filter";
 import { useDispatch, useSelector } from "react-redux";
 import FilterGroup from "@/components/template/filter/Group";

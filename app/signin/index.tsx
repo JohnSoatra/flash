@@ -8,6 +8,7 @@ import Image from "next/image";
 import Error from "@/components/Error";
 import signin from "@/utils/fetch/auth/signin";
 import { useRouter } from "next/navigation";
+import EyeInput from "@/components/element/EyeInput";
 
 const OPTIONS: { [key: string]: RegisterOptions } = {
     'email': {
@@ -92,29 +93,15 @@ const Index = () => {
 
     return (
         <div className="min-h-screen flex justify-center items-center">
-            <div className="border border-midmain shadow-lg h-fit py-5 px-10 rounded-lg">
+            <div className="border border-light-300 shadow-lg h-fit py-5 px-10 rounded-lg">
                 <Card color="transparent" shadow={false}>
-                    <div className="flex justify-center items-center space-x-3 mb-3 md:mb-5">
-                        <div className='relative border border-midmain rounded-full h-12 w-12 md:w-14 md:h-14 cursor-pointer opacity-80 transition hover:opacity-100'>
-                            <Image
-                                priority
-                                src={'/flash-wb.png'}
-                                alt='header'
-                                fill={true}
-                                sizes="100%"
-                                className='object-contain'
-                            />
-                        </div>
-                        <p className="text-xl md:text-2xl font-extrabold">Flash</p>
-                    </div>
-                    
-                    <div>
+                    <div className="text-center">
                         <p className="text-2xl md:text-3xl font-bold">
                             Sign In
                         </p>
-                        <p className="text-sm md:text-base mt-1 font-normal opacity-85">
+                        {/* <p className="text-sm md:text-base mt-1 font-normal opacity-85">
                             Enter your information to sign in.
-                        </p>
+                        </p> */}
                     </div>
 
                     <form
@@ -153,13 +140,13 @@ const Index = () => {
                                         <Error message={String(errors['password']['message'])} />
                                     }
                                 </div>
-
-                                <input
-                                    type="password"
+                                
+                                <EyeInput
                                     id="password"
                                     className="w-full block p-2.5 transition text-sm bg-transparent border border-midmain rounded-lg focus:border-blue-500"
                                     { ...register('password', OPTIONS['password']) }
                                 />
+
                             </div>
 
                         </div>

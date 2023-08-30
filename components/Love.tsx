@@ -3,7 +3,8 @@ import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
 import React, { useRef, useState } from 'react';
 import toggleLove from '@/utils/fetch/love/toggle';
 import { toast } from 'react-hot-toast';
-import { ProductX } from '@/prisma-types/typings';
+import { ProductX } from '@/gateway-types/typings';
+import VARS from '@/constants/vars';
 
 type Prop = {
   product: ProductX
@@ -12,12 +13,14 @@ type Prop = {
 const Love = ({
   product
 }: Prop) => {
-  const [ loved, setLoved ] = useState(product.loved);
+  const [ loved, setLoved ] = useState<boolean|undefined>(product.loved);
+  const [ loveCount, setLoveCount ] = useState(product.love_count);
   const [ processing, setProcessing ] = useState(false);
   const controller = useRef(new AbortController());
 
   const onToggle = async () => {
     setProcessing(true);
+
     controller.current.abort();
     controller.current = new AbortController();
 
@@ -31,38 +34,39 @@ const Love = ({
       .then(res => {
         if (res) {
           toast.success(
-            'Added to favorites',
+            'Added love to this product.',
             {
-              position: 'bottom-center'
+              position: 'bottom-center',
+              duration: VARS.DURATION.TOAST.DEFAULT,
             }
           );
         } else {
-          toast.success(
-            'Removed from favorites',
+          toast.error(
+            'Removed love from this product.',
             {
-              position: 'bottom-center'
+              position: 'bottom-center',
+              duration: VARS.DURATION.TOAST.DEFAULT,
             }
           );
         }
 
-        setLoved(res !== null ? res : undefined);
+        setLoved(res);
+        setLoveCount(res ? loveCount + 1 : loveCount - 1);
       })
-      .catch(() => {})
       .finally(() => {
         setProcessing(false);
       });
   }
 
   return (
-    <div className='flex items-center space-x-2'>
-      <p className='text-sm opacity-75'>{product.love_count}</p>
+    <div className='flex items-center space-x-[2px]'>
       <button
-        className='w-5 h-5'
+        className='w-[1rem] h-[1rem] md:w-[1.25rem] md:h-[1.25rem]'
         disabled={processing}
         onClick={onToggle}>
         {
             <HeartIconSolid className={`
-              w-full h-full transition duration-300 stroke-1
+              w-full h-full transition duration-300
               ${
                 processing && 'animate-pulse'
               }
@@ -74,6 +78,7 @@ const Love = ({
             `} />
         }
       </button>
+      <p className='text-sm md:text-base opacity-60'>{loveCount}</p>
     </div>
   );
 }

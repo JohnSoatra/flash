@@ -14,6 +14,9 @@ import sendEmailVerifyRequest from "@/utils/fetch/email/send/verify_request";
 import verifyRequestToken from "@/utils/fetch/email/verify/request";
 import resetPassword from "@/utils/fetch/user/reset_password";
 import { toast } from "react-hot-toast";
+import { EyeIcon } from "@heroicons/react/24/outline";
+import EyeInput from "@/components/element/EyeInput";
+import VARS from "@/constants/vars";
 
 const OPTIONS: { [key: string]: RegisterOptions } = {
     'email': {
@@ -104,9 +107,10 @@ const Index = () => {
 
             if (result === true) {
                 toast.success(
-                    `Code has been send to ${email}.`,
+                    <p>Code has been send to <b>{email}</b>.</p>,
                     {
-                        position: 'bottom-center'
+                        position: 'bottom-center',
+                        duration: VARS.DURATION.TOAST.DEFAULT
                     }
                 );
             } else if (result === false) {
@@ -160,7 +164,8 @@ const Index = () => {
                 toast.error(
                     'There is a problem with resetting password.',
                     {
-                        position: 'bottom-center'
+                        position: 'bottom-center',
+                        duration: VARS.DURATION.TOAST.DEFAULT
                     }
                 );
             }
@@ -281,13 +286,13 @@ const Index = () => {
                                         <Error message={String(errors['password']['message'])} />
                                     }
                                 </div>
-
-                                <input
-                                    type="password"
+                                
+                                <EyeInput
                                     id="password"
                                     className="w-full block p-2.5 transition text-sm bg-transparent border border-midmain rounded-lg focus:border-blue-500"
                                     { ...register('password', OPTIONS['password']) }
                                 />
+
                             </div>
 
                         </div>

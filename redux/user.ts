@@ -1,6 +1,7 @@
 import { RootState } from '@/redux/store';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { UserC } from '@/prisma-types/typings';
+import { UserC } from '@/gateway-types/typings';
+import { UserOmit } from '@/typings';
 
 export interface UserState {
     data: UserC|null
@@ -22,16 +23,16 @@ const userSlice = createSlice({
     },
     updateUser: (
         state: UserState,
-        user: PayloadAction<Partial<UserC>>
+        user: PayloadAction<Partial<UserOmit>>
     ) => {
         if (state.data) {
             state.data = {
-                ...(state.data),
+                ...state.data,
                 ...user.payload
             }
+        } else {
+            throw Error('User is not set yet.');
         }
-
-        throw Error('User is not set yet.');
     }
   },
 });

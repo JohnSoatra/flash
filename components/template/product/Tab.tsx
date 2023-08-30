@@ -100,7 +100,7 @@ const TabProducts = () => {
             <section className='w-full space-y-5'>
                 <ProductList
                     products={products}
-                    showFavorite={false}
+                    showLove={true}
                 />
 
                 <div className='w-full flex justify-center'>

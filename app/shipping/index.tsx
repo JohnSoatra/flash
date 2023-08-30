@@ -1,6 +1,6 @@
 'use client';
 import OrderTracking from "@/components/OrderTracking";
-import { OrderX } from "@/prisma-types/typings";
+import { OrderX } from "@/gateway-types/typings";
 
 const Index = ({ orders }: { orders: OrderX[] }) => {
     return (

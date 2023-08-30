@@ -22,30 +22,31 @@ const Home = async () => {
   });
   const earphone = await getOneProduct({
     query: {
-      id: 'cljjh97ha000ijrzkkb8ga4ok'
+      id: 'cljjhdmmw000kjrzko64peetj'
     },
     signal: null
   });
 
-  if (pc && smartphone && earphone) {
+  if (smartphone && earphone && pc) {
     return (
-      <Index
-        pc={pc}
-        smartphone={smartphone}
-        earphone={earphone}
-      />
+      <Index products={[
+        {
+          category: 'smartphone',
+          ...smartphone
+        },
+        {
+          category: 'laptop',
+          ...pc
+        },
+        {
+          category: 'earphone',
+          ...earphone
+        }
+      ]}/>
     );
   }
 
-  if (smartphone && earphone && pc) {
-    return (
-      <Index
-        smartphone={smartphone}
-        earphone={earphone}
-        pc={pc}
-      />
-    );
-  }
+  return null;
 
 }
 

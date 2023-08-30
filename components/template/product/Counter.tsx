@@ -1,12 +1,13 @@
+import { CardX } from '@/gateway-types/typings';
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/solid';
 import React from 'react';
 
 const Class = {
     Button: (disabled: boolean) => `
-        py-1 px-2 flex items-center justify-center transition bg-transparent
+        py-1 px-2 flex items-center justify-center transition bg-transparent cursor-default
         ${
             disabled ?
-            'opacity-20 cursor-not-allowed' :
+            'opacity-20' :
             'opacity-75 hover:bg-light-800'
         }
     `,
@@ -15,44 +16,29 @@ const Class = {
 }
 
 type Props = {
-    value: number,
-    min: number,
-    max: number,
+    card: CardX
     onDecrease: (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void,
-    onIncrease: (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void,
-    onChange: (evt: React.ChangeEvent<HTMLInputElement>) => void
+    onIncrease: (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
 }
 
 const QuantityCounter = ({
-    value,
-    min,
-    max,
+    card,
     onDecrease,
-    onIncrease,
-    onChange
+    onIncrease
 }: Props) => {
     return (
         <div className='h-6 w-fit flex items-stretch divide-x divide-light-400 bg-white border border-light-400 rounded overflow-hidden'>
-            
             <button
-                className={Class.Button(value <= min)}
-                onClick={(evt) => value > min && onDecrease(evt)}>
+                className={Class.Button(card.quantity <= 1)}
+                onClick={(evt) => card.quantity > 1 && onDecrease(evt)}>
                 <MinusIcon className={Class.Icon} />
             </button>
-
-            <input
-                value={value}
-                type="number"
-                className={Class.Input}
-                onChange={(evt) => onChange(evt)}
-            />
-
+            <p className={Class.Input}>{card.quantity}</p>
             <button
-                className={Class.Button(value >= max)}
-                onClick={(evt) => value < max && onIncrease(evt)}>
+                className={Class.Button(card.quantity >= card.product.quantity)}
+                onClick={(evt) => card.quantity < card.product.quantity && onIncrease(evt)}>
                 <PlusIcon className={Class.Icon} />
             </button>
-
         </div>
     );
 }

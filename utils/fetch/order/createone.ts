@@ -1,4 +1,4 @@
-import { CreateOneOrderRouter } from "@/prisma-types/typings";
+import { CreateOneOrderRouter } from "@/gateway-types/typings";
 import { CreateOneOrder } from "@/typings";
 import fetchHandler from "../handler";
 import getJson from "@/utils/json/get";

@@ -1,4 +1,4 @@
-import { GetallCollectionsRouter } from "@/prisma-types/typings";
+import { GetallCollectionsRouter } from "@/gateway-types/typings";
 import { GetAllCollections } from "@/typings";
 import fetchHandler from "../handler";
 import getJson from "@/utils/json/get";

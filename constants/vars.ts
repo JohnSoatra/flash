@@ -14,7 +14,7 @@ const VARS = {
         '/reset',
         '/test',
         // '/account',
-        '/checkout'
+        // '/checkout'
     ],
     HIDE_FOOTER: [
         '/signin',
@@ -23,7 +23,6 @@ const VARS = {
         '/test',
         // '/account'
     ],
-    MEDIA_SERVER: 'http://localhost:9997',
     YEAR: 1000 * 60 * 60 * 24 * 30 * 12,
     MONTH: 1000 * 60 * 60 * 24 * 30,
     WEEK: 1000 * 60 * 60 * 24 * 7,
@@ -76,8 +75,15 @@ const VARS = {
     },
     DURATION: {
         DBCLICK: 200,
-        HIDE_CONTROL: 2500
+        HIDE_CONTROL: 2500,
+        TOAST: {
+            DEFAULT: 3000,
+            CARD: 1250
+        }
     },
+    COOKIE: {
+        ACCESS_TOKEN: '0'
+    }
 }
 
 export default VARS;

@@ -7,16 +7,10 @@ import TabProducts from "@/components/template/product/Tab";
 import { ProductX } from "@/typings";
 
 type Props = {
-    pc: ProductX,
-    smartphone: ProductX,
-    earphone: ProductX,
+    products: (ProductX & { category: string })[]
 }
 
-const Index = ({
-    pc,
-    smartphone,
-    earphone,
-}: Props) => {
+const Index = ({ products }: Props) => {
     return (
         <div className="max-w-5xl mx-auto">
             <div>
@@ -24,11 +18,7 @@ const Index = ({
             </div>
 
             <section>
-                <Collection
-                    pc={pc}
-                    smartphone={smartphone}
-                    earphone={earphone}
-                />
+                <Collection products={products} />
             </section>
 
             <section>
@@ -42,7 +32,6 @@ const Index = ({
             <section>
                 <BuyNow />
             </section>
-
         </div>
   )
 }

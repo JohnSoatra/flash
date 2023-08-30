@@ -1,8 +1,10 @@
 'use client';
 import ShippingProcess from "@/components/template/shipping/ShippingProcess";
 import VARS from "@/constants/vars";
-import { OrderX } from "@/prisma-types/typings";
-import { cardTypeString } from "@/utils/number/cardtype";
+import { OrderX } from "@/gateway-types/typings";
+import { cardTypeString } from "@/utils/number/creditcard/cardtype";
+import round from "@/utils/number/round";
+import withStoreUrl from "@/utils/url/with_store";
 import Image from "next/image";
 
 const Class = {
@@ -63,7 +65,7 @@ const OrderTracking = ({ order }: { order: OrderX }) => {
                                     className="flex space-x-5 items-center">
                                     <div className="relative w-28 h-28 md:w-36 md:h-36">
                                         <Image
-                                            src={VARS.MEDIA_SERVER + productOrder.product.images[0].url}
+                                            src={withStoreUrl(productOrder.product.images[0].url)}
                                             alt={productOrder.product.name}
                                             fill={true}
                                             sizes="100%"
@@ -73,7 +75,7 @@ const OrderTracking = ({ order }: { order: OrderX }) => {
                                     <div className="flex flex-col space-y-5">
                                         <div className="space-y-1">
                                             <p className="font-semibold opacity-80">{productOrder.product.name}</p>
-                                            <p className="text-sm opacity-75">${productOrder.product.price}</p>
+                                            <p className="text-sm opacity-75">${round(productOrder.product.price)}</p>
                                         </div>
                                         <div>
                                             <p className="text-sm opacity-75">Quantity {productOrder.product.quantity}</p>
@@ -95,20 +97,20 @@ const OrderTracking = ({ order }: { order: OrderX }) => {
                         <div>
                             <div className="flex items-center justify-between">
                                 <p className={Class.PriceListDownTitle}>Sub-Total</p>
-                                <p className={Class.PriceListDownValue}>${order.payment?.sub_price}</p>
+                                <p className={Class.PriceListDownValue}>${round(order.payment.sub_price)}</p>
                             </div>
                             <div className="flex items-center justify-between">
                                 <p className={Class.PriceListDownTitle}>Shipping</p>
-                                <p className={Class.PriceListDownValue}>{order.payment?.shipping_price! > 0 && '$'}{order.payment?.shipping_price}</p>
+                                <p className={Class.PriceListDownValue}>${round(order.payment.shipping_price)}</p>
                             </div>
                             <div className="flex items-center justify-between">
                                 <p className={Class.PriceListDownTitle}>Tax</p>
-                                <p className={Class.PriceListDownValue}>{order.payment?.tax_price! > 0 && '$'}{order.payment?.tax_price}</p>
+                                <p className={Class.PriceListDownValue}>${round(order.payment.tax_price)}</p>
                             </div>
                         </div>
                         <div className="flex items-center justify-between">
                             <p className={'font-semibold opacity-75 text-sm md:text-base'}>Total</p>
-                            <p className={'font-semibold opacity-75 text-sm md:text-base'}>${order.payment?.total_price}</p>
+                            <p className={'font-semibold opacity-75 text-sm md:text-base'}>${round(order.payment.total_price)}</p>
                         </div>
                     </div>
                 </div>

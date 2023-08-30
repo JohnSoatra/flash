@@ -1,4 +1,4 @@
-import { SignupRouter } from "@/prisma-types/typings";
+import { SignupRouter } from "@/gateway-types/typings";
 import { Signup } from "@/typings";
 import fetchHandler from "../handler";
 import getJson from "@/utils/json/get";

@@ -1,4 +1,4 @@
-import { GetmanyProductNamesRouter } from "@/prisma-types/typings";
+import { GetmanyProductNamesRouter } from "@/gateway-types/typings";
 import { GetManyProductNames } from "@/typings";
 import fetchHandler from "../../handler";
 import getJson from "@/utils/json/get";

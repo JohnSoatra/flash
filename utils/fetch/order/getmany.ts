@@ -1,5 +1,5 @@
 import { GetManyOrders } from "@/typings";
-import { GetManyOrdersRouter } from "@/prisma-types/typings";
+import { GetManyOrdersRouter } from "@/gateway-types/typings";
 import fetchHandler from "../handler";
 import getJson from "@/utils/json/get";
 

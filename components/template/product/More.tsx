@@ -13,24 +13,22 @@ const MoreProducts = ({
 }: Props) => {
     return (
         <div className='flex items-center justify-end py-10'>
-            <p className='text-sm xl:text-base'>
-                <span className='opacity-60'>Showing&nbsp;</span>
-                <span className='opacity-75'>
-                    {
-                        showing < allCount ?
-                        `${showing} / ${allCount}`:
-                        'all'
-                    }&nbsp;
-                </span>
-                <span className='opacity-60'>products.</span>
-            </p>&nbsp;
+            <span className='opacity-60 text-sm xl:text-base'>
+                Showing&nbsp;
+                {
+                    showing < allCount ?
+                    `${showing} / ${allCount}`:
+                    'all'
+                }&nbsp;
+                products.&nbsp;
+            </span>
             {
                 showing < allCount &&
                     <button
                         type="button"
                         className="text-blue-600 hover:underline font-medium rounded-full text-sm xl:text-base text-center"
                         onClick={showMore}>
-                        <p>Show more</p>
+                        <p>Load more</p>
                     </button>
             }
         </div>

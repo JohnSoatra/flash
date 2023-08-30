@@ -16,7 +16,7 @@ export type UserPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultAr
   name: "User"
   objects: {
     credit_card: CreditCardPayload<ExtArgs> | null
-    card: CardPayload<ExtArgs> | null
+    card: CardPayload<ExtArgs>[]
     loves: LovePayload<ExtArgs>[]
     searches: SearchPayload<ExtArgs>[]
     views: ViewPayload<ExtArgs>[]
@@ -29,9 +29,10 @@ export type UserPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultAr
     username: string
     email: string
     password: string
-    fullname: string
-    phone_number: string
-    address: string
+    type: number
+    fullname: string | null
+    phone_number: string | null
+    address: string | null
     image_color: string
     image_url: string | null
     created_at: Date
@@ -53,11 +54,11 @@ export type ProductPayload<ExtArgs extends $Extensions.Args = $Extensions.Defaul
     category: CategoryPayload<ExtArgs> | null
     brand: BrandPayload<ExtArgs> | null
     model: ModelPayload<ExtArgs> | null
+    cards: CardPayload<ExtArgs>[]
     loves: LovePayload<ExtArgs>[]
     views: ViewPayload<ExtArgs>[]
     colors: ColorPayload<ExtArgs>[]
     product_orders: ProductOrderPayload<ExtArgs>[]
-    cards: CardPayload<ExtArgs>[]
     videos: VideoPayload<ExtArgs>[]
     images: ImagePayload<ExtArgs>[]
   }
@@ -106,8 +107,8 @@ export type CreditCardPayload<ExtArgs extends $Extensions.Args = $Extensions.Def
     expired_month: string
     expired_year: string
     last_four: string
-    created_at: Date | null
-    updated_at: Date | null
+    created_at: Date
+    updated_at: Date
   }, ExtArgs["result"]["creditCard"]>
   composites: {}
 }
@@ -220,13 +221,16 @@ export type Order = runtime.Types.DefaultSelection<OrderPayload>
 export type CardPayload<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
   name: "Card"
   objects: {
-    products: ProductPayload<ExtArgs>[]
     user: UserPayload<ExtArgs>
+    product: ProductPayload<ExtArgs>
   }
   scalars: $Extensions.GetResult<{
     id: string
     user_id: string
-    product_quantities: number[]
+    product_id: string
+    quantity: number
+    created_at: Date
+    updated_at: Date
   }, ExtArgs["result"]["card"]>
   composites: {}
 }
@@ -2904,6 +2908,7 @@ export namespace Prisma {
 
 
   export type UserCountOutputType = {
+    card: number
     loves: number
     searches: number
     views: number
@@ -2913,6 +2918,7 @@ export namespace Prisma {
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    card?: boolean | UserCountOutputTypeCountCardArgs
     loves?: boolean | UserCountOutputTypeCountLovesArgs
     searches?: boolean | UserCountOutputTypeCountSearchesArgs
     views?: boolean | UserCountOutputTypeCountViewsArgs
@@ -2931,6 +2937,14 @@ export namespace Prisma {
      * Select specific fields to fetch from the UserCountOutputType
      */
     select?: UserCountOutputTypeSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountCardArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    where?: CardWhereInput
   }
 
 
@@ -2989,21 +3003,21 @@ export namespace Prisma {
 
 
   export type ProductCountOutputType = {
+    cards: number
     loves: number
     views: number
     colors: number
     product_orders: number
-    cards: number
     videos: number
     images: number
   }
 
   export type ProductCountOutputTypeSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    cards?: boolean | ProductCountOutputTypeCountCardsArgs
     loves?: boolean | ProductCountOutputTypeCountLovesArgs
     views?: boolean | ProductCountOutputTypeCountViewsArgs
     colors?: boolean | ProductCountOutputTypeCountColorsArgs
     product_orders?: boolean | ProductCountOutputTypeCountProduct_ordersArgs
-    cards?: boolean | ProductCountOutputTypeCountCardsArgs
     videos?: boolean | ProductCountOutputTypeCountVideosArgs
     images?: boolean | ProductCountOutputTypeCountImagesArgs
   }
@@ -3018,6 +3032,14 @@ export namespace Prisma {
      * Select specific fields to fetch from the ProductCountOutputType
      */
     select?: ProductCountOutputTypeSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * ProductCountOutputType without action
+   */
+  export type ProductCountOutputTypeCountCardsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    where?: CardWhereInput
   }
 
 
@@ -3050,14 +3072,6 @@ export namespace Prisma {
    */
   export type ProductCountOutputTypeCountProduct_ordersArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     where?: ProductOrderWhereInput
-  }
-
-
-  /**
-   * ProductCountOutputType without action
-   */
-  export type ProductCountOutputTypeCountCardsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    where?: CardWhereInput
   }
 
 
@@ -3109,41 +3123,6 @@ export namespace Prisma {
    */
   export type OrderCountOutputTypeCountProduct_ordersArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
     where?: ProductOrderWhereInput
-  }
-
-
-
-  /**
-   * Count Type CardCountOutputType
-   */
-
-
-  export type CardCountOutputType = {
-    products: number
-  }
-
-  export type CardCountOutputTypeSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    products?: boolean | CardCountOutputTypeCountProductsArgs
-  }
-
-  // Custom InputTypes
-
-  /**
-   * CardCountOutputType without action
-   */
-  export type CardCountOutputTypeArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the CardCountOutputType
-     */
-    select?: CardCountOutputTypeSelect<ExtArgs> | null
-  }
-
-
-  /**
-   * CardCountOutputType without action
-   */
-  export type CardCountOutputTypeCountProductsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    where?: ProductWhereInput
   }
 
 
@@ -3364,8 +3343,18 @@ export namespace Prisma {
 
   export type AggregateUser = {
     _count: UserCountAggregateOutputType | null
+    _avg: UserAvgAggregateOutputType | null
+    _sum: UserSumAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
+  }
+
+  export type UserAvgAggregateOutputType = {
+    type: number | null
+  }
+
+  export type UserSumAggregateOutputType = {
+    type: number | null
   }
 
   export type UserMinAggregateOutputType = {
@@ -3373,6 +3362,7 @@ export namespace Prisma {
     username: string | null
     email: string | null
     password: string | null
+    type: number | null
     fullname: string | null
     phone_number: string | null
     address: string | null
@@ -3387,6 +3377,7 @@ export namespace Prisma {
     username: string | null
     email: string | null
     password: string | null
+    type: number | null
     fullname: string | null
     phone_number: string | null
     address: string | null
@@ -3401,6 +3392,7 @@ export namespace Prisma {
     username: number
     email: number
     password: number
+    type: number
     fullname: number
     phone_number: number
     address: number
@@ -3412,11 +3404,20 @@ export namespace Prisma {
   }
 
 
+  export type UserAvgAggregateInputType = {
+    type?: true
+  }
+
+  export type UserSumAggregateInputType = {
+    type?: true
+  }
+
   export type UserMinAggregateInputType = {
     id?: true
     username?: true
     email?: true
     password?: true
+    type?: true
     fullname?: true
     phone_number?: true
     address?: true
@@ -3431,6 +3432,7 @@ export namespace Prisma {
     username?: true
     email?: true
     password?: true
+    type?: true
     fullname?: true
     phone_number?: true
     address?: true
@@ -3445,6 +3447,7 @@ export namespace Prisma {
     username?: true
     email?: true
     password?: true
+    type?: true
     fullname?: true
     phone_number?: true
     address?: true
@@ -3493,6 +3496,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: UserAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: UserSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: UserMinAggregateInputType
@@ -3523,6 +3538,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: UserCountAggregateInputType | true
+    _avg?: UserAvgAggregateInputType
+    _sum?: UserSumAggregateInputType
     _min?: UserMinAggregateInputType
     _max?: UserMaxAggregateInputType
   }
@@ -3533,14 +3550,17 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    fullname: string
-    phone_number: string
-    address: string
+    type: number
+    fullname: string | null
+    phone_number: string | null
+    address: string | null
     image_color: string
     image_url: string | null
     created_at: Date
     updated_at: Date
     _count: UserCountAggregateOutputType | null
+    _avg: UserAvgAggregateOutputType | null
+    _sum: UserSumAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
   }
@@ -3564,6 +3584,7 @@ export namespace Prisma {
     username?: boolean
     email?: boolean
     password?: boolean
+    type?: boolean
     fullname?: boolean
     phone_number?: boolean
     address?: boolean
@@ -3587,6 +3608,7 @@ export namespace Prisma {
     username?: boolean
     email?: boolean
     password?: boolean
+    type?: boolean
     fullname?: boolean
     phone_number?: boolean
     address?: boolean
@@ -3983,7 +4005,7 @@ export namespace Prisma {
 
     credit_card<T extends User$credit_cardArgs<ExtArgs> = {}>(args?: Subset<T, User$credit_cardArgs<ExtArgs>>): Prisma__CreditCardClient<$Types.GetResult<CreditCardPayload<ExtArgs>, T, 'findUnique'> | Null, never, ExtArgs>;
 
-    card<T extends User$cardArgs<ExtArgs> = {}>(args?: Subset<T, User$cardArgs<ExtArgs>>): Prisma__CardClient<$Types.GetResult<CardPayload<ExtArgs>, T, 'findUnique'> | Null, never, ExtArgs>;
+    card<T extends User$cardArgs<ExtArgs> = {}>(args?: Subset<T, User$cardArgs<ExtArgs>>): Prisma.PrismaPromise<$Types.GetResult<CardPayload<ExtArgs>, T, 'findMany'>| Null>;
 
     loves<T extends User$lovesArgs<ExtArgs> = {}>(args?: Subset<T, User$lovesArgs<ExtArgs>>): Prisma.PrismaPromise<$Types.GetResult<LovePayload<ExtArgs>, T, 'findMany'>| Null>;
 
@@ -4030,6 +4052,7 @@ export namespace Prisma {
     readonly username: FieldRef<"User", 'String'>
     readonly email: FieldRef<"User", 'String'>
     readonly password: FieldRef<"User", 'String'>
+    readonly type: FieldRef<"User", 'Int'>
     readonly fullname: FieldRef<"User", 'String'>
     readonly phone_number: FieldRef<"User", 'String'>
     readonly address: FieldRef<"User", 'String'>
@@ -4377,6 +4400,11 @@ export namespace Prisma {
      */
     include?: CardInclude<ExtArgs> | null
     where?: CardWhereInput
+    orderBy?: CardOrderByWithRelationAndSearchRelevanceInput | CardOrderByWithRelationAndSearchRelevanceInput[]
+    cursor?: CardWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CardScalarFieldEnum | CardScalarFieldEnum[]
   }
 
 
@@ -4883,11 +4911,11 @@ export namespace Prisma {
     category?: boolean | Product$categoryArgs<ExtArgs>
     brand?: boolean | Product$brandArgs<ExtArgs>
     model?: boolean | Product$modelArgs<ExtArgs>
+    cards?: boolean | Product$cardsArgs<ExtArgs>
     loves?: boolean | Product$lovesArgs<ExtArgs>
     views?: boolean | Product$viewsArgs<ExtArgs>
     colors?: boolean | Product$colorsArgs<ExtArgs>
     product_orders?: boolean | Product$product_ordersArgs<ExtArgs>
-    cards?: boolean | Product$cardsArgs<ExtArgs>
     videos?: boolean | Product$videosArgs<ExtArgs>
     images?: boolean | Product$imagesArgs<ExtArgs>
     _count?: boolean | ProductCountOutputTypeArgs<ExtArgs>
@@ -4923,11 +4951,11 @@ export namespace Prisma {
     category?: boolean | Product$categoryArgs<ExtArgs>
     brand?: boolean | Product$brandArgs<ExtArgs>
     model?: boolean | Product$modelArgs<ExtArgs>
+    cards?: boolean | Product$cardsArgs<ExtArgs>
     loves?: boolean | Product$lovesArgs<ExtArgs>
     views?: boolean | Product$viewsArgs<ExtArgs>
     colors?: boolean | Product$colorsArgs<ExtArgs>
     product_orders?: boolean | Product$product_ordersArgs<ExtArgs>
-    cards?: boolean | Product$cardsArgs<ExtArgs>
     videos?: boolean | Product$videosArgs<ExtArgs>
     images?: boolean | Product$imagesArgs<ExtArgs>
     _count?: boolean | ProductCountOutputTypeArgs<ExtArgs>
@@ -5316,6 +5344,8 @@ export namespace Prisma {
 
     model<T extends Product$modelArgs<ExtArgs> = {}>(args?: Subset<T, Product$modelArgs<ExtArgs>>): Prisma__ModelClient<$Types.GetResult<ModelPayload<ExtArgs>, T, 'findUnique'> | Null, never, ExtArgs>;
 
+    cards<T extends Product$cardsArgs<ExtArgs> = {}>(args?: Subset<T, Product$cardsArgs<ExtArgs>>): Prisma.PrismaPromise<$Types.GetResult<CardPayload<ExtArgs>, T, 'findMany'>| Null>;
+
     loves<T extends Product$lovesArgs<ExtArgs> = {}>(args?: Subset<T, Product$lovesArgs<ExtArgs>>): Prisma.PrismaPromise<$Types.GetResult<LovePayload<ExtArgs>, T, 'findMany'>| Null>;
 
     views<T extends Product$viewsArgs<ExtArgs> = {}>(args?: Subset<T, Product$viewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Types.GetResult<ViewPayload<ExtArgs>, T, 'findMany'>| Null>;
@@ -5323,8 +5353,6 @@ export namespace Prisma {
     colors<T extends Product$colorsArgs<ExtArgs> = {}>(args?: Subset<T, Product$colorsArgs<ExtArgs>>): Prisma.PrismaPromise<$Types.GetResult<ColorPayload<ExtArgs>, T, 'findMany'>| Null>;
 
     product_orders<T extends Product$product_ordersArgs<ExtArgs> = {}>(args?: Subset<T, Product$product_ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Types.GetResult<ProductOrderPayload<ExtArgs>, T, 'findMany'>| Null>;
-
-    cards<T extends Product$cardsArgs<ExtArgs> = {}>(args?: Subset<T, Product$cardsArgs<ExtArgs>>): Prisma.PrismaPromise<$Types.GetResult<CardPayload<ExtArgs>, T, 'findMany'>| Null>;
 
     videos<T extends Product$videosArgs<ExtArgs> = {}>(args?: Subset<T, Product$videosArgs<ExtArgs>>): Prisma.PrismaPromise<$Types.GetResult<VideoPayload<ExtArgs>, T, 'findMany'>| Null>;
 
@@ -5772,6 +5800,27 @@ export namespace Prisma {
 
 
   /**
+   * Product.cards
+   */
+  export type Product$cardsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Card
+     */
+    select?: CardSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     */
+    include?: CardInclude<ExtArgs> | null
+    where?: CardWhereInput
+    orderBy?: CardOrderByWithRelationAndSearchRelevanceInput | CardOrderByWithRelationAndSearchRelevanceInput[]
+    cursor?: CardWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CardScalarFieldEnum | CardScalarFieldEnum[]
+  }
+
+
+  /**
    * Product.loves
    */
   export type Product$lovesArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
@@ -5852,27 +5901,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ProductOrderScalarFieldEnum | ProductOrderScalarFieldEnum[]
-  }
-
-
-  /**
-   * Product.cards
-   */
-  export type Product$cardsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Card
-     */
-    select?: CardSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: CardInclude<ExtArgs> | null
-    where?: CardWhereInput
-    orderBy?: CardOrderByWithRelationAndSearchRelevanceInput | CardOrderByWithRelationAndSearchRelevanceInput[]
-    cursor?: CardWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: CardScalarFieldEnum | CardScalarFieldEnum[]
   }
 
 
@@ -6140,8 +6168,8 @@ export namespace Prisma {
     expired_month: string
     expired_year: string
     last_four: string
-    created_at: Date | null
-    updated_at: Date | null
+    created_at: Date
+    updated_at: Date
     _count: CreditCardCountAggregateOutputType | null
     _avg: CreditCardAvgAggregateOutputType | null
     _sum: CreditCardSumAggregateOutputType | null
@@ -10966,53 +10994,75 @@ export namespace Prisma {
   }
 
   export type CardAvgAggregateOutputType = {
-    product_quantities: number | null
+    quantity: number | null
   }
 
   export type CardSumAggregateOutputType = {
-    product_quantities: number[] | null
+    quantity: number | null
   }
 
   export type CardMinAggregateOutputType = {
     id: string | null
     user_id: string | null
+    product_id: string | null
+    quantity: number | null
+    created_at: Date | null
+    updated_at: Date | null
   }
 
   export type CardMaxAggregateOutputType = {
     id: string | null
     user_id: string | null
+    product_id: string | null
+    quantity: number | null
+    created_at: Date | null
+    updated_at: Date | null
   }
 
   export type CardCountAggregateOutputType = {
     id: number
     user_id: number
-    product_quantities: number
+    product_id: number
+    quantity: number
+    created_at: number
+    updated_at: number
     _all: number
   }
 
 
   export type CardAvgAggregateInputType = {
-    product_quantities?: true
+    quantity?: true
   }
 
   export type CardSumAggregateInputType = {
-    product_quantities?: true
+    quantity?: true
   }
 
   export type CardMinAggregateInputType = {
     id?: true
     user_id?: true
+    product_id?: true
+    quantity?: true
+    created_at?: true
+    updated_at?: true
   }
 
   export type CardMaxAggregateInputType = {
     id?: true
     user_id?: true
+    product_id?: true
+    quantity?: true
+    created_at?: true
+    updated_at?: true
   }
 
   export type CardCountAggregateInputType = {
     id?: true
     user_id?: true
-    product_quantities?: true
+    product_id?: true
+    quantity?: true
+    created_at?: true
+    updated_at?: true
     _all?: true
   }
 
@@ -11106,7 +11156,10 @@ export namespace Prisma {
   export type CardGroupByOutputType = {
     id: string
     user_id: string
-    product_quantities: number[]
+    product_id: string
+    quantity: number
+    created_at: Date
+    updated_at: Date
     _count: CardCountAggregateOutputType | null
     _avg: CardAvgAggregateOutputType | null
     _sum: CardSumAggregateOutputType | null
@@ -11131,22 +11184,26 @@ export namespace Prisma {
   export type CardSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     user_id?: boolean
-    product_quantities?: boolean
-    products?: boolean | Card$productsArgs<ExtArgs>
+    product_id?: boolean
+    quantity?: boolean
+    created_at?: boolean
+    updated_at?: boolean
     user?: boolean | UserArgs<ExtArgs>
-    _count?: boolean | CardCountOutputTypeArgs<ExtArgs>
+    product?: boolean | ProductArgs<ExtArgs>
   }, ExtArgs["result"]["card"]>
 
   export type CardSelectScalar = {
     id?: boolean
     user_id?: boolean
-    product_quantities?: boolean
+    product_id?: boolean
+    quantity?: boolean
+    created_at?: boolean
+    updated_at?: boolean
   }
 
   export type CardInclude<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    products?: boolean | Card$productsArgs<ExtArgs>
     user?: boolean | UserArgs<ExtArgs>
-    _count?: boolean | CardCountOutputTypeArgs<ExtArgs>
+    product?: boolean | ProductArgs<ExtArgs>
   }
 
 
@@ -11522,9 +11579,9 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: 'PrismaPromise';
     constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
 
-    products<T extends Card$productsArgs<ExtArgs> = {}>(args?: Subset<T, Card$productsArgs<ExtArgs>>): Prisma.PrismaPromise<$Types.GetResult<ProductPayload<ExtArgs>, T, 'findMany'>| Null>;
-
     user<T extends UserArgs<ExtArgs> = {}>(args?: Subset<T, UserArgs<ExtArgs>>): Prisma__UserClient<$Types.GetResult<UserPayload<ExtArgs>, T, 'findUnique'> | Null, never, ExtArgs>;
+
+    product<T extends ProductArgs<ExtArgs> = {}>(args?: Subset<T, ProductArgs<ExtArgs>>): Prisma__ProductClient<$Types.GetResult<ProductPayload<ExtArgs>, T, 'findUnique'> | Null, never, ExtArgs>;
 
     private get _document();
     /**
@@ -11557,7 +11614,10 @@ export namespace Prisma {
   interface CardFieldRefs {
     readonly id: FieldRef<"Card", 'String'>
     readonly user_id: FieldRef<"Card", 'String'>
-    readonly product_quantities: FieldRef<"Card", 'Int[]'>
+    readonly product_id: FieldRef<"Card", 'String'>
+    readonly quantity: FieldRef<"Card", 'Int'>
+    readonly created_at: FieldRef<"Card", 'DateTime'>
+    readonly updated_at: FieldRef<"Card", 'DateTime'>
   }
     
 
@@ -11866,27 +11926,6 @@ export namespace Prisma {
      * Filter which Cards to delete
      */
     where?: CardWhereInput
-  }
-
-
-  /**
-   * Card.products
-   */
-  export type Card$productsArgs<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Product
-     */
-    select?: ProductSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: ProductInclude<ExtArgs> | null
-    where?: ProductWhereInput
-    orderBy?: ProductOrderByWithRelationAndSearchRelevanceInput | ProductOrderByWithRelationAndSearchRelevanceInput[]
-    cursor?: ProductWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: ProductScalarFieldEnum | ProductScalarFieldEnum[]
   }
 
 
@@ -24344,6 +24383,7 @@ export namespace Prisma {
     username: 'username',
     email: 'email',
     password: 'password',
+    type: 'type',
     fullname: 'fullname',
     phone_number: 'phone_number',
     address: 'address',
@@ -24460,7 +24500,10 @@ export namespace Prisma {
   export const CardScalarFieldEnum: {
     id: 'id',
     user_id: 'user_id',
-    product_quantities: 'product_quantities'
+    product_id: 'product_id',
+    quantity: 'quantity',
+    created_at: 'created_at',
+    updated_at: 'updated_at'
   };
 
   export type CardScalarFieldEnum = (typeof CardScalarFieldEnum)[keyof typeof CardScalarFieldEnum]
@@ -24732,7 +24775,8 @@ export namespace Prisma {
 
   export const CardOrderByRelevanceFieldEnum: {
     id: 'id',
-    user_id: 'user_id'
+    user_id: 'user_id',
+    product_id: 'product_id'
   };
 
   export type CardOrderByRelevanceFieldEnum = (typeof CardOrderByRelevanceFieldEnum)[keyof typeof CardOrderByRelevanceFieldEnum]
@@ -24881,6 +24925,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -24909,20 +24967,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-  /**
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
@@ -24940,15 +24984,16 @@ export namespace Prisma {
     username?: StringFilter<"User"> | string
     email?: StringFilter<"User"> | string
     password?: StringFilter<"User"> | string
-    fullname?: StringFilter<"User"> | string
-    phone_number?: StringFilter<"User"> | string
-    address?: StringFilter<"User"> | string
+    type?: IntFilter<"User"> | number
+    fullname?: StringNullableFilter<"User"> | string | null
+    phone_number?: StringNullableFilter<"User"> | string | null
+    address?: StringNullableFilter<"User"> | string | null
     image_color?: StringFilter<"User"> | string
     image_url?: StringNullableFilter<"User"> | string | null
     created_at?: DateTimeFilter<"User"> | Date | string
     updated_at?: DateTimeFilter<"User"> | Date | string
     credit_card?: XOR<CreditCardNullableRelationFilter, CreditCardWhereInput> | null
-    card?: XOR<CardNullableRelationFilter, CardWhereInput> | null
+    card?: CardListRelationFilter
     loves?: LoveListRelationFilter
     searches?: SearchListRelationFilter
     views?: ViewListRelationFilter
@@ -24962,15 +25007,16 @@ export namespace Prisma {
     username?: SortOrder
     email?: SortOrder
     password?: SortOrder
-    fullname?: SortOrder
-    phone_number?: SortOrder
-    address?: SortOrder
+    type?: SortOrder
+    fullname?: SortOrderInput | SortOrder
+    phone_number?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
     image_color?: SortOrder
     image_url?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     credit_card?: CreditCardOrderByWithRelationAndSearchRelevanceInput
-    card?: CardOrderByWithRelationAndSearchRelevanceInput
+    card?: CardOrderByRelationAggregateInput
     loves?: LoveOrderByRelationAggregateInput
     searches?: SearchOrderByRelationAggregateInput
     views?: ViewOrderByRelationAggregateInput
@@ -24988,15 +25034,16 @@ export namespace Prisma {
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
     password?: StringFilter<"User"> | string
-    fullname?: StringFilter<"User"> | string
-    phone_number?: StringFilter<"User"> | string
-    address?: StringFilter<"User"> | string
+    type?: IntFilter<"User"> | number
+    fullname?: StringNullableFilter<"User"> | string | null
+    phone_number?: StringNullableFilter<"User"> | string | null
+    address?: StringNullableFilter<"User"> | string | null
     image_color?: StringFilter<"User"> | string
     image_url?: StringNullableFilter<"User"> | string | null
     created_at?: DateTimeFilter<"User"> | Date | string
     updated_at?: DateTimeFilter<"User"> | Date | string
     credit_card?: XOR<CreditCardNullableRelationFilter, CreditCardWhereInput> | null
-    card?: XOR<CardNullableRelationFilter, CardWhereInput> | null
+    card?: CardListRelationFilter
     loves?: LoveListRelationFilter
     searches?: SearchListRelationFilter
     views?: ViewListRelationFilter
@@ -25010,16 +25057,19 @@ export namespace Prisma {
     username?: SortOrder
     email?: SortOrder
     password?: SortOrder
-    fullname?: SortOrder
-    phone_number?: SortOrder
-    address?: SortOrder
+    type?: SortOrder
+    fullname?: SortOrderInput | SortOrder
+    phone_number?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
     image_color?: SortOrder
     image_url?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     _count?: UserCountOrderByAggregateInput
+    _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
+    _sum?: UserSumOrderByAggregateInput
   }
 
   export type UserScalarWhereWithAggregatesInput = {
@@ -25030,9 +25080,10 @@ export namespace Prisma {
     username?: StringWithAggregatesFilter<"User"> | string
     email?: StringWithAggregatesFilter<"User"> | string
     password?: StringWithAggregatesFilter<"User"> | string
-    fullname?: StringWithAggregatesFilter<"User"> | string
-    phone_number?: StringWithAggregatesFilter<"User"> | string
-    address?: StringWithAggregatesFilter<"User"> | string
+    type?: IntWithAggregatesFilter<"User"> | number
+    fullname?: StringNullableWithAggregatesFilter<"User"> | string | null
+    phone_number?: StringNullableWithAggregatesFilter<"User"> | string | null
+    address?: StringNullableWithAggregatesFilter<"User"> | string | null
     image_color?: StringWithAggregatesFilter<"User"> | string
     image_url?: StringNullableWithAggregatesFilter<"User"> | string | null
     created_at?: DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -25069,11 +25120,11 @@ export namespace Prisma {
     category?: XOR<CategoryNullableRelationFilter, CategoryWhereInput> | null
     brand?: XOR<BrandNullableRelationFilter, BrandWhereInput> | null
     model?: XOR<ModelNullableRelationFilter, ModelWhereInput> | null
+    cards?: CardListRelationFilter
     loves?: LoveListRelationFilter
     views?: ViewListRelationFilter
     colors?: ColorListRelationFilter
     product_orders?: ProductOrderListRelationFilter
-    cards?: CardListRelationFilter
     videos?: VideoListRelationFilter
     images?: ImageListRelationFilter
   }
@@ -25105,11 +25156,11 @@ export namespace Prisma {
     category?: CategoryOrderByWithRelationAndSearchRelevanceInput
     brand?: BrandOrderByWithRelationAndSearchRelevanceInput
     model?: ModelOrderByWithRelationAndSearchRelevanceInput
+    cards?: CardOrderByRelationAggregateInput
     loves?: LoveOrderByRelationAggregateInput
     views?: ViewOrderByRelationAggregateInput
     colors?: ColorOrderByRelationAggregateInput
     product_orders?: ProductOrderOrderByRelationAggregateInput
-    cards?: CardOrderByRelationAggregateInput
     videos?: VideoOrderByRelationAggregateInput
     images?: ImageOrderByRelationAggregateInput
     _relevance?: ProductOrderByRelevanceInput
@@ -25145,11 +25196,11 @@ export namespace Prisma {
     category?: XOR<CategoryNullableRelationFilter, CategoryWhereInput> | null
     brand?: XOR<BrandNullableRelationFilter, BrandWhereInput> | null
     model?: XOR<ModelNullableRelationFilter, ModelWhereInput> | null
+    cards?: CardListRelationFilter
     loves?: LoveListRelationFilter
     views?: ViewListRelationFilter
     colors?: ColorListRelationFilter
     product_orders?: ProductOrderListRelationFilter
-    cards?: CardListRelationFilter
     videos?: VideoListRelationFilter
     images?: ImageListRelationFilter
   }, "id">
@@ -25222,8 +25273,8 @@ export namespace Prisma {
     expired_month?: StringFilter<"CreditCard"> | string
     expired_year?: StringFilter<"CreditCard"> | string
     last_four?: StringFilter<"CreditCard"> | string
-    created_at?: DateTimeNullableFilter<"CreditCard"> | Date | string | null
-    updated_at?: DateTimeNullableFilter<"CreditCard"> | Date | string | null
+    created_at?: DateTimeFilter<"CreditCard"> | Date | string
+    updated_at?: DateTimeFilter<"CreditCard"> | Date | string
     user?: XOR<UserRelationFilter, UserWhereInput>
   }
 
@@ -25236,8 +25287,8 @@ export namespace Prisma {
     expired_month?: SortOrder
     expired_year?: SortOrder
     last_four?: SortOrder
-    created_at?: SortOrderInput | SortOrder
-    updated_at?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
     user?: UserOrderByWithRelationAndSearchRelevanceInput
     _relevance?: CreditCardOrderByRelevanceInput
   }
@@ -25254,8 +25305,8 @@ export namespace Prisma {
     expired_month?: StringFilter<"CreditCard"> | string
     expired_year?: StringFilter<"CreditCard"> | string
     last_four?: StringFilter<"CreditCard"> | string
-    created_at?: DateTimeNullableFilter<"CreditCard"> | Date | string | null
-    updated_at?: DateTimeNullableFilter<"CreditCard"> | Date | string | null
+    created_at?: DateTimeFilter<"CreditCard"> | Date | string
+    updated_at?: DateTimeFilter<"CreditCard"> | Date | string
     user?: XOR<UserRelationFilter, UserWhereInput>
   }, "id" | "user_id">
 
@@ -25268,8 +25319,8 @@ export namespace Prisma {
     expired_month?: SortOrder
     expired_year?: SortOrder
     last_four?: SortOrder
-    created_at?: SortOrderInput | SortOrder
-    updated_at?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
     _count?: CreditCardCountOrderByAggregateInput
     _avg?: CreditCardAvgOrderByAggregateInput
     _max?: CreditCardMaxOrderByAggregateInput
@@ -25289,8 +25340,8 @@ export namespace Prisma {
     expired_month?: StringWithAggregatesFilter<"CreditCard"> | string
     expired_year?: StringWithAggregatesFilter<"CreditCard"> | string
     last_four?: StringWithAggregatesFilter<"CreditCard"> | string
-    created_at?: DateTimeNullableWithAggregatesFilter<"CreditCard"> | Date | string | null
-    updated_at?: DateTimeNullableWithAggregatesFilter<"CreditCard"> | Date | string | null
+    created_at?: DateTimeWithAggregatesFilter<"CreditCard"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"CreditCard"> | Date | string
   }
 
   export type PaymentWhereInput = {
@@ -25618,35 +25669,48 @@ export namespace Prisma {
     NOT?: CardWhereInput | CardWhereInput[]
     id?: StringFilter<"Card"> | string
     user_id?: StringFilter<"Card"> | string
-    product_quantities?: IntNullableListFilter<"Card">
-    products?: ProductListRelationFilter
+    product_id?: StringFilter<"Card"> | string
+    quantity?: IntFilter<"Card"> | number
+    created_at?: DateTimeFilter<"Card"> | Date | string
+    updated_at?: DateTimeFilter<"Card"> | Date | string
     user?: XOR<UserRelationFilter, UserWhereInput>
+    product?: XOR<ProductRelationFilter, ProductWhereInput>
   }
 
   export type CardOrderByWithRelationAndSearchRelevanceInput = {
     id?: SortOrder
     user_id?: SortOrder
-    product_quantities?: SortOrder
-    products?: ProductOrderByRelationAggregateInput
+    product_id?: SortOrder
+    quantity?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
     user?: UserOrderByWithRelationAndSearchRelevanceInput
+    product?: ProductOrderByWithRelationAndSearchRelevanceInput
     _relevance?: CardOrderByRelevanceInput
   }
 
   export type CardWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    user_id?: string
+    user_id_product_id?: CardUser_idProduct_idCompoundUniqueInput
     AND?: CardWhereInput | CardWhereInput[]
     OR?: CardWhereInput[]
     NOT?: CardWhereInput | CardWhereInput[]
-    product_quantities?: IntNullableListFilter<"Card">
-    products?: ProductListRelationFilter
+    user_id?: StringFilter<"Card"> | string
+    product_id?: StringFilter<"Card"> | string
+    quantity?: IntFilter<"Card"> | number
+    created_at?: DateTimeFilter<"Card"> | Date | string
+    updated_at?: DateTimeFilter<"Card"> | Date | string
     user?: XOR<UserRelationFilter, UserWhereInput>
-  }, "id" | "user_id">
+    product?: XOR<ProductRelationFilter, ProductWhereInput>
+  }, "id" | "user_id_product_id">
 
   export type CardOrderByWithAggregationInput = {
     id?: SortOrder
     user_id?: SortOrder
-    product_quantities?: SortOrder
+    product_id?: SortOrder
+    quantity?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
     _count?: CardCountOrderByAggregateInput
     _avg?: CardAvgOrderByAggregateInput
     _max?: CardMaxOrderByAggregateInput
@@ -25660,7 +25724,10 @@ export namespace Prisma {
     NOT?: CardScalarWhereWithAggregatesInput | CardScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Card"> | string
     user_id?: StringWithAggregatesFilter<"Card"> | string
-    product_quantities?: IntNullableListFilter<"Card">
+    product_id?: StringWithAggregatesFilter<"Card"> | string
+    quantity?: IntWithAggregatesFilter<"Card"> | number
+    created_at?: DateTimeWithAggregatesFilter<"Card"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"Card"> | Date | string
   }
 
   export type SearchWhereInput = {
@@ -26495,15 +26562,16 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    fullname?: string
-    phone_number?: string
-    address?: string
+    type?: number
+    fullname?: string | null
+    phone_number?: string | null
+    address?: string | null
     image_color: string
     image_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     credit_card?: CreditCardCreateNestedOneWithoutUserInput
-    card?: CardCreateNestedOneWithoutUserInput
+    card?: CardCreateNestedManyWithoutUserInput
     loves?: LoveCreateNestedManyWithoutUserInput
     searches?: SearchCreateNestedManyWithoutUserInput
     views?: ViewCreateNestedManyWithoutUserInput
@@ -26517,15 +26585,16 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    fullname?: string
-    phone_number?: string
-    address?: string
+    type?: number
+    fullname?: string | null
+    phone_number?: string | null
+    address?: string | null
     image_color: string
     image_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     credit_card?: CreditCardUncheckedCreateNestedOneWithoutUserInput
-    card?: CardUncheckedCreateNestedOneWithoutUserInput
+    card?: CardUncheckedCreateNestedManyWithoutUserInput
     loves?: LoveUncheckedCreateNestedManyWithoutUserInput
     searches?: SearchUncheckedCreateNestedManyWithoutUserInput
     views?: ViewUncheckedCreateNestedManyWithoutUserInput
@@ -26539,15 +26608,16 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    fullname?: StringFieldUpdateOperationsInput | string
-    phone_number?: StringFieldUpdateOperationsInput | string
-    address?: StringFieldUpdateOperationsInput | string
+    type?: IntFieldUpdateOperationsInput | number
+    fullname?: NullableStringFieldUpdateOperationsInput | string | null
+    phone_number?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     image_color?: StringFieldUpdateOperationsInput | string
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     credit_card?: CreditCardUpdateOneWithoutUserNestedInput
-    card?: CardUpdateOneWithoutUserNestedInput
+    card?: CardUpdateManyWithoutUserNestedInput
     loves?: LoveUpdateManyWithoutUserNestedInput
     searches?: SearchUpdateManyWithoutUserNestedInput
     views?: ViewUpdateManyWithoutUserNestedInput
@@ -26561,15 +26631,16 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    fullname?: StringFieldUpdateOperationsInput | string
-    phone_number?: StringFieldUpdateOperationsInput | string
-    address?: StringFieldUpdateOperationsInput | string
+    type?: IntFieldUpdateOperationsInput | number
+    fullname?: NullableStringFieldUpdateOperationsInput | string | null
+    phone_number?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     image_color?: StringFieldUpdateOperationsInput | string
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     credit_card?: CreditCardUncheckedUpdateOneWithoutUserNestedInput
-    card?: CardUncheckedUpdateOneWithoutUserNestedInput
+    card?: CardUncheckedUpdateManyWithoutUserNestedInput
     loves?: LoveUncheckedUpdateManyWithoutUserNestedInput
     searches?: SearchUncheckedUpdateManyWithoutUserNestedInput
     views?: ViewUncheckedUpdateManyWithoutUserNestedInput
@@ -26583,9 +26654,10 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    fullname?: string
-    phone_number?: string
-    address?: string
+    type?: number
+    fullname?: string | null
+    phone_number?: string | null
+    address?: string | null
     image_color: string
     image_url?: string | null
     created_at?: Date | string
@@ -26597,9 +26669,10 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    fullname?: StringFieldUpdateOperationsInput | string
-    phone_number?: StringFieldUpdateOperationsInput | string
-    address?: StringFieldUpdateOperationsInput | string
+    type?: IntFieldUpdateOperationsInput | number
+    fullname?: NullableStringFieldUpdateOperationsInput | string | null
+    phone_number?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     image_color?: StringFieldUpdateOperationsInput | string
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26611,9 +26684,10 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    fullname?: StringFieldUpdateOperationsInput | string
-    phone_number?: StringFieldUpdateOperationsInput | string
-    address?: StringFieldUpdateOperationsInput | string
+    type?: IntFieldUpdateOperationsInput | number
+    fullname?: NullableStringFieldUpdateOperationsInput | string | null
+    phone_number?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     image_color?: StringFieldUpdateOperationsInput | string
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26643,11 +26717,11 @@ export namespace Prisma {
     category?: CategoryCreateNestedOneWithoutProductsInput
     brand?: BrandCreateNestedOneWithoutProductsInput
     model?: ModelCreateNestedOneWithoutProductsInput
+    cards?: CardCreateNestedManyWithoutProductInput
     loves?: LoveCreateNestedManyWithoutProductInput
     views?: ViewCreateNestedManyWithoutProductInput
     colors?: ColorCreateNestedManyWithoutProductsInput
     product_orders?: ProductOrderCreateNestedManyWithoutProductInput
-    cards?: CardCreateNestedManyWithoutProductsInput
     videos?: VideoCreateNestedManyWithoutProductInput
     images?: ImageCreateNestedManyWithoutProductInput
   }
@@ -26675,11 +26749,11 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     detail?: DetailUncheckedCreateNestedOneWithoutProductInput
+    cards?: CardUncheckedCreateNestedManyWithoutProductInput
     loves?: LoveUncheckedCreateNestedManyWithoutProductInput
     views?: ViewUncheckedCreateNestedManyWithoutProductInput
     colors?: ColorUncheckedCreateNestedManyWithoutProductsInput
     product_orders?: ProductOrderUncheckedCreateNestedManyWithoutProductInput
-    cards?: CardUncheckedCreateNestedManyWithoutProductsInput
     videos?: VideoUncheckedCreateNestedManyWithoutProductInput
     images?: ImageUncheckedCreateNestedManyWithoutProductInput
   }
@@ -26707,11 +26781,11 @@ export namespace Prisma {
     category?: CategoryUpdateOneWithoutProductsNestedInput
     brand?: BrandUpdateOneWithoutProductsNestedInput
     model?: ModelUpdateOneWithoutProductsNestedInput
+    cards?: CardUpdateManyWithoutProductNestedInput
     loves?: LoveUpdateManyWithoutProductNestedInput
     views?: ViewUpdateManyWithoutProductNestedInput
     colors?: ColorUpdateManyWithoutProductsNestedInput
     product_orders?: ProductOrderUpdateManyWithoutProductNestedInput
-    cards?: CardUpdateManyWithoutProductsNestedInput
     videos?: VideoUpdateManyWithoutProductNestedInput
     images?: ImageUpdateManyWithoutProductNestedInput
   }
@@ -26739,11 +26813,11 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     detail?: DetailUncheckedUpdateOneWithoutProductNestedInput
+    cards?: CardUncheckedUpdateManyWithoutProductNestedInput
     loves?: LoveUncheckedUpdateManyWithoutProductNestedInput
     views?: ViewUncheckedUpdateManyWithoutProductNestedInput
     colors?: ColorUncheckedUpdateManyWithoutProductsNestedInput
     product_orders?: ProductOrderUncheckedUpdateManyWithoutProductNestedInput
-    cards?: CardUncheckedUpdateManyWithoutProductsNestedInput
     videos?: VideoUncheckedUpdateManyWithoutProductNestedInput
     images?: ImageUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -26824,8 +26898,8 @@ export namespace Prisma {
     expired_month: string
     expired_year: string
     last_four: string
-    created_at?: Date | string | null
-    updated_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
     user: UserCreateNestedOneWithoutCredit_cardInput
   }
 
@@ -26838,8 +26912,8 @@ export namespace Prisma {
     expired_month: string
     expired_year: string
     last_four: string
-    created_at?: Date | string | null
-    updated_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
   }
 
   export type CreditCardUpdateInput = {
@@ -26850,8 +26924,8 @@ export namespace Prisma {
     expired_month?: StringFieldUpdateOperationsInput | string
     expired_year?: StringFieldUpdateOperationsInput | string
     last_four?: StringFieldUpdateOperationsInput | string
-    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutCredit_cardNestedInput
   }
 
@@ -26864,8 +26938,8 @@ export namespace Prisma {
     expired_month?: StringFieldUpdateOperationsInput | string
     expired_year?: StringFieldUpdateOperationsInput | string
     last_four?: StringFieldUpdateOperationsInput | string
-    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CreditCardCreateManyInput = {
@@ -26877,8 +26951,8 @@ export namespace Prisma {
     expired_month: string
     expired_year: string
     last_four: string
-    created_at?: Date | string | null
-    updated_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
   }
 
   export type CreditCardUpdateManyMutationInput = {
@@ -26889,8 +26963,8 @@ export namespace Prisma {
     expired_month?: StringFieldUpdateOperationsInput | string
     expired_year?: StringFieldUpdateOperationsInput | string
     last_four?: StringFieldUpdateOperationsInput | string
-    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CreditCardUncheckedUpdateManyInput = {
@@ -26902,8 +26976,8 @@ export namespace Prisma {
     expired_month?: StringFieldUpdateOperationsInput | string
     expired_year?: StringFieldUpdateOperationsInput | string
     last_four?: StringFieldUpdateOperationsInput | string
-    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PaymentCreateInput = {
@@ -27235,47 +27309,63 @@ export namespace Prisma {
 
   export type CardCreateInput = {
     id?: string
-    product_quantities?: CardCreateproduct_quantitiesInput | number[]
-    products?: ProductCreateNestedManyWithoutCardsInput
+    quantity: number
+    created_at?: Date | string
+    updated_at?: Date | string
     user: UserCreateNestedOneWithoutCardInput
+    product: ProductCreateNestedOneWithoutCardsInput
   }
 
   export type CardUncheckedCreateInput = {
     id?: string
     user_id: string
-    product_quantities?: CardCreateproduct_quantitiesInput | number[]
-    products?: ProductUncheckedCreateNestedManyWithoutCardsInput
+    product_id: string
+    quantity: number
+    created_at?: Date | string
+    updated_at?: Date | string
   }
 
   export type CardUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    product_quantities?: CardUpdateproduct_quantitiesInput | number[]
-    products?: ProductUpdateManyWithoutCardsNestedInput
+    quantity?: IntFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutCardNestedInput
+    product?: ProductUpdateOneRequiredWithoutCardsNestedInput
   }
 
   export type CardUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
-    product_quantities?: CardUpdateproduct_quantitiesInput | number[]
-    products?: ProductUncheckedUpdateManyWithoutCardsNestedInput
+    product_id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CardCreateManyInput = {
     id?: string
     user_id: string
-    product_quantities?: CardCreateproduct_quantitiesInput | number[]
+    product_id: string
+    quantity: number
+    created_at?: Date | string
+    updated_at?: Date | string
   }
 
   export type CardUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    product_quantities?: CardUpdateproduct_quantitiesInput | number[]
+    quantity?: IntFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CardUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
-    product_quantities?: CardUpdateproduct_quantitiesInput | number[]
+    product_id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SearchCreateInput = {
@@ -28137,6 +28227,17 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
   export type StringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -28169,9 +28270,10 @@ export namespace Prisma {
     isNot?: CreditCardWhereInput | null
   }
 
-  export type CardNullableRelationFilter = {
-    is?: CardWhereInput | null
-    isNot?: CardWhereInput | null
+  export type CardListRelationFilter = {
+    every?: CardWhereInput
+    some?: CardWhereInput
+    none?: CardWhereInput
   }
 
   export type LoveListRelationFilter = {
@@ -28215,6 +28317,10 @@ export namespace Prisma {
     nulls?: NullsOrder
   }
 
+  export type CardOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type LoveOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -28250,6 +28356,7 @@ export namespace Prisma {
     username?: SortOrder
     email?: SortOrder
     password?: SortOrder
+    type?: SortOrder
     fullname?: SortOrder
     phone_number?: SortOrder
     address?: SortOrder
@@ -28259,11 +28366,16 @@ export namespace Prisma {
     updated_at?: SortOrder
   }
 
+  export type UserAvgOrderByAggregateInput = {
+    type?: SortOrder
+  }
+
   export type UserMaxOrderByAggregateInput = {
     id?: SortOrder
     username?: SortOrder
     email?: SortOrder
     password?: SortOrder
+    type?: SortOrder
     fullname?: SortOrder
     phone_number?: SortOrder
     address?: SortOrder
@@ -28278,6 +28390,7 @@ export namespace Prisma {
     username?: SortOrder
     email?: SortOrder
     password?: SortOrder
+    type?: SortOrder
     fullname?: SortOrder
     phone_number?: SortOrder
     address?: SortOrder
@@ -28285,6 +28398,10 @@ export namespace Prisma {
     image_url?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
+  }
+
+  export type UserSumOrderByAggregateInput = {
+    type?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -28304,6 +28421,22 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
     _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -28350,17 +28483,6 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
   export type DetailNullableRelationFilter = {
     is?: DetailWhereInput | null
     isNot?: DetailWhereInput | null
@@ -28398,12 +28520,6 @@ export namespace Prisma {
     none?: ProductOrderWhereInput
   }
 
-  export type CardListRelationFilter = {
-    every?: CardWhereInput
-    some?: CardWhereInput
-    none?: CardWhereInput
-  }
-
   export type VideoListRelationFilter = {
     every?: VideoWhereInput
     some?: VideoWhereInput
@@ -28421,10 +28537,6 @@ export namespace Prisma {
   }
 
   export type ProductOrderOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type CardOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -28552,33 +28664,6 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
-  }
-
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
   export type UserRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
@@ -28635,20 +28720,6 @@ export namespace Prisma {
 
   export type CreditCardSumOrderByAggregateInput = {
     type?: SortOrder
-  }
-
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type OrderNullableRelationFilter = {
@@ -28727,6 +28798,17 @@ export namespace Prisma {
     isEmpty?: boolean
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type ShippingOrderByRelevanceInput = {
     fields: ShippingOrderByRelevanceFieldEnum | ShippingOrderByRelevanceFieldEnum[]
     sort: SortOrder
@@ -28773,6 +28855,20 @@ export namespace Prisma {
 
   export type ShippingSumOrderByAggregateInput = {
     process?: SortOrder
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type ProductRelationFilter = {
@@ -28902,52 +28998,50 @@ export namespace Prisma {
     _max?: NestedBoolFilter<$PrismaModel>
   }
 
-  export type IntNullableListFilter<$PrismaModel = never> = {
-    equals?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    has?: number | IntFieldRefInput<$PrismaModel> | null
-    hasEvery?: number[] | ListIntFieldRefInput<$PrismaModel>
-    hasSome?: number[] | ListIntFieldRefInput<$PrismaModel>
-    isEmpty?: boolean
-  }
-
-  export type ProductListRelationFilter = {
-    every?: ProductWhereInput
-    some?: ProductWhereInput
-    none?: ProductWhereInput
-  }
-
-  export type ProductOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
   export type CardOrderByRelevanceInput = {
     fields: CardOrderByRelevanceFieldEnum | CardOrderByRelevanceFieldEnum[]
     sort: SortOrder
     search: string
   }
 
+  export type CardUser_idProduct_idCompoundUniqueInput = {
+    user_id: string
+    product_id: string
+  }
+
   export type CardCountOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
-    product_quantities?: SortOrder
+    product_id?: SortOrder
+    quantity?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
   }
 
   export type CardAvgOrderByAggregateInput = {
-    product_quantities?: SortOrder
+    quantity?: SortOrder
   }
 
   export type CardMaxOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
+    product_id?: SortOrder
+    quantity?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
   }
 
   export type CardMinOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
+    product_id?: SortOrder
+    quantity?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
   }
 
   export type CardSumOrderByAggregateInput = {
-    product_quantities?: SortOrder
+    quantity?: SortOrder
   }
 
   export type UserNullableRelationFilter = {
@@ -29045,6 +29139,16 @@ export namespace Prisma {
     product_id?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
+  }
+
+  export type ProductListRelationFilter = {
+    every?: ProductWhereInput
+    some?: ProductWhereInput
+    none?: ProductWhereInput
+  }
+
+  export type ProductOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type ColorOrderByRelevanceInput = {
@@ -29508,10 +29612,11 @@ export namespace Prisma {
     connect?: CreditCardWhereUniqueInput
   }
 
-  export type CardCreateNestedOneWithoutUserInput = {
-    create?: XOR<CardCreateWithoutUserInput, CardUncheckedCreateWithoutUserInput>
-    connectOrCreate?: CardCreateOrConnectWithoutUserInput
-    connect?: CardWhereUniqueInput
+  export type CardCreateNestedManyWithoutUserInput = {
+    create?: XOR<CardCreateWithoutUserInput, CardUncheckedCreateWithoutUserInput> | CardCreateWithoutUserInput[] | CardUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: CardCreateOrConnectWithoutUserInput | CardCreateOrConnectWithoutUserInput[]
+    createMany?: CardCreateManyUserInputEnvelope
+    connect?: CardWhereUniqueInput | CardWhereUniqueInput[]
   }
 
   export type LoveCreateNestedManyWithoutUserInput = {
@@ -29562,10 +29667,11 @@ export namespace Prisma {
     connect?: CreditCardWhereUniqueInput
   }
 
-  export type CardUncheckedCreateNestedOneWithoutUserInput = {
-    create?: XOR<CardCreateWithoutUserInput, CardUncheckedCreateWithoutUserInput>
-    connectOrCreate?: CardCreateOrConnectWithoutUserInput
-    connect?: CardWhereUniqueInput
+  export type CardUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<CardCreateWithoutUserInput, CardUncheckedCreateWithoutUserInput> | CardCreateWithoutUserInput[] | CardUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: CardCreateOrConnectWithoutUserInput | CardCreateOrConnectWithoutUserInput[]
+    createMany?: CardCreateManyUserInputEnvelope
+    connect?: CardWhereUniqueInput | CardWhereUniqueInput[]
   }
 
   export type LoveUncheckedCreateNestedManyWithoutUserInput = {
@@ -29614,6 +29720,14 @@ export namespace Prisma {
     set?: string
   }
 
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
   }
@@ -29632,14 +29746,18 @@ export namespace Prisma {
     update?: XOR<XOR<CreditCardUpdateToOneWithWhereWithoutUserInput, CreditCardUpdateWithoutUserInput>, CreditCardUncheckedUpdateWithoutUserInput>
   }
 
-  export type CardUpdateOneWithoutUserNestedInput = {
-    create?: XOR<CardCreateWithoutUserInput, CardUncheckedCreateWithoutUserInput>
-    connectOrCreate?: CardCreateOrConnectWithoutUserInput
-    upsert?: CardUpsertWithoutUserInput
-    disconnect?: CardWhereInput | boolean
-    delete?: CardWhereInput | boolean
-    connect?: CardWhereUniqueInput
-    update?: XOR<XOR<CardUpdateToOneWithWhereWithoutUserInput, CardUpdateWithoutUserInput>, CardUncheckedUpdateWithoutUserInput>
+  export type CardUpdateManyWithoutUserNestedInput = {
+    create?: XOR<CardCreateWithoutUserInput, CardUncheckedCreateWithoutUserInput> | CardCreateWithoutUserInput[] | CardUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: CardCreateOrConnectWithoutUserInput | CardCreateOrConnectWithoutUserInput[]
+    upsert?: CardUpsertWithWhereUniqueWithoutUserInput | CardUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: CardCreateManyUserInputEnvelope
+    set?: CardWhereUniqueInput | CardWhereUniqueInput[]
+    disconnect?: CardWhereUniqueInput | CardWhereUniqueInput[]
+    delete?: CardWhereUniqueInput | CardWhereUniqueInput[]
+    connect?: CardWhereUniqueInput | CardWhereUniqueInput[]
+    update?: CardUpdateWithWhereUniqueWithoutUserInput | CardUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: CardUpdateManyWithWhereWithoutUserInput | CardUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: CardScalarWhereInput | CardScalarWhereInput[]
   }
 
   export type LoveUpdateManyWithoutUserNestedInput = {
@@ -29736,14 +29854,18 @@ export namespace Prisma {
     update?: XOR<XOR<CreditCardUpdateToOneWithWhereWithoutUserInput, CreditCardUpdateWithoutUserInput>, CreditCardUncheckedUpdateWithoutUserInput>
   }
 
-  export type CardUncheckedUpdateOneWithoutUserNestedInput = {
-    create?: XOR<CardCreateWithoutUserInput, CardUncheckedCreateWithoutUserInput>
-    connectOrCreate?: CardCreateOrConnectWithoutUserInput
-    upsert?: CardUpsertWithoutUserInput
-    disconnect?: CardWhereInput | boolean
-    delete?: CardWhereInput | boolean
-    connect?: CardWhereUniqueInput
-    update?: XOR<XOR<CardUpdateToOneWithWhereWithoutUserInput, CardUpdateWithoutUserInput>, CardUncheckedUpdateWithoutUserInput>
+  export type CardUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<CardCreateWithoutUserInput, CardUncheckedCreateWithoutUserInput> | CardCreateWithoutUserInput[] | CardUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: CardCreateOrConnectWithoutUserInput | CardCreateOrConnectWithoutUserInput[]
+    upsert?: CardUpsertWithWhereUniqueWithoutUserInput | CardUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: CardCreateManyUserInputEnvelope
+    set?: CardWhereUniqueInput | CardWhereUniqueInput[]
+    disconnect?: CardWhereUniqueInput | CardWhereUniqueInput[]
+    delete?: CardWhereUniqueInput | CardWhereUniqueInput[]
+    connect?: CardWhereUniqueInput | CardWhereUniqueInput[]
+    update?: CardUpdateWithWhereUniqueWithoutUserInput | CardUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: CardUpdateManyWithWhereWithoutUserInput | CardUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: CardScalarWhereInput | CardScalarWhereInput[]
   }
 
   export type LoveUncheckedUpdateManyWithoutUserNestedInput = {
@@ -29860,6 +29982,13 @@ export namespace Prisma {
     connect?: ModelWhereUniqueInput
   }
 
+  export type CardCreateNestedManyWithoutProductInput = {
+    create?: XOR<CardCreateWithoutProductInput, CardUncheckedCreateWithoutProductInput> | CardCreateWithoutProductInput[] | CardUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: CardCreateOrConnectWithoutProductInput | CardCreateOrConnectWithoutProductInput[]
+    createMany?: CardCreateManyProductInputEnvelope
+    connect?: CardWhereUniqueInput | CardWhereUniqueInput[]
+  }
+
   export type LoveCreateNestedManyWithoutProductInput = {
     create?: XOR<LoveCreateWithoutProductInput, LoveUncheckedCreateWithoutProductInput> | LoveCreateWithoutProductInput[] | LoveUncheckedCreateWithoutProductInput[]
     connectOrCreate?: LoveCreateOrConnectWithoutProductInput | LoveCreateOrConnectWithoutProductInput[]
@@ -29887,12 +30016,6 @@ export namespace Prisma {
     connect?: ProductOrderWhereUniqueInput | ProductOrderWhereUniqueInput[]
   }
 
-  export type CardCreateNestedManyWithoutProductsInput = {
-    create?: XOR<CardCreateWithoutProductsInput, CardUncheckedCreateWithoutProductsInput> | CardCreateWithoutProductsInput[] | CardUncheckedCreateWithoutProductsInput[]
-    connectOrCreate?: CardCreateOrConnectWithoutProductsInput | CardCreateOrConnectWithoutProductsInput[]
-    connect?: CardWhereUniqueInput | CardWhereUniqueInput[]
-  }
-
   export type VideoCreateNestedManyWithoutProductInput = {
     create?: XOR<VideoCreateWithoutProductInput, VideoUncheckedCreateWithoutProductInput> | VideoCreateWithoutProductInput[] | VideoUncheckedCreateWithoutProductInput[]
     connectOrCreate?: VideoCreateOrConnectWithoutProductInput | VideoCreateOrConnectWithoutProductInput[]
@@ -29911,6 +30034,13 @@ export namespace Prisma {
     create?: XOR<DetailCreateWithoutProductInput, DetailUncheckedCreateWithoutProductInput>
     connectOrCreate?: DetailCreateOrConnectWithoutProductInput
     connect?: DetailWhereUniqueInput
+  }
+
+  export type CardUncheckedCreateNestedManyWithoutProductInput = {
+    create?: XOR<CardCreateWithoutProductInput, CardUncheckedCreateWithoutProductInput> | CardCreateWithoutProductInput[] | CardUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: CardCreateOrConnectWithoutProductInput | CardCreateOrConnectWithoutProductInput[]
+    createMany?: CardCreateManyProductInputEnvelope
+    connect?: CardWhereUniqueInput | CardWhereUniqueInput[]
   }
 
   export type LoveUncheckedCreateNestedManyWithoutProductInput = {
@@ -29940,12 +30070,6 @@ export namespace Prisma {
     connect?: ProductOrderWhereUniqueInput | ProductOrderWhereUniqueInput[]
   }
 
-  export type CardUncheckedCreateNestedManyWithoutProductsInput = {
-    create?: XOR<CardCreateWithoutProductsInput, CardUncheckedCreateWithoutProductsInput> | CardCreateWithoutProductsInput[] | CardUncheckedCreateWithoutProductsInput[]
-    connectOrCreate?: CardCreateOrConnectWithoutProductsInput | CardCreateOrConnectWithoutProductsInput[]
-    connect?: CardWhereUniqueInput | CardWhereUniqueInput[]
-  }
-
   export type VideoUncheckedCreateNestedManyWithoutProductInput = {
     create?: XOR<VideoCreateWithoutProductInput, VideoUncheckedCreateWithoutProductInput> | VideoCreateWithoutProductInput[] | VideoUncheckedCreateWithoutProductInput[]
     connectOrCreate?: VideoCreateOrConnectWithoutProductInput | VideoCreateOrConnectWithoutProductInput[]
@@ -29961,14 +30085,6 @@ export namespace Prisma {
   }
 
   export type FloatFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
-  export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
     decrement?: number
@@ -30026,6 +30142,20 @@ export namespace Prisma {
     update?: XOR<XOR<ModelUpdateToOneWithWhereWithoutProductsInput, ModelUpdateWithoutProductsInput>, ModelUncheckedUpdateWithoutProductsInput>
   }
 
+  export type CardUpdateManyWithoutProductNestedInput = {
+    create?: XOR<CardCreateWithoutProductInput, CardUncheckedCreateWithoutProductInput> | CardCreateWithoutProductInput[] | CardUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: CardCreateOrConnectWithoutProductInput | CardCreateOrConnectWithoutProductInput[]
+    upsert?: CardUpsertWithWhereUniqueWithoutProductInput | CardUpsertWithWhereUniqueWithoutProductInput[]
+    createMany?: CardCreateManyProductInputEnvelope
+    set?: CardWhereUniqueInput | CardWhereUniqueInput[]
+    disconnect?: CardWhereUniqueInput | CardWhereUniqueInput[]
+    delete?: CardWhereUniqueInput | CardWhereUniqueInput[]
+    connect?: CardWhereUniqueInput | CardWhereUniqueInput[]
+    update?: CardUpdateWithWhereUniqueWithoutProductInput | CardUpdateWithWhereUniqueWithoutProductInput[]
+    updateMany?: CardUpdateManyWithWhereWithoutProductInput | CardUpdateManyWithWhereWithoutProductInput[]
+    deleteMany?: CardScalarWhereInput | CardScalarWhereInput[]
+  }
+
   export type LoveUpdateManyWithoutProductNestedInput = {
     create?: XOR<LoveCreateWithoutProductInput, LoveUncheckedCreateWithoutProductInput> | LoveCreateWithoutProductInput[] | LoveUncheckedCreateWithoutProductInput[]
     connectOrCreate?: LoveCreateOrConnectWithoutProductInput | LoveCreateOrConnectWithoutProductInput[]
@@ -30081,19 +30211,6 @@ export namespace Prisma {
     deleteMany?: ProductOrderScalarWhereInput | ProductOrderScalarWhereInput[]
   }
 
-  export type CardUpdateManyWithoutProductsNestedInput = {
-    create?: XOR<CardCreateWithoutProductsInput, CardUncheckedCreateWithoutProductsInput> | CardCreateWithoutProductsInput[] | CardUncheckedCreateWithoutProductsInput[]
-    connectOrCreate?: CardCreateOrConnectWithoutProductsInput | CardCreateOrConnectWithoutProductsInput[]
-    upsert?: CardUpsertWithWhereUniqueWithoutProductsInput | CardUpsertWithWhereUniqueWithoutProductsInput[]
-    set?: CardWhereUniqueInput | CardWhereUniqueInput[]
-    disconnect?: CardWhereUniqueInput | CardWhereUniqueInput[]
-    delete?: CardWhereUniqueInput | CardWhereUniqueInput[]
-    connect?: CardWhereUniqueInput | CardWhereUniqueInput[]
-    update?: CardUpdateWithWhereUniqueWithoutProductsInput | CardUpdateWithWhereUniqueWithoutProductsInput[]
-    updateMany?: CardUpdateManyWithWhereWithoutProductsInput | CardUpdateManyWithWhereWithoutProductsInput[]
-    deleteMany?: CardScalarWhereInput | CardScalarWhereInput[]
-  }
-
   export type VideoUpdateManyWithoutProductNestedInput = {
     create?: XOR<VideoCreateWithoutProductInput, VideoUncheckedCreateWithoutProductInput> | VideoCreateWithoutProductInput[] | VideoUncheckedCreateWithoutProductInput[]
     connectOrCreate?: VideoCreateOrConnectWithoutProductInput | VideoCreateOrConnectWithoutProductInput[]
@@ -30130,6 +30247,20 @@ export namespace Prisma {
     delete?: DetailWhereInput | boolean
     connect?: DetailWhereUniqueInput
     update?: XOR<XOR<DetailUpdateToOneWithWhereWithoutProductInput, DetailUpdateWithoutProductInput>, DetailUncheckedUpdateWithoutProductInput>
+  }
+
+  export type CardUncheckedUpdateManyWithoutProductNestedInput = {
+    create?: XOR<CardCreateWithoutProductInput, CardUncheckedCreateWithoutProductInput> | CardCreateWithoutProductInput[] | CardUncheckedCreateWithoutProductInput[]
+    connectOrCreate?: CardCreateOrConnectWithoutProductInput | CardCreateOrConnectWithoutProductInput[]
+    upsert?: CardUpsertWithWhereUniqueWithoutProductInput | CardUpsertWithWhereUniqueWithoutProductInput[]
+    createMany?: CardCreateManyProductInputEnvelope
+    set?: CardWhereUniqueInput | CardWhereUniqueInput[]
+    disconnect?: CardWhereUniqueInput | CardWhereUniqueInput[]
+    delete?: CardWhereUniqueInput | CardWhereUniqueInput[]
+    connect?: CardWhereUniqueInput | CardWhereUniqueInput[]
+    update?: CardUpdateWithWhereUniqueWithoutProductInput | CardUpdateWithWhereUniqueWithoutProductInput[]
+    updateMany?: CardUpdateManyWithWhereWithoutProductInput | CardUpdateManyWithWhereWithoutProductInput[]
+    deleteMany?: CardScalarWhereInput | CardScalarWhereInput[]
   }
 
   export type LoveUncheckedUpdateManyWithoutProductNestedInput = {
@@ -30187,19 +30318,6 @@ export namespace Prisma {
     deleteMany?: ProductOrderScalarWhereInput | ProductOrderScalarWhereInput[]
   }
 
-  export type CardUncheckedUpdateManyWithoutProductsNestedInput = {
-    create?: XOR<CardCreateWithoutProductsInput, CardUncheckedCreateWithoutProductsInput> | CardCreateWithoutProductsInput[] | CardUncheckedCreateWithoutProductsInput[]
-    connectOrCreate?: CardCreateOrConnectWithoutProductsInput | CardCreateOrConnectWithoutProductsInput[]
-    upsert?: CardUpsertWithWhereUniqueWithoutProductsInput | CardUpsertWithWhereUniqueWithoutProductsInput[]
-    set?: CardWhereUniqueInput | CardWhereUniqueInput[]
-    disconnect?: CardWhereUniqueInput | CardWhereUniqueInput[]
-    delete?: CardWhereUniqueInput | CardWhereUniqueInput[]
-    connect?: CardWhereUniqueInput | CardWhereUniqueInput[]
-    update?: CardUpdateWithWhereUniqueWithoutProductsInput | CardUpdateWithWhereUniqueWithoutProductsInput[]
-    updateMany?: CardUpdateManyWithWhereWithoutProductsInput | CardUpdateManyWithWhereWithoutProductsInput[]
-    deleteMany?: CardScalarWhereInput | CardScalarWhereInput[]
-  }
-
   export type VideoUncheckedUpdateManyWithoutProductNestedInput = {
     create?: XOR<VideoCreateWithoutProductInput, VideoUncheckedCreateWithoutProductInput> | VideoCreateWithoutProductInput[] | VideoUncheckedCreateWithoutProductInput[]
     connectOrCreate?: VideoCreateOrConnectWithoutProductInput | VideoCreateOrConnectWithoutProductInput[]
@@ -30232,10 +30350,6 @@ export namespace Prisma {
     create?: XOR<UserCreateWithoutCredit_cardInput, UserUncheckedCreateWithoutCredit_cardInput>
     connectOrCreate?: UserCreateOrConnectWithoutCredit_cardInput
     connect?: UserWhereUniqueInput
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type UserUpdateOneRequiredWithoutCredit_cardNestedInput = {
@@ -30317,6 +30431,10 @@ export namespace Prisma {
   export type ShippingUpdatereceiver_phone_numbersInput = {
     set?: string[]
     push?: string | string[]
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
   }
 
   export type UserUpdateOneRequiredWithoutShippingsNestedInput = {
@@ -30463,44 +30581,16 @@ export namespace Prisma {
     deleteMany?: ProductOrderScalarWhereInput | ProductOrderScalarWhereInput[]
   }
 
-  export type CardCreateproduct_quantitiesInput = {
-    set: number[]
-  }
-
-  export type ProductCreateNestedManyWithoutCardsInput = {
-    create?: XOR<ProductCreateWithoutCardsInput, ProductUncheckedCreateWithoutCardsInput> | ProductCreateWithoutCardsInput[] | ProductUncheckedCreateWithoutCardsInput[]
-    connectOrCreate?: ProductCreateOrConnectWithoutCardsInput | ProductCreateOrConnectWithoutCardsInput[]
-    connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
-  }
-
   export type UserCreateNestedOneWithoutCardInput = {
     create?: XOR<UserCreateWithoutCardInput, UserUncheckedCreateWithoutCardInput>
     connectOrCreate?: UserCreateOrConnectWithoutCardInput
     connect?: UserWhereUniqueInput
   }
 
-  export type ProductUncheckedCreateNestedManyWithoutCardsInput = {
-    create?: XOR<ProductCreateWithoutCardsInput, ProductUncheckedCreateWithoutCardsInput> | ProductCreateWithoutCardsInput[] | ProductUncheckedCreateWithoutCardsInput[]
-    connectOrCreate?: ProductCreateOrConnectWithoutCardsInput | ProductCreateOrConnectWithoutCardsInput[]
-    connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
-  }
-
-  export type CardUpdateproduct_quantitiesInput = {
-    set?: number[]
-    push?: number | number[]
-  }
-
-  export type ProductUpdateManyWithoutCardsNestedInput = {
-    create?: XOR<ProductCreateWithoutCardsInput, ProductUncheckedCreateWithoutCardsInput> | ProductCreateWithoutCardsInput[] | ProductUncheckedCreateWithoutCardsInput[]
-    connectOrCreate?: ProductCreateOrConnectWithoutCardsInput | ProductCreateOrConnectWithoutCardsInput[]
-    upsert?: ProductUpsertWithWhereUniqueWithoutCardsInput | ProductUpsertWithWhereUniqueWithoutCardsInput[]
-    set?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
-    disconnect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
-    delete?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
-    connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
-    update?: ProductUpdateWithWhereUniqueWithoutCardsInput | ProductUpdateWithWhereUniqueWithoutCardsInput[]
-    updateMany?: ProductUpdateManyWithWhereWithoutCardsInput | ProductUpdateManyWithWhereWithoutCardsInput[]
-    deleteMany?: ProductScalarWhereInput | ProductScalarWhereInput[]
+  export type ProductCreateNestedOneWithoutCardsInput = {
+    create?: XOR<ProductCreateWithoutCardsInput, ProductUncheckedCreateWithoutCardsInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutCardsInput
+    connect?: ProductWhereUniqueInput
   }
 
   export type UserUpdateOneRequiredWithoutCardNestedInput = {
@@ -30511,17 +30601,12 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCardInput, UserUpdateWithoutCardInput>, UserUncheckedUpdateWithoutCardInput>
   }
 
-  export type ProductUncheckedUpdateManyWithoutCardsNestedInput = {
-    create?: XOR<ProductCreateWithoutCardsInput, ProductUncheckedCreateWithoutCardsInput> | ProductCreateWithoutCardsInput[] | ProductUncheckedCreateWithoutCardsInput[]
-    connectOrCreate?: ProductCreateOrConnectWithoutCardsInput | ProductCreateOrConnectWithoutCardsInput[]
-    upsert?: ProductUpsertWithWhereUniqueWithoutCardsInput | ProductUpsertWithWhereUniqueWithoutCardsInput[]
-    set?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
-    disconnect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
-    delete?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
-    connect?: ProductWhereUniqueInput | ProductWhereUniqueInput[]
-    update?: ProductUpdateWithWhereUniqueWithoutCardsInput | ProductUpdateWithWhereUniqueWithoutCardsInput[]
-    updateMany?: ProductUpdateManyWithWhereWithoutCardsInput | ProductUpdateManyWithWhereWithoutCardsInput[]
-    deleteMany?: ProductScalarWhereInput | ProductScalarWhereInput[]
+  export type ProductUpdateOneRequiredWithoutCardsNestedInput = {
+    create?: XOR<ProductCreateWithoutCardsInput, ProductUncheckedCreateWithoutCardsInput>
+    connectOrCreate?: ProductCreateOrConnectWithoutCardsInput
+    upsert?: ProductUpsertWithoutCardsInput
+    connect?: ProductWhereUniqueInput
+    update?: XOR<XOR<ProductUpdateToOneWithWhereWithoutCardsInput, ProductUpdateWithoutCardsInput>, ProductUncheckedUpdateWithoutCardsInput>
   }
 
   export type UserCreateNestedOneWithoutSearchesInput = {
@@ -31079,6 +31164,17 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type NestedIntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
   export type NestedStringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -31123,7 +31219,7 @@ export namespace Prisma {
     _max?: NestedStringFilter<$PrismaModel>
   }
 
-  export type NestedIntFilter<$PrismaModel = never> = {
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
     notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -31131,7 +31227,23 @@ export namespace Prisma {
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
   }
 
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -31177,17 +31289,6 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
-  export type NestedFloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
-  }
-
   export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
     in?: number[] | ListFloatFieldRefInput<$PrismaModel>
@@ -31202,22 +31303,6 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
-  }
-
-  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
@@ -31279,8 +31364,8 @@ export namespace Prisma {
     expired_month: string
     expired_year: string
     last_four: string
-    created_at?: Date | string | null
-    updated_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
   }
 
   export type CreditCardUncheckedCreateWithoutUserInput = {
@@ -31291,8 +31376,8 @@ export namespace Prisma {
     expired_month: string
     expired_year: string
     last_four: string
-    created_at?: Date | string | null
-    updated_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
   }
 
   export type CreditCardCreateOrConnectWithoutUserInput = {
@@ -31302,19 +31387,28 @@ export namespace Prisma {
 
   export type CardCreateWithoutUserInput = {
     id?: string
-    product_quantities?: CardCreateproduct_quantitiesInput | number[]
-    products?: ProductCreateNestedManyWithoutCardsInput
+    quantity: number
+    created_at?: Date | string
+    updated_at?: Date | string
+    product: ProductCreateNestedOneWithoutCardsInput
   }
 
   export type CardUncheckedCreateWithoutUserInput = {
     id?: string
-    product_quantities?: CardCreateproduct_quantitiesInput | number[]
-    products?: ProductUncheckedCreateNestedManyWithoutCardsInput
+    product_id: string
+    quantity: number
+    created_at?: Date | string
+    updated_at?: Date | string
   }
 
   export type CardCreateOrConnectWithoutUserInput = {
     where: CardWhereUniqueInput
     create: XOR<CardCreateWithoutUserInput, CardUncheckedCreateWithoutUserInput>
+  }
+
+  export type CardCreateManyUserInputEnvelope = {
+    data: CardCreateManyUserInput | CardCreateManyUserInput[]
+    skipDuplicates?: boolean
   }
 
   export type LoveCreateWithoutUserInput = {
@@ -31506,8 +31600,8 @@ export namespace Prisma {
     expired_month?: StringFieldUpdateOperationsInput | string
     expired_year?: StringFieldUpdateOperationsInput | string
     last_four?: StringFieldUpdateOperationsInput | string
-    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CreditCardUncheckedUpdateWithoutUserInput = {
@@ -31518,31 +31612,36 @@ export namespace Prisma {
     expired_month?: StringFieldUpdateOperationsInput | string
     expired_year?: StringFieldUpdateOperationsInput | string
     last_four?: StringFieldUpdateOperationsInput | string
-    created_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type CardUpsertWithoutUserInput = {
+  export type CardUpsertWithWhereUniqueWithoutUserInput = {
+    where: CardWhereUniqueInput
     update: XOR<CardUpdateWithoutUserInput, CardUncheckedUpdateWithoutUserInput>
     create: XOR<CardCreateWithoutUserInput, CardUncheckedCreateWithoutUserInput>
-    where?: CardWhereInput
   }
 
-  export type CardUpdateToOneWithWhereWithoutUserInput = {
-    where?: CardWhereInput
+  export type CardUpdateWithWhereUniqueWithoutUserInput = {
+    where: CardWhereUniqueInput
     data: XOR<CardUpdateWithoutUserInput, CardUncheckedUpdateWithoutUserInput>
   }
 
-  export type CardUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    product_quantities?: CardUpdateproduct_quantitiesInput | number[]
-    products?: ProductUpdateManyWithoutCardsNestedInput
+  export type CardUpdateManyWithWhereWithoutUserInput = {
+    where: CardScalarWhereInput
+    data: XOR<CardUpdateManyMutationInput, CardUncheckedUpdateManyWithoutUserInput>
   }
 
-  export type CardUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    product_quantities?: CardUpdateproduct_quantitiesInput | number[]
-    products?: ProductUncheckedUpdateManyWithoutCardsNestedInput
+  export type CardScalarWhereInput = {
+    AND?: CardScalarWhereInput | CardScalarWhereInput[]
+    OR?: CardScalarWhereInput[]
+    NOT?: CardScalarWhereInput | CardScalarWhereInput[]
+    id?: StringFilter<"Card"> | string
+    user_id?: StringFilter<"Card"> | string
+    product_id?: StringFilter<"Card"> | string
+    quantity?: IntFilter<"Card"> | number
+    created_at?: DateTimeFilter<"Card"> | Date | string
+    updated_at?: DateTimeFilter<"Card"> | Date | string
   }
 
   export type LoveUpsertWithWhereUniqueWithoutUserInput = {
@@ -31832,6 +31931,32 @@ export namespace Prisma {
     create: XOR<ModelCreateWithoutProductsInput, ModelUncheckedCreateWithoutProductsInput>
   }
 
+  export type CardCreateWithoutProductInput = {
+    id?: string
+    quantity: number
+    created_at?: Date | string
+    updated_at?: Date | string
+    user: UserCreateNestedOneWithoutCardInput
+  }
+
+  export type CardUncheckedCreateWithoutProductInput = {
+    id?: string
+    user_id: string
+    quantity: number
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type CardCreateOrConnectWithoutProductInput = {
+    where: CardWhereUniqueInput
+    create: XOR<CardCreateWithoutProductInput, CardUncheckedCreateWithoutProductInput>
+  }
+
+  export type CardCreateManyProductInputEnvelope = {
+    data: CardCreateManyProductInput | CardCreateManyProductInput[]
+    skipDuplicates?: boolean
+  }
+
   export type LoveCreateWithoutProductInput = {
     id?: string
     loved?: boolean
@@ -31929,23 +32054,6 @@ export namespace Prisma {
   export type ProductOrderCreateManyProductInputEnvelope = {
     data: ProductOrderCreateManyProductInput | ProductOrderCreateManyProductInput[]
     skipDuplicates?: boolean
-  }
-
-  export type CardCreateWithoutProductsInput = {
-    id?: string
-    product_quantities?: CardCreateproduct_quantitiesInput | number[]
-    user: UserCreateNestedOneWithoutCardInput
-  }
-
-  export type CardUncheckedCreateWithoutProductsInput = {
-    id?: string
-    user_id: string
-    product_quantities?: CardCreateproduct_quantitiesInput | number[]
-  }
-
-  export type CardCreateOrConnectWithoutProductsInput = {
-    where: CardWhereUniqueInput
-    create: XOR<CardCreateWithoutProductsInput, CardUncheckedCreateWithoutProductsInput>
   }
 
   export type VideoCreateWithoutProductInput = {
@@ -32157,6 +32265,22 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type CardUpsertWithWhereUniqueWithoutProductInput = {
+    where: CardWhereUniqueInput
+    update: XOR<CardUpdateWithoutProductInput, CardUncheckedUpdateWithoutProductInput>
+    create: XOR<CardCreateWithoutProductInput, CardUncheckedCreateWithoutProductInput>
+  }
+
+  export type CardUpdateWithWhereUniqueWithoutProductInput = {
+    where: CardWhereUniqueInput
+    data: XOR<CardUpdateWithoutProductInput, CardUncheckedUpdateWithoutProductInput>
+  }
+
+  export type CardUpdateManyWithWhereWithoutProductInput = {
+    where: CardScalarWhereInput
+    data: XOR<CardUpdateManyMutationInput, CardUncheckedUpdateManyWithoutProductInput>
+  }
+
   export type LoveUpsertWithWhereUniqueWithoutProductInput = {
     where: LoveWhereUniqueInput
     update: XOR<LoveUpdateWithoutProductInput, LoveUncheckedUpdateWithoutProductInput>
@@ -32246,31 +32370,6 @@ export namespace Prisma {
     created_at?: DateTimeFilter<"ProductOrder"> | Date | string
   }
 
-  export type CardUpsertWithWhereUniqueWithoutProductsInput = {
-    where: CardWhereUniqueInput
-    update: XOR<CardUpdateWithoutProductsInput, CardUncheckedUpdateWithoutProductsInput>
-    create: XOR<CardCreateWithoutProductsInput, CardUncheckedCreateWithoutProductsInput>
-  }
-
-  export type CardUpdateWithWhereUniqueWithoutProductsInput = {
-    where: CardWhereUniqueInput
-    data: XOR<CardUpdateWithoutProductsInput, CardUncheckedUpdateWithoutProductsInput>
-  }
-
-  export type CardUpdateManyWithWhereWithoutProductsInput = {
-    where: CardScalarWhereInput
-    data: XOR<CardUpdateManyMutationInput, CardUncheckedUpdateManyWithoutProductsInput>
-  }
-
-  export type CardScalarWhereInput = {
-    AND?: CardScalarWhereInput | CardScalarWhereInput[]
-    OR?: CardScalarWhereInput[]
-    NOT?: CardScalarWhereInput | CardScalarWhereInput[]
-    id?: StringFilter<"Card"> | string
-    user_id?: StringFilter<"Card"> | string
-    product_quantities?: IntNullableListFilter<"Card">
-  }
-
   export type VideoUpsertWithWhereUniqueWithoutProductInput = {
     where: VideoWhereUniqueInput
     update: XOR<VideoUpdateWithoutProductInput, VideoUncheckedUpdateWithoutProductInput>
@@ -32337,14 +32436,15 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    fullname?: string
-    phone_number?: string
-    address?: string
+    type?: number
+    fullname?: string | null
+    phone_number?: string | null
+    address?: string | null
     image_color: string
     image_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
-    card?: CardCreateNestedOneWithoutUserInput
+    card?: CardCreateNestedManyWithoutUserInput
     loves?: LoveCreateNestedManyWithoutUserInput
     searches?: SearchCreateNestedManyWithoutUserInput
     views?: ViewCreateNestedManyWithoutUserInput
@@ -32358,14 +32458,15 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    fullname?: string
-    phone_number?: string
-    address?: string
+    type?: number
+    fullname?: string | null
+    phone_number?: string | null
+    address?: string | null
     image_color: string
     image_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
-    card?: CardUncheckedCreateNestedOneWithoutUserInput
+    card?: CardUncheckedCreateNestedManyWithoutUserInput
     loves?: LoveUncheckedCreateNestedManyWithoutUserInput
     searches?: SearchUncheckedCreateNestedManyWithoutUserInput
     views?: ViewUncheckedCreateNestedManyWithoutUserInput
@@ -32395,14 +32496,15 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    fullname?: StringFieldUpdateOperationsInput | string
-    phone_number?: StringFieldUpdateOperationsInput | string
-    address?: StringFieldUpdateOperationsInput | string
+    type?: IntFieldUpdateOperationsInput | number
+    fullname?: NullableStringFieldUpdateOperationsInput | string | null
+    phone_number?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     image_color?: StringFieldUpdateOperationsInput | string
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    card?: CardUpdateOneWithoutUserNestedInput
+    card?: CardUpdateManyWithoutUserNestedInput
     loves?: LoveUpdateManyWithoutUserNestedInput
     searches?: SearchUpdateManyWithoutUserNestedInput
     views?: ViewUpdateManyWithoutUserNestedInput
@@ -32416,14 +32518,15 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    fullname?: StringFieldUpdateOperationsInput | string
-    phone_number?: StringFieldUpdateOperationsInput | string
-    address?: StringFieldUpdateOperationsInput | string
+    type?: IntFieldUpdateOperationsInput | number
+    fullname?: NullableStringFieldUpdateOperationsInput | string | null
+    phone_number?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     image_color?: StringFieldUpdateOperationsInput | string
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    card?: CardUncheckedUpdateOneWithoutUserNestedInput
+    card?: CardUncheckedUpdateManyWithoutUserNestedInput
     loves?: LoveUncheckedUpdateManyWithoutUserNestedInput
     searches?: SearchUncheckedUpdateManyWithoutUserNestedInput
     views?: ViewUncheckedUpdateManyWithoutUserNestedInput
@@ -32462,15 +32565,16 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    fullname?: string
-    phone_number?: string
-    address?: string
+    type?: number
+    fullname?: string | null
+    phone_number?: string | null
+    address?: string | null
     image_color: string
     image_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     credit_card?: CreditCardCreateNestedOneWithoutUserInput
-    card?: CardCreateNestedOneWithoutUserInput
+    card?: CardCreateNestedManyWithoutUserInput
     loves?: LoveCreateNestedManyWithoutUserInput
     searches?: SearchCreateNestedManyWithoutUserInput
     views?: ViewCreateNestedManyWithoutUserInput
@@ -32483,15 +32587,16 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    fullname?: string
-    phone_number?: string
-    address?: string
+    type?: number
+    fullname?: string | null
+    phone_number?: string | null
+    address?: string | null
     image_color: string
     image_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     credit_card?: CreditCardUncheckedCreateNestedOneWithoutUserInput
-    card?: CardUncheckedCreateNestedOneWithoutUserInput
+    card?: CardUncheckedCreateNestedManyWithoutUserInput
     loves?: LoveUncheckedCreateNestedManyWithoutUserInput
     searches?: SearchUncheckedCreateNestedManyWithoutUserInput
     views?: ViewUncheckedCreateNestedManyWithoutUserInput
@@ -32551,15 +32656,16 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    fullname?: StringFieldUpdateOperationsInput | string
-    phone_number?: StringFieldUpdateOperationsInput | string
-    address?: StringFieldUpdateOperationsInput | string
+    type?: IntFieldUpdateOperationsInput | number
+    fullname?: NullableStringFieldUpdateOperationsInput | string | null
+    phone_number?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     image_color?: StringFieldUpdateOperationsInput | string
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     credit_card?: CreditCardUpdateOneWithoutUserNestedInput
-    card?: CardUpdateOneWithoutUserNestedInput
+    card?: CardUpdateManyWithoutUserNestedInput
     loves?: LoveUpdateManyWithoutUserNestedInput
     searches?: SearchUpdateManyWithoutUserNestedInput
     views?: ViewUpdateManyWithoutUserNestedInput
@@ -32572,15 +32678,16 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    fullname?: StringFieldUpdateOperationsInput | string
-    phone_number?: StringFieldUpdateOperationsInput | string
-    address?: StringFieldUpdateOperationsInput | string
+    type?: IntFieldUpdateOperationsInput | number
+    fullname?: NullableStringFieldUpdateOperationsInput | string | null
+    phone_number?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     image_color?: StringFieldUpdateOperationsInput | string
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     credit_card?: CreditCardUncheckedUpdateOneWithoutUserNestedInput
-    card?: CardUncheckedUpdateOneWithoutUserNestedInput
+    card?: CardUncheckedUpdateManyWithoutUserNestedInput
     loves?: LoveUncheckedUpdateManyWithoutUserNestedInput
     searches?: SearchUncheckedUpdateManyWithoutUserNestedInput
     views?: ViewUncheckedUpdateManyWithoutUserNestedInput
@@ -32593,15 +32700,16 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    fullname?: string
-    phone_number?: string
-    address?: string
+    type?: number
+    fullname?: string | null
+    phone_number?: string | null
+    address?: string | null
     image_color: string
     image_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     credit_card?: CreditCardCreateNestedOneWithoutUserInput
-    card?: CardCreateNestedOneWithoutUserInput
+    card?: CardCreateNestedManyWithoutUserInput
     loves?: LoveCreateNestedManyWithoutUserInput
     searches?: SearchCreateNestedManyWithoutUserInput
     views?: ViewCreateNestedManyWithoutUserInput
@@ -32614,15 +32722,16 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    fullname?: string
-    phone_number?: string
-    address?: string
+    type?: number
+    fullname?: string | null
+    phone_number?: string | null
+    address?: string | null
     image_color: string
     image_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     credit_card?: CreditCardUncheckedCreateNestedOneWithoutUserInput
-    card?: CardUncheckedCreateNestedOneWithoutUserInput
+    card?: CardUncheckedCreateNestedManyWithoutUserInput
     loves?: LoveUncheckedCreateNestedManyWithoutUserInput
     searches?: SearchUncheckedCreateNestedManyWithoutUserInput
     views?: ViewUncheckedCreateNestedManyWithoutUserInput
@@ -32676,15 +32785,16 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    fullname?: StringFieldUpdateOperationsInput | string
-    phone_number?: StringFieldUpdateOperationsInput | string
-    address?: StringFieldUpdateOperationsInput | string
+    type?: IntFieldUpdateOperationsInput | number
+    fullname?: NullableStringFieldUpdateOperationsInput | string | null
+    phone_number?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     image_color?: StringFieldUpdateOperationsInput | string
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     credit_card?: CreditCardUpdateOneWithoutUserNestedInput
-    card?: CardUpdateOneWithoutUserNestedInput
+    card?: CardUpdateManyWithoutUserNestedInput
     loves?: LoveUpdateManyWithoutUserNestedInput
     searches?: SearchUpdateManyWithoutUserNestedInput
     views?: ViewUpdateManyWithoutUserNestedInput
@@ -32697,15 +32807,16 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    fullname?: StringFieldUpdateOperationsInput | string
-    phone_number?: StringFieldUpdateOperationsInput | string
-    address?: StringFieldUpdateOperationsInput | string
+    type?: IntFieldUpdateOperationsInput | number
+    fullname?: NullableStringFieldUpdateOperationsInput | string | null
+    phone_number?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     image_color?: StringFieldUpdateOperationsInput | string
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     credit_card?: CreditCardUncheckedUpdateOneWithoutUserNestedInput
-    card?: CardUncheckedUpdateOneWithoutUserNestedInput
+    card?: CardUncheckedUpdateManyWithoutUserNestedInput
     loves?: LoveUncheckedUpdateManyWithoutUserNestedInput
     searches?: SearchUncheckedUpdateManyWithoutUserNestedInput
     views?: ViewUncheckedUpdateManyWithoutUserNestedInput
@@ -32767,10 +32878,10 @@ export namespace Prisma {
     category?: CategoryCreateNestedOneWithoutProductsInput
     brand?: BrandCreateNestedOneWithoutProductsInput
     model?: ModelCreateNestedOneWithoutProductsInput
+    cards?: CardCreateNestedManyWithoutProductInput
     loves?: LoveCreateNestedManyWithoutProductInput
     views?: ViewCreateNestedManyWithoutProductInput
     colors?: ColorCreateNestedManyWithoutProductsInput
-    cards?: CardCreateNestedManyWithoutProductsInput
     videos?: VideoCreateNestedManyWithoutProductInput
     images?: ImageCreateNestedManyWithoutProductInput
   }
@@ -32798,10 +32909,10 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     detail?: DetailUncheckedCreateNestedOneWithoutProductInput
+    cards?: CardUncheckedCreateNestedManyWithoutProductInput
     loves?: LoveUncheckedCreateNestedManyWithoutProductInput
     views?: ViewUncheckedCreateNestedManyWithoutProductInput
     colors?: ColorUncheckedCreateNestedManyWithoutProductsInput
-    cards?: CardUncheckedCreateNestedManyWithoutProductsInput
     videos?: VideoUncheckedCreateNestedManyWithoutProductInput
     images?: ImageUncheckedCreateNestedManyWithoutProductInput
   }
@@ -32870,10 +32981,10 @@ export namespace Prisma {
     category?: CategoryUpdateOneWithoutProductsNestedInput
     brand?: BrandUpdateOneWithoutProductsNestedInput
     model?: ModelUpdateOneWithoutProductsNestedInput
+    cards?: CardUpdateManyWithoutProductNestedInput
     loves?: LoveUpdateManyWithoutProductNestedInput
     views?: ViewUpdateManyWithoutProductNestedInput
     colors?: ColorUpdateManyWithoutProductsNestedInput
-    cards?: CardUpdateManyWithoutProductsNestedInput
     videos?: VideoUpdateManyWithoutProductNestedInput
     images?: ImageUpdateManyWithoutProductNestedInput
   }
@@ -32901,10 +33012,10 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     detail?: DetailUncheckedUpdateOneWithoutProductNestedInput
+    cards?: CardUncheckedUpdateManyWithoutProductNestedInput
     loves?: LoveUncheckedUpdateManyWithoutProductNestedInput
     views?: ViewUncheckedUpdateManyWithoutProductNestedInput
     colors?: ColorUncheckedUpdateManyWithoutProductsNestedInput
-    cards?: CardUncheckedUpdateManyWithoutProductsNestedInput
     videos?: VideoUncheckedUpdateManyWithoutProductNestedInput
     images?: ImageUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -32975,15 +33086,16 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    fullname?: string
-    phone_number?: string
-    address?: string
+    type?: number
+    fullname?: string | null
+    phone_number?: string | null
+    address?: string | null
     image_color: string
     image_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     credit_card?: CreditCardCreateNestedOneWithoutUserInput
-    card?: CardCreateNestedOneWithoutUserInput
+    card?: CardCreateNestedManyWithoutUserInput
     loves?: LoveCreateNestedManyWithoutUserInput
     searches?: SearchCreateNestedManyWithoutUserInput
     views?: ViewCreateNestedManyWithoutUserInput
@@ -32996,15 +33108,16 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    fullname?: string
-    phone_number?: string
-    address?: string
+    type?: number
+    fullname?: string | null
+    phone_number?: string | null
+    address?: string | null
     image_color: string
     image_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     credit_card?: CreditCardUncheckedCreateNestedOneWithoutUserInput
-    card?: CardUncheckedCreateNestedOneWithoutUserInput
+    card?: CardUncheckedCreateNestedManyWithoutUserInput
     loves?: LoveUncheckedCreateNestedManyWithoutUserInput
     searches?: SearchUncheckedCreateNestedManyWithoutUserInput
     views?: ViewUncheckedCreateNestedManyWithoutUserInput
@@ -33109,15 +33222,16 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    fullname?: StringFieldUpdateOperationsInput | string
-    phone_number?: StringFieldUpdateOperationsInput | string
-    address?: StringFieldUpdateOperationsInput | string
+    type?: IntFieldUpdateOperationsInput | number
+    fullname?: NullableStringFieldUpdateOperationsInput | string | null
+    phone_number?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     image_color?: StringFieldUpdateOperationsInput | string
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     credit_card?: CreditCardUpdateOneWithoutUserNestedInput
-    card?: CardUpdateOneWithoutUserNestedInput
+    card?: CardUpdateManyWithoutUserNestedInput
     loves?: LoveUpdateManyWithoutUserNestedInput
     searches?: SearchUpdateManyWithoutUserNestedInput
     views?: ViewUpdateManyWithoutUserNestedInput
@@ -33130,15 +33244,16 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    fullname?: StringFieldUpdateOperationsInput | string
-    phone_number?: StringFieldUpdateOperationsInput | string
-    address?: StringFieldUpdateOperationsInput | string
+    type?: IntFieldUpdateOperationsInput | number
+    fullname?: NullableStringFieldUpdateOperationsInput | string | null
+    phone_number?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     image_color?: StringFieldUpdateOperationsInput | string
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     credit_card?: CreditCardUncheckedUpdateOneWithoutUserNestedInput
-    card?: CardUncheckedUpdateOneWithoutUserNestedInput
+    card?: CardUncheckedUpdateManyWithoutUserNestedInput
     loves?: LoveUncheckedUpdateManyWithoutUserNestedInput
     searches?: SearchUncheckedUpdateManyWithoutUserNestedInput
     views?: ViewUncheckedUpdateManyWithoutUserNestedInput
@@ -33218,6 +33333,55 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type UserCreateWithoutCardInput = {
+    id?: string
+    username: string
+    email: string
+    password: string
+    type?: number
+    fullname?: string | null
+    phone_number?: string | null
+    address?: string | null
+    image_color: string
+    image_url?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    credit_card?: CreditCardCreateNestedOneWithoutUserInput
+    loves?: LoveCreateNestedManyWithoutUserInput
+    searches?: SearchCreateNestedManyWithoutUserInput
+    views?: ViewCreateNestedManyWithoutUserInput
+    orders?: OrderCreateNestedManyWithoutUserInput
+    payments?: PaymentCreateNestedManyWithoutUserInput
+    shippings?: ShippingCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutCardInput = {
+    id?: string
+    username: string
+    email: string
+    password: string
+    type?: number
+    fullname?: string | null
+    phone_number?: string | null
+    address?: string | null
+    image_color: string
+    image_url?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    credit_card?: CreditCardUncheckedCreateNestedOneWithoutUserInput
+    loves?: LoveUncheckedCreateNestedManyWithoutUserInput
+    searches?: SearchUncheckedCreateNestedManyWithoutUserInput
+    views?: ViewUncheckedCreateNestedManyWithoutUserInput
+    orders?: OrderUncheckedCreateNestedManyWithoutUserInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
+    shippings?: ShippingUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutCardInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutCardInput, UserUncheckedCreateWithoutCardInput>
+  }
+
   export type ProductCreateWithoutCardsInput = {
     id?: string
     name: string
@@ -33285,96 +33449,6 @@ export namespace Prisma {
     create: XOR<ProductCreateWithoutCardsInput, ProductUncheckedCreateWithoutCardsInput>
   }
 
-  export type UserCreateWithoutCardInput = {
-    id?: string
-    username: string
-    email: string
-    password: string
-    fullname?: string
-    phone_number?: string
-    address?: string
-    image_color: string
-    image_url?: string | null
-    created_at?: Date | string
-    updated_at?: Date | string
-    credit_card?: CreditCardCreateNestedOneWithoutUserInput
-    loves?: LoveCreateNestedManyWithoutUserInput
-    searches?: SearchCreateNestedManyWithoutUserInput
-    views?: ViewCreateNestedManyWithoutUserInput
-    orders?: OrderCreateNestedManyWithoutUserInput
-    payments?: PaymentCreateNestedManyWithoutUserInput
-    shippings?: ShippingCreateNestedManyWithoutUserInput
-  }
-
-  export type UserUncheckedCreateWithoutCardInput = {
-    id?: string
-    username: string
-    email: string
-    password: string
-    fullname?: string
-    phone_number?: string
-    address?: string
-    image_color: string
-    image_url?: string | null
-    created_at?: Date | string
-    updated_at?: Date | string
-    credit_card?: CreditCardUncheckedCreateNestedOneWithoutUserInput
-    loves?: LoveUncheckedCreateNestedManyWithoutUserInput
-    searches?: SearchUncheckedCreateNestedManyWithoutUserInput
-    views?: ViewUncheckedCreateNestedManyWithoutUserInput
-    orders?: OrderUncheckedCreateNestedManyWithoutUserInput
-    payments?: PaymentUncheckedCreateNestedManyWithoutUserInput
-    shippings?: ShippingUncheckedCreateNestedManyWithoutUserInput
-  }
-
-  export type UserCreateOrConnectWithoutCardInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutCardInput, UserUncheckedCreateWithoutCardInput>
-  }
-
-  export type ProductUpsertWithWhereUniqueWithoutCardsInput = {
-    where: ProductWhereUniqueInput
-    update: XOR<ProductUpdateWithoutCardsInput, ProductUncheckedUpdateWithoutCardsInput>
-    create: XOR<ProductCreateWithoutCardsInput, ProductUncheckedCreateWithoutCardsInput>
-  }
-
-  export type ProductUpdateWithWhereUniqueWithoutCardsInput = {
-    where: ProductWhereUniqueInput
-    data: XOR<ProductUpdateWithoutCardsInput, ProductUncheckedUpdateWithoutCardsInput>
-  }
-
-  export type ProductUpdateManyWithWhereWithoutCardsInput = {
-    where: ProductScalarWhereInput
-    data: XOR<ProductUpdateManyMutationInput, ProductUncheckedUpdateManyWithoutCardsInput>
-  }
-
-  export type ProductScalarWhereInput = {
-    AND?: ProductScalarWhereInput | ProductScalarWhereInput[]
-    OR?: ProductScalarWhereInput[]
-    NOT?: ProductScalarWhereInput | ProductScalarWhereInput[]
-    id?: StringFilter<"Product"> | string
-    name?: StringFilter<"Product"> | string
-    title?: StringFilter<"Product"> | string
-    description?: StringFilter<"Product"> | string
-    price?: FloatFilter<"Product"> | number
-    shipping_price?: FloatFilter<"Product"> | number
-    tax_price?: FloatFilter<"Product"> | number
-    quantity?: IntFilter<"Product"> | number
-    collection_id?: StringNullableFilter<"Product"> | string | null
-    category_id?: StringNullableFilter<"Product"> | string | null
-    brand_id?: StringNullableFilter<"Product"> | string | null
-    model_id?: StringNullableFilter<"Product"> | string | null
-    readme_url?: StringNullableFilter<"Product"> | string | null
-    released_month?: StringNullableFilter<"Product"> | string | null
-    released_year?: StringNullableFilter<"Product"> | string | null
-    search_count?: FloatFilter<"Product"> | number
-    view_count?: FloatFilter<"Product"> | number
-    love_count?: FloatFilter<"Product"> | number
-    order_count?: FloatFilter<"Product"> | number
-    created_at?: DateTimeFilter<"Product"> | Date | string
-    updated_at?: DateTimeFilter<"Product"> | Date | string
-  }
-
   export type UserUpsertWithoutCardInput = {
     update: XOR<UserUpdateWithoutCardInput, UserUncheckedUpdateWithoutCardInput>
     create: XOR<UserCreateWithoutCardInput, UserUncheckedCreateWithoutCardInput>
@@ -33391,9 +33465,10 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    fullname?: StringFieldUpdateOperationsInput | string
-    phone_number?: StringFieldUpdateOperationsInput | string
-    address?: StringFieldUpdateOperationsInput | string
+    type?: IntFieldUpdateOperationsInput | number
+    fullname?: NullableStringFieldUpdateOperationsInput | string | null
+    phone_number?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     image_color?: StringFieldUpdateOperationsInput | string
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33412,9 +33487,10 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    fullname?: StringFieldUpdateOperationsInput | string
-    phone_number?: StringFieldUpdateOperationsInput | string
-    address?: StringFieldUpdateOperationsInput | string
+    type?: IntFieldUpdateOperationsInput | number
+    fullname?: NullableStringFieldUpdateOperationsInput | string | null
+    phone_number?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     image_color?: StringFieldUpdateOperationsInput | string
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33428,20 +33504,94 @@ export namespace Prisma {
     shippings?: ShippingUncheckedUpdateManyWithoutUserNestedInput
   }
 
+  export type ProductUpsertWithoutCardsInput = {
+    update: XOR<ProductUpdateWithoutCardsInput, ProductUncheckedUpdateWithoutCardsInput>
+    create: XOR<ProductCreateWithoutCardsInput, ProductUncheckedCreateWithoutCardsInput>
+    where?: ProductWhereInput
+  }
+
+  export type ProductUpdateToOneWithWhereWithoutCardsInput = {
+    where?: ProductWhereInput
+    data: XOR<ProductUpdateWithoutCardsInput, ProductUncheckedUpdateWithoutCardsInput>
+  }
+
+  export type ProductUpdateWithoutCardsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    price?: FloatFieldUpdateOperationsInput | number
+    shipping_price?: FloatFieldUpdateOperationsInput | number
+    tax_price?: FloatFieldUpdateOperationsInput | number
+    quantity?: IntFieldUpdateOperationsInput | number
+    readme_url?: NullableStringFieldUpdateOperationsInput | string | null
+    released_month?: NullableStringFieldUpdateOperationsInput | string | null
+    released_year?: NullableStringFieldUpdateOperationsInput | string | null
+    search_count?: FloatFieldUpdateOperationsInput | number
+    view_count?: FloatFieldUpdateOperationsInput | number
+    love_count?: FloatFieldUpdateOperationsInput | number
+    order_count?: FloatFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    detail?: DetailUpdateOneWithoutProductNestedInput
+    collection?: CollectionUpdateOneWithoutProductsNestedInput
+    category?: CategoryUpdateOneWithoutProductsNestedInput
+    brand?: BrandUpdateOneWithoutProductsNestedInput
+    model?: ModelUpdateOneWithoutProductsNestedInput
+    loves?: LoveUpdateManyWithoutProductNestedInput
+    views?: ViewUpdateManyWithoutProductNestedInput
+    colors?: ColorUpdateManyWithoutProductsNestedInput
+    product_orders?: ProductOrderUpdateManyWithoutProductNestedInput
+    videos?: VideoUpdateManyWithoutProductNestedInput
+    images?: ImageUpdateManyWithoutProductNestedInput
+  }
+
+  export type ProductUncheckedUpdateWithoutCardsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    price?: FloatFieldUpdateOperationsInput | number
+    shipping_price?: FloatFieldUpdateOperationsInput | number
+    tax_price?: FloatFieldUpdateOperationsInput | number
+    quantity?: IntFieldUpdateOperationsInput | number
+    collection_id?: NullableStringFieldUpdateOperationsInput | string | null
+    category_id?: NullableStringFieldUpdateOperationsInput | string | null
+    brand_id?: NullableStringFieldUpdateOperationsInput | string | null
+    model_id?: NullableStringFieldUpdateOperationsInput | string | null
+    readme_url?: NullableStringFieldUpdateOperationsInput | string | null
+    released_month?: NullableStringFieldUpdateOperationsInput | string | null
+    released_year?: NullableStringFieldUpdateOperationsInput | string | null
+    search_count?: FloatFieldUpdateOperationsInput | number
+    view_count?: FloatFieldUpdateOperationsInput | number
+    love_count?: FloatFieldUpdateOperationsInput | number
+    order_count?: FloatFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    detail?: DetailUncheckedUpdateOneWithoutProductNestedInput
+    loves?: LoveUncheckedUpdateManyWithoutProductNestedInput
+    views?: ViewUncheckedUpdateManyWithoutProductNestedInput
+    colors?: ColorUncheckedUpdateManyWithoutProductsNestedInput
+    product_orders?: ProductOrderUncheckedUpdateManyWithoutProductNestedInput
+    videos?: VideoUncheckedUpdateManyWithoutProductNestedInput
+    images?: ImageUncheckedUpdateManyWithoutProductNestedInput
+  }
+
   export type UserCreateWithoutSearchesInput = {
     id?: string
     username: string
     email: string
     password: string
-    fullname?: string
-    phone_number?: string
-    address?: string
+    type?: number
+    fullname?: string | null
+    phone_number?: string | null
+    address?: string | null
     image_color: string
     image_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     credit_card?: CreditCardCreateNestedOneWithoutUserInput
-    card?: CardCreateNestedOneWithoutUserInput
+    card?: CardCreateNestedManyWithoutUserInput
     loves?: LoveCreateNestedManyWithoutUserInput
     views?: ViewCreateNestedManyWithoutUserInput
     orders?: OrderCreateNestedManyWithoutUserInput
@@ -33454,15 +33604,16 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    fullname?: string
-    phone_number?: string
-    address?: string
+    type?: number
+    fullname?: string | null
+    phone_number?: string | null
+    address?: string | null
     image_color: string
     image_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     credit_card?: CreditCardUncheckedCreateNestedOneWithoutUserInput
-    card?: CardUncheckedCreateNestedOneWithoutUserInput
+    card?: CardUncheckedCreateNestedManyWithoutUserInput
     loves?: LoveUncheckedCreateNestedManyWithoutUserInput
     views?: ViewUncheckedCreateNestedManyWithoutUserInput
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
@@ -33491,15 +33642,16 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    fullname?: StringFieldUpdateOperationsInput | string
-    phone_number?: StringFieldUpdateOperationsInput | string
-    address?: StringFieldUpdateOperationsInput | string
+    type?: IntFieldUpdateOperationsInput | number
+    fullname?: NullableStringFieldUpdateOperationsInput | string | null
+    phone_number?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     image_color?: StringFieldUpdateOperationsInput | string
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     credit_card?: CreditCardUpdateOneWithoutUserNestedInput
-    card?: CardUpdateOneWithoutUserNestedInput
+    card?: CardUpdateManyWithoutUserNestedInput
     loves?: LoveUpdateManyWithoutUserNestedInput
     views?: ViewUpdateManyWithoutUserNestedInput
     orders?: OrderUpdateManyWithoutUserNestedInput
@@ -33512,15 +33664,16 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    fullname?: StringFieldUpdateOperationsInput | string
-    phone_number?: StringFieldUpdateOperationsInput | string
-    address?: StringFieldUpdateOperationsInput | string
+    type?: IntFieldUpdateOperationsInput | number
+    fullname?: NullableStringFieldUpdateOperationsInput | string | null
+    phone_number?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     image_color?: StringFieldUpdateOperationsInput | string
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     credit_card?: CreditCardUncheckedUpdateOneWithoutUserNestedInput
-    card?: CardUncheckedUpdateOneWithoutUserNestedInput
+    card?: CardUncheckedUpdateManyWithoutUserNestedInput
     loves?: LoveUncheckedUpdateManyWithoutUserNestedInput
     views?: ViewUncheckedUpdateManyWithoutUserNestedInput
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
@@ -33551,10 +33704,10 @@ export namespace Prisma {
     category?: CategoryCreateNestedOneWithoutProductsInput
     brand?: BrandCreateNestedOneWithoutProductsInput
     model?: ModelCreateNestedOneWithoutProductsInput
+    cards?: CardCreateNestedManyWithoutProductInput
     loves?: LoveCreateNestedManyWithoutProductInput
     colors?: ColorCreateNestedManyWithoutProductsInput
     product_orders?: ProductOrderCreateNestedManyWithoutProductInput
-    cards?: CardCreateNestedManyWithoutProductsInput
     videos?: VideoCreateNestedManyWithoutProductInput
     images?: ImageCreateNestedManyWithoutProductInput
   }
@@ -33582,10 +33735,10 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     detail?: DetailUncheckedCreateNestedOneWithoutProductInput
+    cards?: CardUncheckedCreateNestedManyWithoutProductInput
     loves?: LoveUncheckedCreateNestedManyWithoutProductInput
     colors?: ColorUncheckedCreateNestedManyWithoutProductsInput
     product_orders?: ProductOrderUncheckedCreateNestedManyWithoutProductInput
-    cards?: CardUncheckedCreateNestedManyWithoutProductsInput
     videos?: VideoUncheckedCreateNestedManyWithoutProductInput
     images?: ImageUncheckedCreateNestedManyWithoutProductInput
   }
@@ -33600,15 +33753,16 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    fullname?: string
-    phone_number?: string
-    address?: string
+    type?: number
+    fullname?: string | null
+    phone_number?: string | null
+    address?: string | null
     image_color: string
     image_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     credit_card?: CreditCardCreateNestedOneWithoutUserInput
-    card?: CardCreateNestedOneWithoutUserInput
+    card?: CardCreateNestedManyWithoutUserInput
     loves?: LoveCreateNestedManyWithoutUserInput
     searches?: SearchCreateNestedManyWithoutUserInput
     orders?: OrderCreateNestedManyWithoutUserInput
@@ -33621,15 +33775,16 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    fullname?: string
-    phone_number?: string
-    address?: string
+    type?: number
+    fullname?: string | null
+    phone_number?: string | null
+    address?: string | null
     image_color: string
     image_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     credit_card?: CreditCardUncheckedCreateNestedOneWithoutUserInput
-    card?: CardUncheckedCreateNestedOneWithoutUserInput
+    card?: CardUncheckedCreateNestedManyWithoutUserInput
     loves?: LoveUncheckedCreateNestedManyWithoutUserInput
     searches?: SearchUncheckedCreateNestedManyWithoutUserInput
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
@@ -33676,10 +33831,10 @@ export namespace Prisma {
     category?: CategoryUpdateOneWithoutProductsNestedInput
     brand?: BrandUpdateOneWithoutProductsNestedInput
     model?: ModelUpdateOneWithoutProductsNestedInput
+    cards?: CardUpdateManyWithoutProductNestedInput
     loves?: LoveUpdateManyWithoutProductNestedInput
     colors?: ColorUpdateManyWithoutProductsNestedInput
     product_orders?: ProductOrderUpdateManyWithoutProductNestedInput
-    cards?: CardUpdateManyWithoutProductsNestedInput
     videos?: VideoUpdateManyWithoutProductNestedInput
     images?: ImageUpdateManyWithoutProductNestedInput
   }
@@ -33707,10 +33862,10 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     detail?: DetailUncheckedUpdateOneWithoutProductNestedInput
+    cards?: CardUncheckedUpdateManyWithoutProductNestedInput
     loves?: LoveUncheckedUpdateManyWithoutProductNestedInput
     colors?: ColorUncheckedUpdateManyWithoutProductsNestedInput
     product_orders?: ProductOrderUncheckedUpdateManyWithoutProductNestedInput
-    cards?: CardUncheckedUpdateManyWithoutProductsNestedInput
     videos?: VideoUncheckedUpdateManyWithoutProductNestedInput
     images?: ImageUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -33731,15 +33886,16 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    fullname?: StringFieldUpdateOperationsInput | string
-    phone_number?: StringFieldUpdateOperationsInput | string
-    address?: StringFieldUpdateOperationsInput | string
+    type?: IntFieldUpdateOperationsInput | number
+    fullname?: NullableStringFieldUpdateOperationsInput | string | null
+    phone_number?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     image_color?: StringFieldUpdateOperationsInput | string
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     credit_card?: CreditCardUpdateOneWithoutUserNestedInput
-    card?: CardUpdateOneWithoutUserNestedInput
+    card?: CardUpdateManyWithoutUserNestedInput
     loves?: LoveUpdateManyWithoutUserNestedInput
     searches?: SearchUpdateManyWithoutUserNestedInput
     orders?: OrderUpdateManyWithoutUserNestedInput
@@ -33752,15 +33908,16 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    fullname?: StringFieldUpdateOperationsInput | string
-    phone_number?: StringFieldUpdateOperationsInput | string
-    address?: StringFieldUpdateOperationsInput | string
+    type?: IntFieldUpdateOperationsInput | number
+    fullname?: NullableStringFieldUpdateOperationsInput | string | null
+    phone_number?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     image_color?: StringFieldUpdateOperationsInput | string
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     credit_card?: CreditCardUncheckedUpdateOneWithoutUserNestedInput
-    card?: CardUncheckedUpdateOneWithoutUserNestedInput
+    card?: CardUncheckedUpdateManyWithoutUserNestedInput
     loves?: LoveUncheckedUpdateManyWithoutUserNestedInput
     searches?: SearchUncheckedUpdateManyWithoutUserNestedInput
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
@@ -33773,15 +33930,16 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    fullname?: string
-    phone_number?: string
-    address?: string
+    type?: number
+    fullname?: string | null
+    phone_number?: string | null
+    address?: string | null
     image_color: string
     image_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     credit_card?: CreditCardCreateNestedOneWithoutUserInput
-    card?: CardCreateNestedOneWithoutUserInput
+    card?: CardCreateNestedManyWithoutUserInput
     searches?: SearchCreateNestedManyWithoutUserInput
     views?: ViewCreateNestedManyWithoutUserInput
     orders?: OrderCreateNestedManyWithoutUserInput
@@ -33794,15 +33952,16 @@ export namespace Prisma {
     username: string
     email: string
     password: string
-    fullname?: string
-    phone_number?: string
-    address?: string
+    type?: number
+    fullname?: string | null
+    phone_number?: string | null
+    address?: string | null
     image_color: string
     image_url?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     credit_card?: CreditCardUncheckedCreateNestedOneWithoutUserInput
-    card?: CardUncheckedCreateNestedOneWithoutUserInput
+    card?: CardUncheckedCreateNestedManyWithoutUserInput
     searches?: SearchUncheckedCreateNestedManyWithoutUserInput
     views?: ViewUncheckedCreateNestedManyWithoutUserInput
     orders?: OrderUncheckedCreateNestedManyWithoutUserInput
@@ -33838,10 +33997,10 @@ export namespace Prisma {
     category?: CategoryCreateNestedOneWithoutProductsInput
     brand?: BrandCreateNestedOneWithoutProductsInput
     model?: ModelCreateNestedOneWithoutProductsInput
+    cards?: CardCreateNestedManyWithoutProductInput
     views?: ViewCreateNestedManyWithoutProductInput
     colors?: ColorCreateNestedManyWithoutProductsInput
     product_orders?: ProductOrderCreateNestedManyWithoutProductInput
-    cards?: CardCreateNestedManyWithoutProductsInput
     videos?: VideoCreateNestedManyWithoutProductInput
     images?: ImageCreateNestedManyWithoutProductInput
   }
@@ -33869,10 +34028,10 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     detail?: DetailUncheckedCreateNestedOneWithoutProductInput
+    cards?: CardUncheckedCreateNestedManyWithoutProductInput
     views?: ViewUncheckedCreateNestedManyWithoutProductInput
     colors?: ColorUncheckedCreateNestedManyWithoutProductsInput
     product_orders?: ProductOrderUncheckedCreateNestedManyWithoutProductInput
-    cards?: CardUncheckedCreateNestedManyWithoutProductsInput
     videos?: VideoUncheckedCreateNestedManyWithoutProductInput
     images?: ImageUncheckedCreateNestedManyWithoutProductInput
   }
@@ -33898,15 +34057,16 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    fullname?: StringFieldUpdateOperationsInput | string
-    phone_number?: StringFieldUpdateOperationsInput | string
-    address?: StringFieldUpdateOperationsInput | string
+    type?: IntFieldUpdateOperationsInput | number
+    fullname?: NullableStringFieldUpdateOperationsInput | string | null
+    phone_number?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     image_color?: StringFieldUpdateOperationsInput | string
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     credit_card?: CreditCardUpdateOneWithoutUserNestedInput
-    card?: CardUpdateOneWithoutUserNestedInput
+    card?: CardUpdateManyWithoutUserNestedInput
     searches?: SearchUpdateManyWithoutUserNestedInput
     views?: ViewUpdateManyWithoutUserNestedInput
     orders?: OrderUpdateManyWithoutUserNestedInput
@@ -33919,15 +34079,16 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
-    fullname?: StringFieldUpdateOperationsInput | string
-    phone_number?: StringFieldUpdateOperationsInput | string
-    address?: StringFieldUpdateOperationsInput | string
+    type?: IntFieldUpdateOperationsInput | number
+    fullname?: NullableStringFieldUpdateOperationsInput | string | null
+    phone_number?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
     image_color?: StringFieldUpdateOperationsInput | string
     image_url?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     credit_card?: CreditCardUncheckedUpdateOneWithoutUserNestedInput
-    card?: CardUncheckedUpdateOneWithoutUserNestedInput
+    card?: CardUncheckedUpdateManyWithoutUserNestedInput
     searches?: SearchUncheckedUpdateManyWithoutUserNestedInput
     views?: ViewUncheckedUpdateManyWithoutUserNestedInput
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
@@ -33969,10 +34130,10 @@ export namespace Prisma {
     category?: CategoryUpdateOneWithoutProductsNestedInput
     brand?: BrandUpdateOneWithoutProductsNestedInput
     model?: ModelUpdateOneWithoutProductsNestedInput
+    cards?: CardUpdateManyWithoutProductNestedInput
     views?: ViewUpdateManyWithoutProductNestedInput
     colors?: ColorUpdateManyWithoutProductsNestedInput
     product_orders?: ProductOrderUpdateManyWithoutProductNestedInput
-    cards?: CardUpdateManyWithoutProductsNestedInput
     videos?: VideoUpdateManyWithoutProductNestedInput
     images?: ImageUpdateManyWithoutProductNestedInput
   }
@@ -34000,10 +34161,10 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     detail?: DetailUncheckedUpdateOneWithoutProductNestedInput
+    cards?: CardUncheckedUpdateManyWithoutProductNestedInput
     views?: ViewUncheckedUpdateManyWithoutProductNestedInput
     colors?: ColorUncheckedUpdateManyWithoutProductsNestedInput
     product_orders?: ProductOrderUncheckedUpdateManyWithoutProductNestedInput
-    cards?: CardUncheckedUpdateManyWithoutProductsNestedInput
     videos?: VideoUncheckedUpdateManyWithoutProductNestedInput
     images?: ImageUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -34031,10 +34192,10 @@ export namespace Prisma {
     category?: CategoryCreateNestedOneWithoutProductsInput
     brand?: BrandCreateNestedOneWithoutProductsInput
     model?: ModelCreateNestedOneWithoutProductsInput
+    cards?: CardCreateNestedManyWithoutProductInput
     loves?: LoveCreateNestedManyWithoutProductInput
     views?: ViewCreateNestedManyWithoutProductInput
     product_orders?: ProductOrderCreateNestedManyWithoutProductInput
-    cards?: CardCreateNestedManyWithoutProductsInput
     videos?: VideoCreateNestedManyWithoutProductInput
     images?: ImageCreateNestedManyWithoutProductInput
   }
@@ -34062,10 +34223,10 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     detail?: DetailUncheckedCreateNestedOneWithoutProductInput
+    cards?: CardUncheckedCreateNestedManyWithoutProductInput
     loves?: LoveUncheckedCreateNestedManyWithoutProductInput
     views?: ViewUncheckedCreateNestedManyWithoutProductInput
     product_orders?: ProductOrderUncheckedCreateNestedManyWithoutProductInput
-    cards?: CardUncheckedCreateNestedManyWithoutProductsInput
     videos?: VideoUncheckedCreateNestedManyWithoutProductInput
     images?: ImageUncheckedCreateNestedManyWithoutProductInput
   }
@@ -34089,6 +34250,33 @@ export namespace Prisma {
   export type ProductUpdateManyWithWhereWithoutColorsInput = {
     where: ProductScalarWhereInput
     data: XOR<ProductUpdateManyMutationInput, ProductUncheckedUpdateManyWithoutColorsInput>
+  }
+
+  export type ProductScalarWhereInput = {
+    AND?: ProductScalarWhereInput | ProductScalarWhereInput[]
+    OR?: ProductScalarWhereInput[]
+    NOT?: ProductScalarWhereInput | ProductScalarWhereInput[]
+    id?: StringFilter<"Product"> | string
+    name?: StringFilter<"Product"> | string
+    title?: StringFilter<"Product"> | string
+    description?: StringFilter<"Product"> | string
+    price?: FloatFilter<"Product"> | number
+    shipping_price?: FloatFilter<"Product"> | number
+    tax_price?: FloatFilter<"Product"> | number
+    quantity?: IntFilter<"Product"> | number
+    collection_id?: StringNullableFilter<"Product"> | string | null
+    category_id?: StringNullableFilter<"Product"> | string | null
+    brand_id?: StringNullableFilter<"Product"> | string | null
+    model_id?: StringNullableFilter<"Product"> | string | null
+    readme_url?: StringNullableFilter<"Product"> | string | null
+    released_month?: StringNullableFilter<"Product"> | string | null
+    released_year?: StringNullableFilter<"Product"> | string | null
+    search_count?: FloatFilter<"Product"> | number
+    view_count?: FloatFilter<"Product"> | number
+    love_count?: FloatFilter<"Product"> | number
+    order_count?: FloatFilter<"Product"> | number
+    created_at?: DateTimeFilter<"Product"> | Date | string
+    updated_at?: DateTimeFilter<"Product"> | Date | string
   }
 
   export type CategoryCreateWithoutCollectionInput = {
@@ -34141,11 +34329,11 @@ export namespace Prisma {
     category?: CategoryCreateNestedOneWithoutProductsInput
     brand?: BrandCreateNestedOneWithoutProductsInput
     model?: ModelCreateNestedOneWithoutProductsInput
+    cards?: CardCreateNestedManyWithoutProductInput
     loves?: LoveCreateNestedManyWithoutProductInput
     views?: ViewCreateNestedManyWithoutProductInput
     colors?: ColorCreateNestedManyWithoutProductsInput
     product_orders?: ProductOrderCreateNestedManyWithoutProductInput
-    cards?: CardCreateNestedManyWithoutProductsInput
     videos?: VideoCreateNestedManyWithoutProductInput
     images?: ImageCreateNestedManyWithoutProductInput
   }
@@ -34172,11 +34360,11 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     detail?: DetailUncheckedCreateNestedOneWithoutProductInput
+    cards?: CardUncheckedCreateNestedManyWithoutProductInput
     loves?: LoveUncheckedCreateNestedManyWithoutProductInput
     views?: ViewUncheckedCreateNestedManyWithoutProductInput
     colors?: ColorUncheckedCreateNestedManyWithoutProductsInput
     product_orders?: ProductOrderUncheckedCreateNestedManyWithoutProductInput
-    cards?: CardUncheckedCreateNestedManyWithoutProductsInput
     videos?: VideoUncheckedCreateNestedManyWithoutProductInput
     images?: ImageUncheckedCreateNestedManyWithoutProductInput
   }
@@ -34307,11 +34495,11 @@ export namespace Prisma {
     collection?: CollectionCreateNestedOneWithoutProductsInput
     brand?: BrandCreateNestedOneWithoutProductsInput
     model?: ModelCreateNestedOneWithoutProductsInput
+    cards?: CardCreateNestedManyWithoutProductInput
     loves?: LoveCreateNestedManyWithoutProductInput
     views?: ViewCreateNestedManyWithoutProductInput
     colors?: ColorCreateNestedManyWithoutProductsInput
     product_orders?: ProductOrderCreateNestedManyWithoutProductInput
-    cards?: CardCreateNestedManyWithoutProductsInput
     videos?: VideoCreateNestedManyWithoutProductInput
     images?: ImageCreateNestedManyWithoutProductInput
   }
@@ -34338,11 +34526,11 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     detail?: DetailUncheckedCreateNestedOneWithoutProductInput
+    cards?: CardUncheckedCreateNestedManyWithoutProductInput
     loves?: LoveUncheckedCreateNestedManyWithoutProductInput
     views?: ViewUncheckedCreateNestedManyWithoutProductInput
     colors?: ColorUncheckedCreateNestedManyWithoutProductsInput
     product_orders?: ProductOrderUncheckedCreateNestedManyWithoutProductInput
-    cards?: CardUncheckedCreateNestedManyWithoutProductsInput
     videos?: VideoUncheckedCreateNestedManyWithoutProductInput
     images?: ImageUncheckedCreateNestedManyWithoutProductInput
   }
@@ -34473,11 +34661,11 @@ export namespace Prisma {
     collection?: CollectionCreateNestedOneWithoutProductsInput
     category?: CategoryCreateNestedOneWithoutProductsInput
     model?: ModelCreateNestedOneWithoutProductsInput
+    cards?: CardCreateNestedManyWithoutProductInput
     loves?: LoveCreateNestedManyWithoutProductInput
     views?: ViewCreateNestedManyWithoutProductInput
     colors?: ColorCreateNestedManyWithoutProductsInput
     product_orders?: ProductOrderCreateNestedManyWithoutProductInput
-    cards?: CardCreateNestedManyWithoutProductsInput
     videos?: VideoCreateNestedManyWithoutProductInput
     images?: ImageCreateNestedManyWithoutProductInput
   }
@@ -34504,11 +34692,11 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     detail?: DetailUncheckedCreateNestedOneWithoutProductInput
+    cards?: CardUncheckedCreateNestedManyWithoutProductInput
     loves?: LoveUncheckedCreateNestedManyWithoutProductInput
     views?: ViewUncheckedCreateNestedManyWithoutProductInput
     colors?: ColorUncheckedCreateNestedManyWithoutProductsInput
     product_orders?: ProductOrderUncheckedCreateNestedManyWithoutProductInput
-    cards?: CardUncheckedCreateNestedManyWithoutProductsInput
     videos?: VideoUncheckedCreateNestedManyWithoutProductInput
     images?: ImageUncheckedCreateNestedManyWithoutProductInput
   }
@@ -34668,11 +34856,11 @@ export namespace Prisma {
     collection?: CollectionCreateNestedOneWithoutProductsInput
     category?: CategoryCreateNestedOneWithoutProductsInput
     brand?: BrandCreateNestedOneWithoutProductsInput
+    cards?: CardCreateNestedManyWithoutProductInput
     loves?: LoveCreateNestedManyWithoutProductInput
     views?: ViewCreateNestedManyWithoutProductInput
     colors?: ColorCreateNestedManyWithoutProductsInput
     product_orders?: ProductOrderCreateNestedManyWithoutProductInput
-    cards?: CardCreateNestedManyWithoutProductsInput
     videos?: VideoCreateNestedManyWithoutProductInput
     images?: ImageCreateNestedManyWithoutProductInput
   }
@@ -34699,11 +34887,11 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     detail?: DetailUncheckedCreateNestedOneWithoutProductInput
+    cards?: CardUncheckedCreateNestedManyWithoutProductInput
     loves?: LoveUncheckedCreateNestedManyWithoutProductInput
     views?: ViewUncheckedCreateNestedManyWithoutProductInput
     colors?: ColorUncheckedCreateNestedManyWithoutProductsInput
     product_orders?: ProductOrderUncheckedCreateNestedManyWithoutProductInput
-    cards?: CardUncheckedCreateNestedManyWithoutProductsInput
     videos?: VideoUncheckedCreateNestedManyWithoutProductInput
     images?: ImageUncheckedCreateNestedManyWithoutProductInput
   }
@@ -34787,11 +34975,11 @@ export namespace Prisma {
     category?: CategoryCreateNestedOneWithoutProductsInput
     brand?: BrandCreateNestedOneWithoutProductsInput
     model?: ModelCreateNestedOneWithoutProductsInput
+    cards?: CardCreateNestedManyWithoutProductInput
     loves?: LoveCreateNestedManyWithoutProductInput
     views?: ViewCreateNestedManyWithoutProductInput
     colors?: ColorCreateNestedManyWithoutProductsInput
     product_orders?: ProductOrderCreateNestedManyWithoutProductInput
-    cards?: CardCreateNestedManyWithoutProductsInput
     videos?: VideoCreateNestedManyWithoutProductInput
     images?: ImageCreateNestedManyWithoutProductInput
   }
@@ -34818,11 +35006,11 @@ export namespace Prisma {
     order_count?: number
     created_at?: Date | string
     updated_at?: Date | string
+    cards?: CardUncheckedCreateNestedManyWithoutProductInput
     loves?: LoveUncheckedCreateNestedManyWithoutProductInput
     views?: ViewUncheckedCreateNestedManyWithoutProductInput
     colors?: ColorUncheckedCreateNestedManyWithoutProductsInput
     product_orders?: ProductOrderUncheckedCreateNestedManyWithoutProductInput
-    cards?: CardUncheckedCreateNestedManyWithoutProductsInput
     videos?: VideoUncheckedCreateNestedManyWithoutProductInput
     images?: ImageUncheckedCreateNestedManyWithoutProductInput
   }
@@ -34865,11 +35053,11 @@ export namespace Prisma {
     category?: CategoryUpdateOneWithoutProductsNestedInput
     brand?: BrandUpdateOneWithoutProductsNestedInput
     model?: ModelUpdateOneWithoutProductsNestedInput
+    cards?: CardUpdateManyWithoutProductNestedInput
     loves?: LoveUpdateManyWithoutProductNestedInput
     views?: ViewUpdateManyWithoutProductNestedInput
     colors?: ColorUpdateManyWithoutProductsNestedInput
     product_orders?: ProductOrderUpdateManyWithoutProductNestedInput
-    cards?: CardUpdateManyWithoutProductsNestedInput
     videos?: VideoUpdateManyWithoutProductNestedInput
     images?: ImageUpdateManyWithoutProductNestedInput
   }
@@ -34896,11 +35084,11 @@ export namespace Prisma {
     order_count?: FloatFieldUpdateOperationsInput | number
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    cards?: CardUncheckedUpdateManyWithoutProductNestedInput
     loves?: LoveUncheckedUpdateManyWithoutProductNestedInput
     views?: ViewUncheckedUpdateManyWithoutProductNestedInput
     colors?: ColorUncheckedUpdateManyWithoutProductsNestedInput
     product_orders?: ProductOrderUncheckedUpdateManyWithoutProductNestedInput
-    cards?: CardUncheckedUpdateManyWithoutProductsNestedInput
     videos?: VideoUncheckedUpdateManyWithoutProductNestedInput
     images?: ImageUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -34928,11 +35116,11 @@ export namespace Prisma {
     category?: CategoryCreateNestedOneWithoutProductsInput
     brand?: BrandCreateNestedOneWithoutProductsInput
     model?: ModelCreateNestedOneWithoutProductsInput
+    cards?: CardCreateNestedManyWithoutProductInput
     loves?: LoveCreateNestedManyWithoutProductInput
     views?: ViewCreateNestedManyWithoutProductInput
     colors?: ColorCreateNestedManyWithoutProductsInput
     product_orders?: ProductOrderCreateNestedManyWithoutProductInput
-    cards?: CardCreateNestedManyWithoutProductsInput
     videos?: VideoCreateNestedManyWithoutProductInput
   }
 
@@ -34959,11 +35147,11 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     detail?: DetailUncheckedCreateNestedOneWithoutProductInput
+    cards?: CardUncheckedCreateNestedManyWithoutProductInput
     loves?: LoveUncheckedCreateNestedManyWithoutProductInput
     views?: ViewUncheckedCreateNestedManyWithoutProductInput
     colors?: ColorUncheckedCreateNestedManyWithoutProductsInput
     product_orders?: ProductOrderUncheckedCreateNestedManyWithoutProductInput
-    cards?: CardUncheckedCreateNestedManyWithoutProductsInput
     videos?: VideoUncheckedCreateNestedManyWithoutProductInput
   }
 
@@ -35006,11 +35194,11 @@ export namespace Prisma {
     category?: CategoryUpdateOneWithoutProductsNestedInput
     brand?: BrandUpdateOneWithoutProductsNestedInput
     model?: ModelUpdateOneWithoutProductsNestedInput
+    cards?: CardUpdateManyWithoutProductNestedInput
     loves?: LoveUpdateManyWithoutProductNestedInput
     views?: ViewUpdateManyWithoutProductNestedInput
     colors?: ColorUpdateManyWithoutProductsNestedInput
     product_orders?: ProductOrderUpdateManyWithoutProductNestedInput
-    cards?: CardUpdateManyWithoutProductsNestedInput
     videos?: VideoUpdateManyWithoutProductNestedInput
   }
 
@@ -35037,11 +35225,11 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     detail?: DetailUncheckedUpdateOneWithoutProductNestedInput
+    cards?: CardUncheckedUpdateManyWithoutProductNestedInput
     loves?: LoveUncheckedUpdateManyWithoutProductNestedInput
     views?: ViewUncheckedUpdateManyWithoutProductNestedInput
     colors?: ColorUncheckedUpdateManyWithoutProductsNestedInput
     product_orders?: ProductOrderUncheckedUpdateManyWithoutProductNestedInput
-    cards?: CardUncheckedUpdateManyWithoutProductsNestedInput
     videos?: VideoUncheckedUpdateManyWithoutProductNestedInput
   }
 
@@ -35136,11 +35324,11 @@ export namespace Prisma {
     category?: CategoryCreateNestedOneWithoutProductsInput
     brand?: BrandCreateNestedOneWithoutProductsInput
     model?: ModelCreateNestedOneWithoutProductsInput
+    cards?: CardCreateNestedManyWithoutProductInput
     loves?: LoveCreateNestedManyWithoutProductInput
     views?: ViewCreateNestedManyWithoutProductInput
     colors?: ColorCreateNestedManyWithoutProductsInput
     product_orders?: ProductOrderCreateNestedManyWithoutProductInput
-    cards?: CardCreateNestedManyWithoutProductsInput
     images?: ImageCreateNestedManyWithoutProductInput
   }
 
@@ -35167,11 +35355,11 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     detail?: DetailUncheckedCreateNestedOneWithoutProductInput
+    cards?: CardUncheckedCreateNestedManyWithoutProductInput
     loves?: LoveUncheckedCreateNestedManyWithoutProductInput
     views?: ViewUncheckedCreateNestedManyWithoutProductInput
     colors?: ColorUncheckedCreateNestedManyWithoutProductsInput
     product_orders?: ProductOrderUncheckedCreateNestedManyWithoutProductInput
-    cards?: CardUncheckedCreateNestedManyWithoutProductsInput
     images?: ImageUncheckedCreateNestedManyWithoutProductInput
   }
 
@@ -35237,11 +35425,11 @@ export namespace Prisma {
     category?: CategoryUpdateOneWithoutProductsNestedInput
     brand?: BrandUpdateOneWithoutProductsNestedInput
     model?: ModelUpdateOneWithoutProductsNestedInput
+    cards?: CardUpdateManyWithoutProductNestedInput
     loves?: LoveUpdateManyWithoutProductNestedInput
     views?: ViewUpdateManyWithoutProductNestedInput
     colors?: ColorUpdateManyWithoutProductsNestedInput
     product_orders?: ProductOrderUpdateManyWithoutProductNestedInput
-    cards?: CardUpdateManyWithoutProductsNestedInput
     images?: ImageUpdateManyWithoutProductNestedInput
   }
 
@@ -35268,11 +35456,11 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     detail?: DetailUncheckedUpdateOneWithoutProductNestedInput
+    cards?: CardUncheckedUpdateManyWithoutProductNestedInput
     loves?: LoveUncheckedUpdateManyWithoutProductNestedInput
     views?: ViewUncheckedUpdateManyWithoutProductNestedInput
     colors?: ColorUncheckedUpdateManyWithoutProductsNestedInput
     product_orders?: ProductOrderUncheckedUpdateManyWithoutProductNestedInput
-    cards?: CardUncheckedUpdateManyWithoutProductsNestedInput
     images?: ImageUncheckedUpdateManyWithoutProductNestedInput
   }
 
@@ -35303,6 +35491,14 @@ export namespace Prisma {
     height?: FloatFieldUpdateOperationsInput | number
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CardCreateManyUserInput = {
+    id?: string
+    product_id: string
+    quantity: number
+    created_at?: Date | string
+    updated_at?: Date | string
   }
 
   export type LoveCreateManyUserInput = {
@@ -35355,6 +35551,30 @@ export namespace Prisma {
     received?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
+  }
+
+  export type CardUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    product?: ProductUpdateOneRequiredWithoutCardsNestedInput
+  }
+
+  export type CardUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    product_id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CardUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    product_id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type LoveUpdateWithoutUserInput = {
@@ -35519,6 +35739,14 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type CardCreateManyProductInput = {
+    id?: string
+    user_id: string
+    quantity: number
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
   export type LoveCreateManyProductInput = {
     id?: string
     loved?: boolean
@@ -35562,6 +35790,30 @@ export namespace Prisma {
     height: number
     created_at?: Date | string
     updated_at?: Date | string
+  }
+
+  export type CardUpdateWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutCardNestedInput
+  }
+
+  export type CardUncheckedUpdateWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CardUncheckedUpdateManyWithoutProductInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type LoveUpdateWithoutProductInput = {
@@ -35658,24 +35910,6 @@ export namespace Prisma {
     shipping_price?: FloatFieldUpdateOperationsInput | number
     tax_price?: FloatFieldUpdateOperationsInput | number
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type CardUpdateWithoutProductsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    product_quantities?: CardUpdateproduct_quantitiesInput | number[]
-    user?: UserUpdateOneRequiredWithoutCardNestedInput
-  }
-
-  export type CardUncheckedUpdateWithoutProductsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    user_id?: StringFieldUpdateOperationsInput | string
-    product_quantities?: CardUpdateproduct_quantitiesInput | number[]
-  }
-
-  export type CardUncheckedUpdateManyWithoutProductsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    user_id?: StringFieldUpdateOperationsInput | string
-    product_quantities?: CardUpdateproduct_quantitiesInput | number[]
   }
 
   export type VideoUpdateWithoutProductInput = {
@@ -35783,92 +36017,6 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type ProductUpdateWithoutCardsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    price?: FloatFieldUpdateOperationsInput | number
-    shipping_price?: FloatFieldUpdateOperationsInput | number
-    tax_price?: FloatFieldUpdateOperationsInput | number
-    quantity?: IntFieldUpdateOperationsInput | number
-    readme_url?: NullableStringFieldUpdateOperationsInput | string | null
-    released_month?: NullableStringFieldUpdateOperationsInput | string | null
-    released_year?: NullableStringFieldUpdateOperationsInput | string | null
-    search_count?: FloatFieldUpdateOperationsInput | number
-    view_count?: FloatFieldUpdateOperationsInput | number
-    love_count?: FloatFieldUpdateOperationsInput | number
-    order_count?: FloatFieldUpdateOperationsInput | number
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    detail?: DetailUpdateOneWithoutProductNestedInput
-    collection?: CollectionUpdateOneWithoutProductsNestedInput
-    category?: CategoryUpdateOneWithoutProductsNestedInput
-    brand?: BrandUpdateOneWithoutProductsNestedInput
-    model?: ModelUpdateOneWithoutProductsNestedInput
-    loves?: LoveUpdateManyWithoutProductNestedInput
-    views?: ViewUpdateManyWithoutProductNestedInput
-    colors?: ColorUpdateManyWithoutProductsNestedInput
-    product_orders?: ProductOrderUpdateManyWithoutProductNestedInput
-    videos?: VideoUpdateManyWithoutProductNestedInput
-    images?: ImageUpdateManyWithoutProductNestedInput
-  }
-
-  export type ProductUncheckedUpdateWithoutCardsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    price?: FloatFieldUpdateOperationsInput | number
-    shipping_price?: FloatFieldUpdateOperationsInput | number
-    tax_price?: FloatFieldUpdateOperationsInput | number
-    quantity?: IntFieldUpdateOperationsInput | number
-    collection_id?: NullableStringFieldUpdateOperationsInput | string | null
-    category_id?: NullableStringFieldUpdateOperationsInput | string | null
-    brand_id?: NullableStringFieldUpdateOperationsInput | string | null
-    model_id?: NullableStringFieldUpdateOperationsInput | string | null
-    readme_url?: NullableStringFieldUpdateOperationsInput | string | null
-    released_month?: NullableStringFieldUpdateOperationsInput | string | null
-    released_year?: NullableStringFieldUpdateOperationsInput | string | null
-    search_count?: FloatFieldUpdateOperationsInput | number
-    view_count?: FloatFieldUpdateOperationsInput | number
-    love_count?: FloatFieldUpdateOperationsInput | number
-    order_count?: FloatFieldUpdateOperationsInput | number
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    detail?: DetailUncheckedUpdateOneWithoutProductNestedInput
-    loves?: LoveUncheckedUpdateManyWithoutProductNestedInput
-    views?: ViewUncheckedUpdateManyWithoutProductNestedInput
-    colors?: ColorUncheckedUpdateManyWithoutProductsNestedInput
-    product_orders?: ProductOrderUncheckedUpdateManyWithoutProductNestedInput
-    videos?: VideoUncheckedUpdateManyWithoutProductNestedInput
-    images?: ImageUncheckedUpdateManyWithoutProductNestedInput
-  }
-
-  export type ProductUncheckedUpdateManyWithoutCardsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
-    price?: FloatFieldUpdateOperationsInput | number
-    shipping_price?: FloatFieldUpdateOperationsInput | number
-    tax_price?: FloatFieldUpdateOperationsInput | number
-    quantity?: IntFieldUpdateOperationsInput | number
-    collection_id?: NullableStringFieldUpdateOperationsInput | string | null
-    category_id?: NullableStringFieldUpdateOperationsInput | string | null
-    brand_id?: NullableStringFieldUpdateOperationsInput | string | null
-    model_id?: NullableStringFieldUpdateOperationsInput | string | null
-    readme_url?: NullableStringFieldUpdateOperationsInput | string | null
-    released_month?: NullableStringFieldUpdateOperationsInput | string | null
-    released_year?: NullableStringFieldUpdateOperationsInput | string | null
-    search_count?: FloatFieldUpdateOperationsInput | number
-    view_count?: FloatFieldUpdateOperationsInput | number
-    love_count?: FloatFieldUpdateOperationsInput | number
-    order_count?: FloatFieldUpdateOperationsInput | number
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
   export type ProductUpdateWithoutColorsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -35892,10 +36040,10 @@ export namespace Prisma {
     category?: CategoryUpdateOneWithoutProductsNestedInput
     brand?: BrandUpdateOneWithoutProductsNestedInput
     model?: ModelUpdateOneWithoutProductsNestedInput
+    cards?: CardUpdateManyWithoutProductNestedInput
     loves?: LoveUpdateManyWithoutProductNestedInput
     views?: ViewUpdateManyWithoutProductNestedInput
     product_orders?: ProductOrderUpdateManyWithoutProductNestedInput
-    cards?: CardUpdateManyWithoutProductsNestedInput
     videos?: VideoUpdateManyWithoutProductNestedInput
     images?: ImageUpdateManyWithoutProductNestedInput
   }
@@ -35923,10 +36071,10 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     detail?: DetailUncheckedUpdateOneWithoutProductNestedInput
+    cards?: CardUncheckedUpdateManyWithoutProductNestedInput
     loves?: LoveUncheckedUpdateManyWithoutProductNestedInput
     views?: ViewUncheckedUpdateManyWithoutProductNestedInput
     product_orders?: ProductOrderUncheckedUpdateManyWithoutProductNestedInput
-    cards?: CardUncheckedUpdateManyWithoutProductsNestedInput
     videos?: VideoUncheckedUpdateManyWithoutProductNestedInput
     images?: ImageUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -36032,11 +36180,11 @@ export namespace Prisma {
     category?: CategoryUpdateOneWithoutProductsNestedInput
     brand?: BrandUpdateOneWithoutProductsNestedInput
     model?: ModelUpdateOneWithoutProductsNestedInput
+    cards?: CardUpdateManyWithoutProductNestedInput
     loves?: LoveUpdateManyWithoutProductNestedInput
     views?: ViewUpdateManyWithoutProductNestedInput
     colors?: ColorUpdateManyWithoutProductsNestedInput
     product_orders?: ProductOrderUpdateManyWithoutProductNestedInput
-    cards?: CardUpdateManyWithoutProductsNestedInput
     videos?: VideoUpdateManyWithoutProductNestedInput
     images?: ImageUpdateManyWithoutProductNestedInput
   }
@@ -36063,11 +36211,11 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     detail?: DetailUncheckedUpdateOneWithoutProductNestedInput
+    cards?: CardUncheckedUpdateManyWithoutProductNestedInput
     loves?: LoveUncheckedUpdateManyWithoutProductNestedInput
     views?: ViewUncheckedUpdateManyWithoutProductNestedInput
     colors?: ColorUncheckedUpdateManyWithoutProductsNestedInput
     product_orders?: ProductOrderUncheckedUpdateManyWithoutProductNestedInput
-    cards?: CardUncheckedUpdateManyWithoutProductsNestedInput
     videos?: VideoUncheckedUpdateManyWithoutProductNestedInput
     images?: ImageUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -36176,11 +36324,11 @@ export namespace Prisma {
     collection?: CollectionUpdateOneWithoutProductsNestedInput
     brand?: BrandUpdateOneWithoutProductsNestedInput
     model?: ModelUpdateOneWithoutProductsNestedInput
+    cards?: CardUpdateManyWithoutProductNestedInput
     loves?: LoveUpdateManyWithoutProductNestedInput
     views?: ViewUpdateManyWithoutProductNestedInput
     colors?: ColorUpdateManyWithoutProductsNestedInput
     product_orders?: ProductOrderUpdateManyWithoutProductNestedInput
-    cards?: CardUpdateManyWithoutProductsNestedInput
     videos?: VideoUpdateManyWithoutProductNestedInput
     images?: ImageUpdateManyWithoutProductNestedInput
   }
@@ -36207,11 +36355,11 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     detail?: DetailUncheckedUpdateOneWithoutProductNestedInput
+    cards?: CardUncheckedUpdateManyWithoutProductNestedInput
     loves?: LoveUncheckedUpdateManyWithoutProductNestedInput
     views?: ViewUncheckedUpdateManyWithoutProductNestedInput
     colors?: ColorUncheckedUpdateManyWithoutProductsNestedInput
     product_orders?: ProductOrderUncheckedUpdateManyWithoutProductNestedInput
-    cards?: CardUncheckedUpdateManyWithoutProductsNestedInput
     videos?: VideoUncheckedUpdateManyWithoutProductNestedInput
     images?: ImageUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -36291,11 +36439,11 @@ export namespace Prisma {
     collection?: CollectionUpdateOneWithoutProductsNestedInput
     category?: CategoryUpdateOneWithoutProductsNestedInput
     model?: ModelUpdateOneWithoutProductsNestedInput
+    cards?: CardUpdateManyWithoutProductNestedInput
     loves?: LoveUpdateManyWithoutProductNestedInput
     views?: ViewUpdateManyWithoutProductNestedInput
     colors?: ColorUpdateManyWithoutProductsNestedInput
     product_orders?: ProductOrderUpdateManyWithoutProductNestedInput
-    cards?: CardUpdateManyWithoutProductsNestedInput
     videos?: VideoUpdateManyWithoutProductNestedInput
     images?: ImageUpdateManyWithoutProductNestedInput
   }
@@ -36322,11 +36470,11 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     detail?: DetailUncheckedUpdateOneWithoutProductNestedInput
+    cards?: CardUncheckedUpdateManyWithoutProductNestedInput
     loves?: LoveUncheckedUpdateManyWithoutProductNestedInput
     views?: ViewUncheckedUpdateManyWithoutProductNestedInput
     colors?: ColorUncheckedUpdateManyWithoutProductsNestedInput
     product_orders?: ProductOrderUncheckedUpdateManyWithoutProductNestedInput
-    cards?: CardUncheckedUpdateManyWithoutProductsNestedInput
     videos?: VideoUncheckedUpdateManyWithoutProductNestedInput
     images?: ImageUncheckedUpdateManyWithoutProductNestedInput
   }
@@ -36422,11 +36570,11 @@ export namespace Prisma {
     collection?: CollectionUpdateOneWithoutProductsNestedInput
     category?: CategoryUpdateOneWithoutProductsNestedInput
     brand?: BrandUpdateOneWithoutProductsNestedInput
+    cards?: CardUpdateManyWithoutProductNestedInput
     loves?: LoveUpdateManyWithoutProductNestedInput
     views?: ViewUpdateManyWithoutProductNestedInput
     colors?: ColorUpdateManyWithoutProductsNestedInput
     product_orders?: ProductOrderUpdateManyWithoutProductNestedInput
-    cards?: CardUpdateManyWithoutProductsNestedInput
     videos?: VideoUpdateManyWithoutProductNestedInput
     images?: ImageUpdateManyWithoutProductNestedInput
   }
@@ -36453,11 +36601,11 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     detail?: DetailUncheckedUpdateOneWithoutProductNestedInput
+    cards?: CardUncheckedUpdateManyWithoutProductNestedInput
     loves?: LoveUncheckedUpdateManyWithoutProductNestedInput
     views?: ViewUncheckedUpdateManyWithoutProductNestedInput
     colors?: ColorUncheckedUpdateManyWithoutProductsNestedInput
     product_orders?: ProductOrderUncheckedUpdateManyWithoutProductNestedInput
-    cards?: CardUncheckedUpdateManyWithoutProductsNestedInput
     videos?: VideoUncheckedUpdateManyWithoutProductNestedInput
     images?: ImageUncheckedUpdateManyWithoutProductNestedInput
   }

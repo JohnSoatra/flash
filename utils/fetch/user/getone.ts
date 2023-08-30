@@ -1,4 +1,4 @@
-import { GetoneUserRouter } from "@/prisma-types/typings";
+import { GetoneUserRouter } from "@/gateway-types/typings";
 import { GetOneUser } from "@/typings";
 import fetchHandler from "@/utils/fetch/handler";
 import getJson from "@/utils/json/get";

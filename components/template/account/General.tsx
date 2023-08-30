@@ -4,7 +4,8 @@ import { FieldErrors, FieldValues, RegisterOptions, UseFormRegister } from 'reac
 import Error from "@/components/Error";
 import VARS from '@/constants/vars';
 import { CameraIcon } from '@heroicons/react/24/solid';
-import { UserC } from '@/prisma-types/typings';
+import { UserC } from '@/gateway-types/typings';
+import withStoreUrl from '@/utils/url/with_store';
 
 const Class = {
     Title: 'text-sm opacity-75 font-semibold',
@@ -20,6 +21,7 @@ type Props = {
 
     onImageOversize: () => void,
     onImageRightsize: () => void,
+    onFormChanged: () => void,
 }
 
 const GeneralAccount = ({ 
@@ -30,12 +32,13 @@ const GeneralAccount = ({
 
     onImageOversize,
     onImageRightsize,
+    onFormChanged
 }: Props) => {
     const avatar = useRef<HTMLLabelElement>(null);
-    const [imageUrl, setImageUrl] = useState(undefined as string|undefined);
+    const [imageUrl, setImageUrl] = useState(null as string|null);
 
     return (
-        <form className="space-y-10">
+        <form className="space-y-10" onChange={onFormChanged}>
             <div className='flex justify-center'>
                 <div className='flex flex-col items-center'>
                     <div className="mb-2 text-sm font-medium flex items-start ">
@@ -67,6 +70,10 @@ const GeneralAccount = ({
                                             if (files[0].size > (2 * VARS.SIZE.MB)) {
                                                 onImageOversize();
                                             } else {
+                                                if (imageUrl) {
+                                                    URL.revokeObjectURL(imageUrl);
+                                                }
+
                                                 const _url = URL.createObjectURL(files[0]);
                                                 setImageUrl(_url);
                                                 onImageRightsize();
@@ -84,7 +91,7 @@ const GeneralAccount = ({
                         {
                             (imageUrl || user.image_url) ?
                                 <Image
-                                    src={(imageUrl || user.image_url && (VARS.MEDIA_SERVER + user.image_url))!}
+                                    src={(imageUrl || withStoreUrl(user.image_url!))!}
                                     alt="user"
                                     fill={true}
                                     sizes='100%'
@@ -119,6 +126,49 @@ const GeneralAccount = ({
                     { ...register('username', options['username']) }
                 />
             </div>
+
+            <div>
+                <div className="mb-2 text-sm font-medium flex items-start ">
+                    <label
+                        htmlFor="fullname"
+                        className={Class.InputLabel}>
+                        Fullname&nbsp;
+                    </label>
+                    {
+                        errors['fullname'] &&
+                        <Error message={String(errors['fullname']['message'])} />
+                    }
+                </div>
+                <input
+                    type="text"
+                    id="fullname"
+                    defaultValue={user.fullname}
+                    className={Class.Input}
+                    { ...register('fullname', options['fullname']) }
+                />
+            </div>
+
+            <div>
+                <div className="mb-2 text-sm font-medium flex items-start ">
+                    <label
+                        htmlFor="address"
+                        className={Class.InputLabel}>
+                        Address&nbsp;
+                    </label>
+                    {
+                        errors['address'] &&
+                        <Error message={String(errors['address']['message'])} />
+                    }
+                </div>
+                <textarea
+                    rows={4}
+                    id="address"
+                    defaultValue={user.address}
+                    className={Class.Input}
+                    { ...register('address', options['address']) }
+                />
+            </div>
+
         </form>
   )
 }

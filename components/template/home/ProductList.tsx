@@ -5,12 +5,12 @@ import EachProduct from '../product/Each';
 
 type Props = {
     products: ProductX[],
-    showFavorite: boolean,
+    showLove: boolean,
 }
 
 const ProductList = ({
     products,
-    showFavorite
+    showLove
 }: Props) => {
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
@@ -19,7 +19,7 @@ const ProductList = ({
                     <EachProduct
                         key={product.id}
                         product={product}
-                        showFavorite={showFavorite}
+                        showLove={showLove}
                     />
                 )
             }

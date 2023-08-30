@@ -1,4 +1,4 @@
-import { ResetPasswordRouter } from "@/prisma-types/typings";
+import { ResetPasswordRouter } from "@/gateway-types/typings";
 import { ResetPassword } from "@/typings";
 import fetchHandler from "@/utils/fetch/handler";
 import getJson from "@/utils/json/get";

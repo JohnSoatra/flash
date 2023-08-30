@@ -1,16 +1,16 @@
-import { GetoneCardRouter } from "@/prisma-types/typings";
-import { GetOneCard } from "@/typings";
+import { GetmanyCardsRouter } from "@/gateway-types/typings";
+import { GetManyCards } from "@/typings";
 import fetchHandler from "../handler";
 import getJson from "@/utils/json/get";
 
-async function getOneCard({
+async function getManyCards({
     signal,
     onData,
     onError
-}: GetOneCard): Promise<GetoneCardRouter> {
+}: GetManyCards): Promise<GetmanyCardsRouter> {
     const response = await fetchHandler({
         method: 'get',
-        url: '/card/getone',
+        url: '/card/getmany',
         signal,
         onData,
         onError
@@ -21,4 +21,4 @@ async function getOneCard({
     return json;
 }
 
-export default getOneCard;
+export default getManyCards;

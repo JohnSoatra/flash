@@ -6,6 +6,7 @@ import { ReadonlyURLSearchParams, usePathname, useSearchParams } from "next/navi
 import { useSelector } from "react-redux";
 import { selectInitialed } from "@/redux/initialed";
 import SplashScreen from "./SplashScreen";
+import PopoverCard from "@/components/element/PopoverCard";
 
 function isEmptySearchPage(
     pathName: string,
@@ -53,6 +54,7 @@ const Index = ({ children }: { children: React.ReactNode }) => {
                     <div></div>
 
             }
+            <PopoverCard />
         </>
     );
 }

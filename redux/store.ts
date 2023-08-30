@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
-import basketReducer from '@/redux/basket';
+import cardReducer from '@/redux/card';
+import creditcardReducer from '@/redux/creditcard';
 import filterReducer from '@/redux/filter';
 import userReducer from '@/redux/user';
 import cookieReducer from '@/redux/cookie';
@@ -9,7 +10,8 @@ import browserReducer from '@/redux/browser';
 
 const store = configureStore({
   reducer: {
-    basket: basketReducer,
+    card: cardReducer,
+    creditcard: creditcardReducer,
     filter: filterReducer,
     cookie: cookieReducer,
     user: userReducer,

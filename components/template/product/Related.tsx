@@ -4,6 +4,8 @@ import ROUTE from '@/constants/route';
 import VARS from '@/constants/vars';
 import {useFetch} from '@/hooks/useFetch';
 import getManyRelatedProducts from '@/utils/fetch/product/getmany/related';
+import round from '@/utils/number/round';
+import withStoreUrl from '@/utils/url/with_store';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
@@ -37,7 +39,7 @@ const RelatedProducts = ({ productId }: Props) => {
                             <Link href={ROUTE.PRODUCT(product.id)}>
                                 <div className='w-full h-40 md:h-52 relative'>
                                     <Image
-                                        src={VARS.MEDIA_SERVER + product.images[0].url}
+                                        src={withStoreUrl(product.images[0].url)}
                                         alt="product image"
                                         fill={true}
                                         sizes="100%"
@@ -52,7 +54,7 @@ const RelatedProducts = ({ productId }: Props) => {
                                 <div className='w-full h-full flex flex-col justify-between space-y-2'>
                                     <div>
                                         <Link href={ROUTE.PRODUCT(product.id)}>
-                                            <h5 className="hover:underline text-base md:text-lg font-semibold tracking-tight opacity-80">
+                                            <h5 className="text-base md:text-lg font-semibold tracking-tight opacity-80">
                                                 {product.title}
                                             </h5>
                                         </Link>
@@ -60,11 +62,8 @@ const RelatedProducts = ({ productId }: Props) => {
                                     
                                     <div className='flex items-center justify-between space-x-2'>
                                         <div className="text-base md:text-lg font-semibold opacity-70">
-                                            ${product.price}
+                                            ${round(product.price)}
                                         </div>
-                                        {/* <div>
-                                            <Rating count={product.rating} />
-                                        </div> */}
                                     </div>
 
                                 </div>

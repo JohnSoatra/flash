@@ -1,4 +1,4 @@
-import { VerifyTokenRequestRouter } from "@/prisma-types/typings";
+import { VerifyTokenRequestRouter } from "@/gateway-types/typings";
 import { VerifyTokenRequest } from "@/typings";
 import fetchHandler from "../../handler";
 import getJson from "@/utils/json/get";

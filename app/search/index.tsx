@@ -139,7 +139,7 @@ const Index = ({ string }: Props) => {
 
             <ProductList
                 products={products}
-                showFavorite={true}
+                showLove={true}
             />
 
             {

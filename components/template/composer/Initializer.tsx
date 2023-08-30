@@ -1,10 +1,10 @@
 "use client";
-import initialize from "@/utils/compose/initialize";
+import initial from "@/utils/compose/initial";
 import { useEffect } from "react";
 
 const Initializer = () => {
   useEffect(() => {
-    initialize();
+    initial();
   }, []);
 
   return null;

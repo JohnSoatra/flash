@@ -16,7 +16,7 @@ const Tooltip = ({ children, content }: Props) => {
             <div>{children}</div>
             {
                 hovered &&
-                <div className="w-full h-full absolute left-1/2 bottom-full -translate-y-2 -translate-x-1/2 z-10">
+                <div className="w-full h-full absolute left-1/2 -translate-x-1/2 z-10">
                     {content}
                 </div>
             }

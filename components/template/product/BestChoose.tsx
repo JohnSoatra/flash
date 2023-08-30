@@ -118,7 +118,7 @@ const BestChooseProducts = ({ fetchFunc, fetchAllcount, label }: Props) => {
 
             <ProductList
                 products={products}
-                showFavorite={true}
+                showLove={true}
             />
 
             {

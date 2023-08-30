@@ -1,4 +1,4 @@
-import { GetallCategoriesRouter } from "@/prisma-types/typings";
+import { GetallCategoriesRouter } from "@/gateway-types/typings";
 import { GetAllCategories } from "@/typings";
 import fetchHandler from "../handler";
 import getJson from "@/utils/json/get";

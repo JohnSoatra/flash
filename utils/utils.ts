@@ -21,6 +21,10 @@ function isNegative(num: number) {
     return num < 0;
 }
 
+function isUndefined(value: any) {
+    return value === undefined;
+}
+
 function createHeaders(csrfToken: string) {
     return new Headers({
         'Content-Type': 'x-www-form-urlencoded',
@@ -34,5 +38,6 @@ export {
     isPositive,
     isNegative,
     isZero,
-    createHeaders
+    createHeaders,
+    isUndefined
 };

@@ -1,5 +1,5 @@
 import { GetOneCreditCard } from "@/typings";
-import { GetoneCreditcardRouter } from "@/prisma-types/typings";
+import { GetoneCreditcardRouter } from "@/gateway-types/typings";
 import fetchHandler from "../handler";
 import getJson from "@/utils/json/get";
 

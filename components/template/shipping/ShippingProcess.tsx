@@ -1,4 +1,4 @@
-import { Shipping } from '@/prisma-types/index';
+import { Shipping } from '@/gateway-types/index';
 import React from 'react';
 import { BsBoxFill } from 'react-icons/bs';
 import { FaGetPocket } from 'react-icons/fa';

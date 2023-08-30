@@ -1,4 +1,4 @@
-import { GetCsrfRouter } from "@/prisma-types/typings";
+import { GetCsrfRouter } from "@/gateway-types/typings";
 import { GetOneCsrf } from "@/typings";
 import fetchHandler from "../handler";
 import getJson from "@/utils/json/get";

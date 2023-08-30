@@ -15,6 +15,8 @@ import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import random from "@/utils/string/random";
 import sendEmailVerifyEmail from "@/utils/fetch/email/send/verify_email";
 import verifyEmailToken from "@/utils/fetch/email/verify/email";
+import EyeInput from "@/components/element/EyeInput";
+import VARS from "@/constants/vars";
 
 const OPTIONS: { [key: string]: RegisterOptions } = {
     'email': {
@@ -109,9 +111,10 @@ const Index = () => {
 
             if (result === true) {
                 toast.success(
-                    `Code has been send to ${email}.`,
+                    <p>Code has been send to <b>{email}</b>.</p>,
                     {
-                        position: 'bottom-center'
+                        position: 'bottom-center',
+                        duration: VARS.DURATION.TOAST.DEFAULT
                     }
                 );
             } else if (result === false) {
@@ -165,7 +168,8 @@ const Index = () => {
                 toast.error(
                     'There is a problem with signing up.',
                     {
-                        position: 'bottom-center'
+                        position: 'bottom-center',
+                        duration: VARS.DURATION.TOAST.DEFAULT
                     }
                 );
             } else {
@@ -190,26 +194,9 @@ const Index = () => {
 
     return (
         <div className="min-h-screen flex justify-center items-center">
-            <div className="border border-light-200 shadow-lg h-fit py-5 px-10 rounded-lg">
+            <div className="border border-light-300 shadow-lg h-fit py-5 px-10 rounded-lg">
                 <Card color="transparent" shadow={false}>
-                    
-                    <div className="flex justify-center items-center space-x-3 mb-3 md:mb-5">
-                        <Link href={ROUTE.HOME}>
-                            <div className='relative border border-light-300 rounded-full h-12 w-12 md:w-14 md:h-14 cursor-pointer opacity-80 transition hover:opacity-100'>
-                                <Image
-                                    priority
-                                    src={'/flash-wb.png'}
-                                    alt='header'
-                                    fill={true}
-                                    sizes="100%"
-                                    className='object-contain'
-                                />
-                            </div>
-                        </Link>
-                        <p className="text-xl md:text-2xl font-extrabold">Flash</p>
-                    </div>
-                    
-                    <div>
+                    <div className="text-center">
                         <p className="text-2xl md:text-3xl font-bold">
                             Sign Up
                         </p>
@@ -298,8 +285,7 @@ const Index = () => {
                                     }
                                 </div>
 
-                                <input
-                                    type="password"
+                                <EyeInput
                                     id="password"
                                     className={Class.Input}
                                     { ...register('password', OPTIONS['password']) }

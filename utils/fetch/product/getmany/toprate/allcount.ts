@@ -1,4 +1,4 @@
-import { GetmanyToprateProductsAllCountRouter } from "@/prisma-types/typings";
+import { GetmanyToprateProductsAllCountRouter } from "@/gateway-types/typings";
 import { GetAllcountToprateProducts } from "@/typings";
 import fetchHandler from "@/utils/fetch/handler";
 import getJson from "@/utils/json/get";

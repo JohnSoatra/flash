@@ -25,7 +25,7 @@ const FilterPopover = () => {
             <button
                 type='button'
                 onClick={() => setOpen(true)}>
-                <AdjustmentsHorizontalIcon className='headerIcon'/>
+                <AdjustmentsHorizontalIcon className='h-5 w-5 md:h-6 md:w-6 cursor-pointer opacity-60 transition hover:opacity-100;'/>
             </button>
 
             <Transition appear show={open} as={Fragment}>

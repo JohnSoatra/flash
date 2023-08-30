@@ -5,15 +5,16 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useRef } from 'react';
 import SampleProfileIcon from '@/components/template/header/ProfileIcon';
-import { UserC } from '@/prisma-types/typings';
+import { UserC } from '@/gateway-types/typings';
 import signout from '@/utils/fetch/auth/signout';
 import { toast } from 'react-hot-toast';
 import VARS from '@/constants/vars';
 import { useRouter } from 'next/navigation';
+import withStoreUrl from '@/utils/url/with_store';
 
 type Prop = {
     user: UserC,
-    onClickOutside: (evt: MouseEvent) => void
+    onClickOutside: (evt: MouseEvent|null) => void
 }
 
 const UserPopover = ({ user, onClickOutside }: Prop) => {
@@ -24,15 +25,20 @@ const UserPopover = ({ user, onClickOutside }: Prop) => {
         signout({ signal: null }).then(success => {
             if (!success) {
                 toast.error(
-                    'Cannot signout',
+                    'There is a problem with signing out.',
                     {
-                        position: 'bottom-center'
+                        position: 'bottom-center',
+                        duration: VARS.DURATION.TOAST.DEFAULT
                     }
                 );
             } else {
-                router.push(ROUTE.HOME);
+                router.push(ROUTE.SIGN_IN);
             }
         });
+    }
+
+    const onLinkClicked = () => {
+        onClickOutside && onClickOutside(null);
     }
 
     useEffect(() => {
@@ -62,7 +68,7 @@ const UserPopover = ({ user, onClickOutside }: Prop) => {
                             {
                                 user.image_url ?
                                     <Image
-                                        src={VARS.MEDIA_SERVER + user.image_url}
+                                        src={withStoreUrl(user.image_url)}
                                         alt="user"
                                         fill={true}
                                         sizes='100%'
@@ -87,27 +93,31 @@ const UserPopover = ({ user, onClickOutside }: Prop) => {
             <div className='space-y-2'>
                 <Link
                     href={ROUTE.ACCOUNT}
-                    className='MenuItem'>
+                    className='MenuItem'
+                    onClick={onLinkClicked}>
                     <UserIcon className='MenuIcon' />
                     <p className='MenuLabel'>Account</p>
                 </Link>
                 <Link
                     href={ROUTE.CHECKOUT}
-                    className='MenuItem'>
+                    className='MenuItem'
+                    onClick={onLinkClicked}>
                     <ShoppingBagIcon className='MenuIcon' />
                     <p className='MenuLabel'>Checkout</p>
                 </Link>
                 <Link
                     href={ROUTE.SHIPPING}
-                    className='MenuItem'>
+                    className='MenuItem'
+                    onClick={onLinkClicked}>
                     <TruckIcon className='MenuIcon' />
                     <p className='MenuLabel'>Shipping</p>
                 </Link>
                 <Link
                     href={ROUTE.LOVE}
-                    className='MenuItem'>
+                    className='MenuItem'
+                    onClick={onLinkClicked}>
                     <HeartIcon className='MenuIcon' />
-                    <p className='MenuLabel'>Favorite</p>
+                    <p className='MenuLabel'>Love</p>
                 </Link>
             </div>
 
@@ -116,7 +126,10 @@ const UserPopover = ({ user, onClickOutside }: Prop) => {
             <div>
                 <div
                     className='MenuItem opacity-100 text-rose-500 hover:text-rose-600'
-                    onClick={onSignout}>
+                    onClick={() => {
+                        onSignout();
+                        onLinkClicked();
+                    }}>
                     <PowerIcon className='MenuIcon' />
                     <p className='MenuLabel'>Sign out</p>
                 </div>

@@ -8,11 +8,11 @@ import Link from "next/link";
 import SampleProfileIcon from "./ProfileIcon";
 import UserPopover from "./UserPopover";
 import useUser from "@/hooks/useUser";
-import VARS from "@/constants/vars";
+import withStoreUrl from "@/utils/url/with_store";
  
 const UserProfile = () => {
   const [ open, setOpen ] = useState(false);
-  const user = useUser();
+  const user = useUser({ require: false });
 
   if (user === null) {
     return (
@@ -33,7 +33,7 @@ const UserProfile = () => {
           {
             user.image_url ?
                 <Image
-                    src={VARS.MEDIA_SERVER + user.image_url}
+                    src={withStoreUrl(user.image_url)}
                     alt="user"
                     sizes="100%"
                     fill={true}
@@ -57,7 +57,7 @@ const UserProfile = () => {
               {
                 <UserPopover
                   user={user}
-                  onClickOutside={(evt) => {
+                  onClickOutside={() => {
                     setOpen(false);
                   }}
                 />

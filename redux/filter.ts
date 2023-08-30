@@ -1,5 +1,5 @@
 import { RootState } from '@/redux/store';
-import { Brand, Category, Collection, Model } from '@/prisma-types/index';
+import { Brand, Category, Collection, Model } from '@/gateway-types/index';
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { PriceRange, SortBy } from '@/typings';

@@ -1,4 +1,4 @@
-import { DeleteCookieRouter } from "@/prisma-types/typings";
+import { DeleteCookieRouter } from "@/gateway-types/typings";
 import { DeleteCookie } from "@/typings";
 import fetchHandler from "../handler";
 import getJson from "@/utils/json/get";

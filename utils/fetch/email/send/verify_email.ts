@@ -1,4 +1,4 @@
-import { SendEmailVerifyEmailRouter } from "@/prisma-types/typings";
+import { SendEmailVerifyEmailRouter } from "@/gateway-types/typings";
 import { SendEmailVerifyEmail } from "@/typings";
 import fetchHandler from "../../handler";
 import getJson from "@/utils/json/get";

@@ -1,5 +1,5 @@
 import { GetAllModels } from "@/typings";
-import { GetallModelsRouter } from "@/prisma-types/typings";
+import { GetallModelsRouter } from "@/gateway-types/typings";
 import fetchHandler from "../handler";
 import getJson from "@/utils/json/get";
 

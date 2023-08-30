@@ -1,4 +1,4 @@
-import { SigninRouter } from "@/prisma-types/typings";
+import { SigninRouter } from "@/gateway-types/typings";
 import { Signin } from "@/typings";
 import fetchHandler from "../handler";
 import store from "@/redux/store";
